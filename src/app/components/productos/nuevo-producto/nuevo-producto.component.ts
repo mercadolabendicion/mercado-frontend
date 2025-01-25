@@ -30,6 +30,7 @@ export class NuevoProductoComponent implements OnInit {
   ngOnInit(): void {
     this.buildForm();
     this.obtenerImpuesto();
+    this.agregarFila();
   }
 
   /**
