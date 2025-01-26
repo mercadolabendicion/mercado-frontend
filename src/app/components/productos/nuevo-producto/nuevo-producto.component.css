@@ -6,6 +6,34 @@
   border-radius: 10px;
 }
 
+.finFormulario{
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.formasVenta {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 10px;
+  padding-left: 150px;
+  border-radius: 10px;
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 576px) {
+  .formasVenta {
+    padding-left: 15px; /* Reduce el padding izquierdo en pantallas pequeñas */
+    padding-right: 0px;
+    max-width: 100%;    /* Elimina el límite de max-width */
+  }
+}
+
+.cajasFormas{
+  padding-right: 10px;
+}
+
 .formulario .nota {
   color: #000000;
   width: 100%;
@@ -49,6 +77,29 @@ button {
   justify-content: center;
   align-items: center;
   transition: background-color 0.3s, transform 0.2s;
+}
+
+.btnAggFormas{
+  background-color: transparent;
+  border-style: solid;
+  border-color: rgb(195, 205, 214);
+  border-width: 1px;
+  color: black;
+}
+
+.btnAggFormas:hover{
+  background-color: rgb(255, 255, 255);
+  border-color: rgb(67, 164, 255);
+  border-width: 3px;
+}
+
+.quitarFila{
+  background-color: rgb(255, 255, 255);
+}
+
+.quitarFila:hover{
+  background-color: rgb(255, 255, 255);
+  transform: scale(1.5); /* Pequeña animación de escala */
 }
 
 button:hover {

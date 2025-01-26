@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<div class="container contenedorGeneral mt-4">
   <div class="formulario">
     <div class="encabezado">
       <h1 class="nota">Registro de productos</h1>
@@ -8,110 +8,109 @@
     <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
 
       <div class="form-group">
-        <input
-          type="text"
-          class="form-control"
-          pattern="[a-zA-Z0-9]*"
-          formControlName="codigo"
-          placeholder="Código"
-          (change)="validarCodigo( $event )"
-          (keyup)="validarCodigo( $event )"
-        >
+        <input type="text" class="form-control" pattern="[a-zA-Z0-9]*" formControlName="codigo" placeholder="Código"
+          (change)="validarCodigo( $event )" (keyup)="validarCodigo( $event )">
 
-        <span
-          class="text-danger"
-          *ngIf="formulario.get('codigoExistente') && formulario.get('codigoExistente')!.errors && formulario.get('codigoExistente')!.touched"
-        >
+        <span class="text-danger"
+          *ngIf="formulario.get('codigoExistente') && formulario.get('codigoExistente')!.errors && formulario.get('codigoExistente')!.touched">
           El código ya existe
         </span>
-        <span
-          class="text-danger"
-          *ngIf="formulario.get('codigo') && formulario.get('codigo')!.errors && formulario.get('codigo')!.touched"
-        >
+        <span class="text-danger"
+          *ngIf="formulario.get('codigo') && formulario.get('codigo')!.errors && formulario.get('codigo')!.touched">
           Por favor, ingrese un valor válido.
         </span>
       </div>
 
       <p class="datos">Nombre:</p>
       <div class="form-group">
-        <input
-          type="text"
-          class="form-control"
-          formControlName="nombre"
-          placeholder="Nombre"
-        >
-        <span
-          class="text-danger"
-          *ngIf="formulario.get('nombre') && formulario.get('nombre')!.errors && formulario.get('nombre')!.touched"
-        >
+        <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
+        <span class="text-danger"
+          *ngIf="formulario.get('nombre') && formulario.get('nombre')!.errors && formulario.get('nombre')!.touched">
           Por favor, ingrese solo texto
         </span>
       </div>
 
       <p class="datos">Precio de compra:</p>
       <div class="form-group">
-        <input
-          type="text"
-          class="form-control"
-          formControlName="precioCompra"
-          placeholder="Precio de compra"
-        >
-        <span
-          class="text-danger"
-          *ngIf="formulario.get('precioCompra') && formulario.get('precioCompra')!.errors && formulario.get('precioCompra')!.touched"
-        >
+        <input type="text" class="form-control" formControlName="precioCompra" placeholder="Precio de compra">
+        <span class="text-danger"
+          *ngIf="formulario.get('precioCompra') && formulario.get('precioCompra')!.errors && formulario.get('precioCompra')!.touched">
           Por favor, ingrese solo texto
         </span>
       </div>
+    </form>
 
-      <!-- Nuevo Componente -->
-      <h2 class="mt-4">Forma de venta</h2>
-      <div formArrayName="formasVenta">
-        <div *ngFor="let forma of formasVenta.controls; let i = index" [formGroupName]="i">
+
+    <!-- Nuevo Componente -->
+    <h3 class="mt-4">Formas de compra y venta</h3>
+    <p class="text-muted mb-2">
+      A continuación podrá describir de qué maneras compró y cómo se va a vender el producto, definir el valor neto y a
+      qué precios se van a vender cada tipo de producto; Ej: (Cajas, Sellos, Unidades)
+    </p>
+  </div>
+  <form [formGroup]="formulario">
+    <div formArrayName="formasVenta">
+      <div class="formasVenta" *ngFor="let forma of formasVenta.controls; let i = index" [formGroupName]="i">
+        <div class="row mt-2 align-items-center">
           <div class="row">
-            <div class="col-md-4">
-              <input
-                type="text"
-                class="form-control"
-                formControlName="nombre"
-                placeholder="Nombre"
-              >
+            <div class="col-md-10 col-sm-12">
+              <div class="row cajasFormas">
+                <div class="col-md-3 col-sm-12">
+                  <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
+                </div>
+                <div class="col-md-3 col-sm-12">
+                  <input type="text" class="form-control" formControlName="precioCompra" placeholder="$ Compra">
+                </div>
+                <div class="col-md-3 col-sm-12">
+                  <input type="text" class="form-control" formControlName="precioVenta" placeholder="$ Venta">
+                </div>
+                <div class="col-md-3 col-sm-12">
+                  <input type="number" class="form-control" formControlName="cantidad" placeholder="Cantidad">
+                </div>
+              </div>
             </div>
-            <div class="col-md-4">
-              <input
-                type="text"
-                class="form-control"
-                formControlName="precio"
-                placeholder="Precio"
-              >
-            </div>
-            <div class="col-md-4">
-              <input
-                type="number"
-                class="form-control"
-                formControlName="cantidad"
-                placeholder="Cantidad"
-              >
+            <div class="col-md-2">
+              <div class="row">
+                <div class="col-md-6 col-sm-12">
+                  <!-- Botón transparente con ícono de "X" -->
+                  <button type="button" class="btn quitarFila btn-transparent p-0" (click)="eliminarFila(i)">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32"
+                      viewBox="0,0,256,256">
+                      <g fill="#ff0000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
+                        stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
+                        font-family="none" font-weight="none" font-size="none" text-anchor="none"
+                        style="mix-blend-mode: normal">
+                        <g transform="scale(8,8)">
+                          <path
+                            d="M16,3c-7.16797,0 -13,5.83203 -13,13c0,7.16797 5.83203,13 13,13c7.16797,0 13,-5.83203 13,-13c0,-7.16797 -5.83203,-13 -13,-13zM16,5c6.08594,0 11,4.91406 11,11c0,6.08594 -4.91406,11 -11,11c-6.08594,0 -11,-4.91406 -11,-11c0,-6.08594 4.91406,-11 11,-11zM12.21875,10.78125l-1.4375,1.4375l3.78125,3.78125l-3.78125,3.78125l1.4375,1.4375l3.78125,-3.78125l3.78125,3.78125l1.4375,-1.4375l-3.78125,-3.78125l3.78125,-3.78125l-1.4375,-1.4375l-3.78125,3.78125z">
+                          </path>
+                        </g>
+                      </g>
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <button type="button" class="btn btn-secondary mt-2" (click)="agregarFila()">+</button>
-      <!-- Fin del nuevo componente -->
+    </div>
+    <button type="button" class=" mt-2 formulario btnAggFormas" (click)="agregarFila()">+</button>
+  </form>
+  <!-- Fin del nuevo componente -->
 
-      <div class="form-group">
+  <div class="finFormulario">
+    <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+      <div class="form-group mt-4">
         <p class="datos">Tipo de impuesto</p>
-        <select
-          class="form-control"
-          formControlName="impuesto"
-        >
+        <select class="form-control" formControlName="impuesto">
           <option *ngFor="let impuesto of tipoImpuesto; let i = index" [value]="i">
             {{impuesto}}
           </option>
         </select>
       </div>
 
-      <button type="submit" class="btn btn-primary">
+      <button type="submit" class="btn btn-primary mt-3">
         Guardar Datos
       </button>
     </form>

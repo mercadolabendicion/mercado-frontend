@@ -47,10 +47,15 @@ export class NuevoProductoComponent implements OnInit {
     this.formasVenta.push(
       this.formBuilder.group({
         nombre: [''],
-        precio: [''],
+        precioCompra: [''],
+        precioVenta: [''],
         cantidad: [1]
       })
     );
+  }
+
+    eliminarFila(indice: number) {
+    this.formasVenta.removeAt(indice);
   }
 
 

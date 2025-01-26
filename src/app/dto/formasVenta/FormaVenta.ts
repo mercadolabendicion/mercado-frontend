@@ -4,7 +4,8 @@ export class FormaVenta{
 
 
     nombre!: string;
-    precio!: number;
+    precioCompra!: number;
+    precioVenta!: number;
     cantidad!: number;
     activo!: boolean;
 
@@ -13,7 +14,8 @@ export class FormaVenta{
         let formaVenta = new FormaVenta();
         console.log(forma);
         formaVenta.nombre = forma.get('nombre')?.value;
-        formaVenta.precio = forma.get('precio')?.value;
+        formaVenta.precioCompra = forma.get('precioCompra')?.value;
+        formaVenta.precioVenta = forma.get('precioVenta')?.value;
         formaVenta.cantidad = forma.get('cantidad')?.value;
         formaVenta.activo = true;
         return formaVenta;
