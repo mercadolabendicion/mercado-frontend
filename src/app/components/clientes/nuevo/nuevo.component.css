@@ -13,6 +13,17 @@
   justify-content: left;
 }
 
+input:hover {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+select:hover {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+
 .encabezado{
   padding-bottom: 20px;
 }

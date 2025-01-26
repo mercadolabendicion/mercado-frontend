@@ -95,7 +95,7 @@
         </div>
       </div>
     </div>
-    <button type="button" class=" mt-2 formulario btnAggFormas" (click)="agregarFila()">+</button>
+    <button type="button" class="mt-2 formulario btnAggFormas" (click)="agregarFila()">+</button>
   </form>
   <!-- Fin del nuevo componente -->
 
@@ -103,11 +103,14 @@
     <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
       <div class="form-group mt-4">
         <p class="datos">Tipo de impuesto</p>
-        <select class="form-control" formControlName="impuesto">
+        <select class="form-select" formControlName="impuesto">
+          <option value="" disabled selected>Seleccione un impuesto</option> <!-- Placeholder -->
           <option *ngFor="let impuesto of tipoImpuesto; let i = index" [value]="i">
             {{impuesto}}
           </option>
         </select>
+        
+        
       </div>
 
       <button type="submit" class="btn btn-primary mt-3">

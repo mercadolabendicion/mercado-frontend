@@ -22,6 +22,7 @@ export class VentaComponent implements DoCheck {
   protected productoSeleccionado!: ProductoDTO | null;
   protected formulario!: FormGroup;
   protected productosForm!: FormGroup;
+  protected formaVenta!: string[];
   protected listProductos: ProductoDTO[];
   protected modoOculto: boolean = true;
   protected subtotal: number = 0;
@@ -138,6 +139,7 @@ export class VentaComponent implements DoCheck {
     const venta = this.crearVentaDTO();
     if (!this.validarProductosVenta(venta)) return;
     this.procesarVenta(venta);
+    let formaDeVenta = this.formaVenta[this.formulario.get('formaDeVenta')!.value] == undefined ? '':this.formaVenta[this.formulario.get('formaDeVenta')!.value];
   }
   /**
    * Este metodo se encarga de validar si los campos del formulario están completos
