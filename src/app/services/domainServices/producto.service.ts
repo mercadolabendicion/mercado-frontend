@@ -7,11 +7,13 @@ import { ActualizarProductoDTO } from "src/app/dto/producto/ActualizarProductoDT
 import { CrearProductoDTO } from "src/app/dto/producto/CrearProductoDTO";
 import { Page } from "src/app/dto/pageable/Page";
 import { ProductoCompletoDTO } from "src/app/dto/producto/ProductoCompletoDTO";
+import { FormaVenta } from "src/app/dto/formasVenta/FormaVenta";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ProductoService {
+    
    
     private httpProductoService: HttpProductoService = inject(HttpProductoService);
     private alert: AlertService = inject(AlertService);
@@ -211,4 +213,9 @@ export class ProductoService {
     obtenerProductoCompleto(codigo: string): Observable<ProductoCompletoDTO> {
         return this.httpProductoService.obtenerProductoCompleto(codigo);
     }
+
+    obtenerFormasVentaByCodigo(codigo: string): Observable<FormaVenta[]> {
+        return this.httpProductoService.obtenerFormasVentaByCodigo(codigo);
+    }
+
 }

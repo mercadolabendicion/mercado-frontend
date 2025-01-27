@@ -120,7 +120,7 @@
 
             <select class="form-select" formControlName="formaVenta">
               <option value="" disabled selected>Seleccione una forma de venta</option>
-              <option *ngFor="let formaDeVenta of formaVenta; let i = index" [value]="i">
+              <option *ngFor="let formaDeVenta of formaVenta; let i = index" [value]="i" (change)="cambiarPrecio()">
                 {{formaDeVenta}}
               </option>
             </select>
@@ -178,7 +178,7 @@
                 <tr>
                   <td>{{ producto.codigo }}</td>
                   <td>{{ producto.nombre }}</td>
-                  <td>$ {{ producto.precioCompra | number:'1.0-0' }}</td>
+                  <td>$ {{ 10 | number:'1.0-0' }}</td>
                   <td>{{ producto.cantidad }}</td>
                   <td id="eliminar" class="eliminar">
                     <button class="btn-primary BotonGeneral" (click)="eliminarPorId(producto)">X</button>

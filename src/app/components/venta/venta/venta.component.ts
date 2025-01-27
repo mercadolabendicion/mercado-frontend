@@ -8,6 +8,7 @@ import { ProductoService } from 'src/app/services/domainServices/producto.servic
 import { VentaService } from 'src/app/services/domainServices/venta.service';
 import { MenuComponent } from '../../menu/menu.component';
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
+import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 
 @Component({
   selector: 'app-venta',
@@ -15,6 +16,7 @@ import { ClienteService } from 'src/app/services/domainServices/cliente.service'
   styleUrls: ['./venta.component.css']
 })
 export class VentaComponent implements DoCheck {
+
 
   protected clientes: ClienteDTO[];
   protected productos: ProductoDTO[];
@@ -42,6 +44,7 @@ export class VentaComponent implements DoCheck {
   private menuComponent: MenuComponent = inject(MenuComponent);
   private descuento!: number;
   private totalReal!: number;
+  private formasVentaProductoSeleccionado!: FormaVenta[];
   protected descuentoAplicado: boolean = false;
   valorFormateado: string = ''; // Para almacenar el valor con formato de dinero 
 
@@ -71,7 +74,6 @@ export class VentaComponent implements DoCheck {
    */
   applyDiscountValue(): void {
     if (this.aplicarDescuento && this.valorDescuento !== null && +this.valorDescuento > 0) {
-      console.log(`Descuento aplicado: ${this.valorDescuento}`);
       alert(`¡Se ha aplicado un descuento de ${this.valorDescuento}!`);
     } else {
       alert('Ingrese un valor válido para el descuento.');
@@ -92,7 +94,6 @@ export class VentaComponent implements DoCheck {
         this.descuento = valorNumerico;
       }
     } 
-    console.log('Descuento:', this.descuento);
   }
 
   public reducirTotal(){
@@ -127,6 +128,7 @@ export class VentaComponent implements DoCheck {
       codigoProducto: ['', [Validators.required]],
       nombreProducto: ['', [Validators.required]],
       precioProducto: ['', [Validators.required]],
+      formaVenta: ['', [Validators.required]],
       cantidadProducto: [1, [Validators.required, cantidadMayorQueCero()]],
     });
   }
@@ -339,7 +341,7 @@ export class VentaComponent implements DoCheck {
       }
 
       this.resetForms();
-      this.subtotal = this.listProductos.reduce((total, producto) => total + producto.precioCompra * producto.cantidad, 0);
+      //this.subtotal = this.listProductos.reduce((total, producto) => total + producto.precioCompra * producto.cantidad, 0);
       this.calcularValores();
     } catch (error) {
       console.error(error);
@@ -361,7 +363,7 @@ export class VentaComponent implements DoCheck {
    * Este metodo se encarga de calcular el subtotal, igv y total de la factura
    */
   private calcularValores(): void {
-    this.subtotal = this.listProductos.reduce((total: number, producto: ProductoDTO) => total + (producto.precioCompra * producto.cantidad), 0);
+    //this.subtotal = this.listProductos.reduce((total: number, producto: ProductoDTO) => total + (producto.precioCompra * producto.cantidad), 0);
     this.igv = this.subtotal * (this.porcentajeIva / 100);
     this.total = this.subtotal - this.descuento;
     this.totalReal = this.total;
@@ -414,7 +416,7 @@ export class VentaComponent implements DoCheck {
     this.productoSeleccionado = producto;
     this.productosForm.patchValue({
       nombreProducto: producto.nombre,
-      precioProducto: producto.precioCompra
+      //precioProducto: producto.precioCompra
     });
   }
 
@@ -562,6 +564,15 @@ export class VentaComponent implements DoCheck {
     this.productosForm.patchValue({
       codigoProducto: producto.codigo,
     });
+    this.productoService.obtenerFormasVentaByCodigo(producto.codigo).subscribe(
+      response => {
+        this.formaVenta = [];
+        this.formasVentaProductoSeleccionado = response;
+        response.forEach((element) => {
+          this.formaVenta.push(element.nombre);
+        });
+      }
+    )
     this.ocultarSugerencias();
     this.asignarProducto(producto);
   }
@@ -589,5 +600,14 @@ export class VentaComponent implements DoCheck {
       }
     }**/
 
+  }
+
+
+  cambiarPrecio() {
+    if (this.productoSeleccionado) {
+      this.productosForm.patchValue({
+        precioProducto: this.formaVenta[this.productosForm.get('formaVenta')!.value] == undefined ? '':this.formaVenta[this.productosForm.get('formaVenta')!.value]
+      });
+    }
   }
 }
