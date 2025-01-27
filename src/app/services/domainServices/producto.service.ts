@@ -111,9 +111,9 @@ export class ProductoService {
      * @param codigo Código del producto a verificar
      * @returns un booleano que indica si el producto tiene suficiente cantidad
      */
-    public verificarProductoCantidad(cantidad: number, codigo: string): Promise<boolean> {
+    public verificarProductoCantidad(cantidad: number, codigo: string, formaVenta: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            this.httpProductoService.verificarCantidad(cantidad, codigo).subscribe({
+            this.httpProductoService.verificarCantidad(cantidad, codigo, formaVenta).subscribe({
                 next: (response) => {
                     if (!response) this.alert.simpleErrorAlert('No hay suficiente cantidad de producto');
                     resolve(response);

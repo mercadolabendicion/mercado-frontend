@@ -308,3 +308,15 @@ p.impuesto-usado {
 .list-group-item:hover {
   background-color: #f8f9fa;
 }
+
+.option-venta{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+}
+
+.option-venta span{
+  font-size: 1.2em;
+  align-items: center;
+}

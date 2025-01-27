@@ -69,21 +69,21 @@
           <div class="modal-body">
             <div class="row mb-3">
               <div class="col-md-6">
-                <label for="codigo" class="form-label">Código</label>
+                <label for="codigo" class="form-label"><strong>Código</strong></label>
                 <input type="text" id="codigo" class="form-control" [(ngModel)]="productoSeleccionado.codigo" readonly />
               </div>
               <div class="col-md-6">
-                <label for="nombre" class="form-label">Nombre</label>
+                <label for="nombre" class="form-label"><strong>Nombre</strong></label>
                 <input type="text" id="nombre" class="form-control" [(ngModel)]="productoSeleccionado.nombre" readonly />
               </div>
             </div>
             <div class="row mb-3">
               <div class="col-md-6">
-                <label for="activo" class="form-label">Activo</label>
+                <label for="activo" class="form-label"><strong>Activo</strong></label>
                 <input type="text" id="activo" class="form-control" [(ngModel)]="productoSeleccionado.activo" readonly />
               </div>
               <div class="col-md-6">
-                <label for="fechaCreacion" class="form-label">Fecha de Creación</label>
+                <label for="fechaCreacion" class="form-label"><strong>Fecha de Creación</strong></label>
                 <input type="text" id="fechaCreacion" class="form-control" [(ngModel)]="productoSeleccionado.fechaCreacion" readonly />
               </div>
             </div>
@@ -104,13 +104,13 @@
                       <input type="text" class="form-control" [(ngModel)]="forma.nombre" readonly />
                     </td>
                     <td>
-                      <input type="text" class="form-control" [(ngModel)]="forma.precioCompra" readonly />
+                      <input type="text" class="form-control" [value]="forma.precioCompra | currency:'USD':'symbol':'1.0-0' " readonly />
                     </td>
                     <td>
-                      <input type="text" class="form-control" [(ngModel)]="forma.precioVenta" readonly />
+                      <input type="text" class="form-control" [value]="forma.precioVenta | currency:'USD':'symbol':'1.0-0'"  readonly />
                     </td>
                     <td>
-                      <input type="text" class="form-control" [(ngModel)]="forma.cantidad" readonly />
+                      <input type="text" class="form-control" [value]="forma.cantidad" readonly />
                     </td>
                   </tr>
                 </tbody>

@@ -43,8 +43,8 @@ export class HttpProductoService {
     return this.http.get<boolean>(`${this.URL_API}/productos/verificar-cod-producto/${codigo}`);
   }
 
-  public verificarCantidad(cantidad: number, codigo: string):Observable<boolean> {
-    return this.http.get<boolean>(`${this.URL_API}/productos/verificar-cantidad/${cantidad}/${codigo}`);
+  public verificarCantidad(cantidad: number, codigo: string, formaVenta:string):Observable<boolean> {
+    return this.http.get<boolean>(`${this.URL_API}/productos/verificar-cantidad/${cantidad}/${codigo}/${formaVenta}`);
   }
 
   public verificarActivo(codigo: string):Observable<boolean> {

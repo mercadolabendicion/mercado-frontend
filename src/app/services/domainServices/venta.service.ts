@@ -10,6 +10,7 @@ import { DetalleVentaDTO } from "src/app/dto/detalleVenta/DetalleVentaDTO";
 import { VentaDTO } from "src/app/dto/venta/VentaDTO";
 import { FullVentaDTO } from "src/app/dto/venta/FullVentaDTO";
 import { Page } from "src/app/dto/pageable/Page";
+import { CarritoProductoDTO } from "src/app/dto/producto/CarritoProductoDTO";
 
 @Injectable({
   providedIn: 'root'
@@ -137,14 +138,14 @@ export class VentaService {
    * @param listProductos lista de productos que se agregaron al carrito
    * @returns un booleano que indica si se agregaron los productos correctamente
    */
-  public agregarProductosVenta(venta: CrearVentaDTO, listProductos: ProductoDTO[]): boolean {
+  public agregarProductosVenta(venta: CrearVentaDTO, listProductos: CarritoProductoDTO[]): boolean {
     if (listProductos.length == 0) {
       this.alert.simpleErrorAlert('No se ha agregado ningun producto a la factura');
       return false;
     }
     listProductos.map(producto => {
       let detalleVenta = new DetalleVentaDTO();
-      detalleVenta.cantidad = producto.cantidad;
+      //detalleVenta.cantidad = producto.cantidad;
       detalleVenta.codigoProducto = producto.codigo;
       venta.agregarDetalle(detalleVenta);
     });

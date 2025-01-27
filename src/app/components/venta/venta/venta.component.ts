@@ -9,6 +9,7 @@ import { VentaService } from 'src/app/services/domainServices/venta.service';
 import { MenuComponent } from '../../menu/menu.component';
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
 import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
+import { CarritoProductoDTO } from 'src/app/dto/producto/CarritoProductoDTO';
 
 @Component({
   selector: 'app-venta',
@@ -17,7 +18,6 @@ import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 })
 export class VentaComponent implements DoCheck {
 
-
   protected clientes: ClienteDTO[];
   protected productos: ProductoDTO[];
   protected clienteSeleccionado!: ClienteDTO | null;
@@ -25,7 +25,7 @@ export class VentaComponent implements DoCheck {
   protected formulario!: FormGroup;
   protected productosForm!: FormGroup;
   protected formaVenta!: string[];
-  protected listProductos: ProductoDTO[];
+  protected listProductos: CarritoProductoDTO[];
   protected modoOculto: boolean = true;
   protected subtotal: number = 0;
   protected porcentajeIva: number = 19;
@@ -45,8 +45,10 @@ export class VentaComponent implements DoCheck {
   private descuento!: number;
   private totalReal!: number;
   private formasVentaProductoSeleccionado!: FormaVenta[];
+  protected productoSeleccionadoPrecio = 0;
   protected descuentoAplicado: boolean = false;
   valorFormateado: string = ''; // Para almacenar el valor con formato de dinero 
+  protected cantidadDisponible!: number;
 
   constructor() {
     this.clientes = [];
@@ -127,7 +129,7 @@ export class VentaComponent implements DoCheck {
     this.productosForm = this.formBuilder.group({
       codigoProducto: ['', [Validators.required]],
       nombreProducto: ['', [Validators.required]],
-      precioProducto: ['', [Validators.required]],
+      precio: ['', [Validators.required]],
       formaVenta: ['', [Validators.required]],
       cantidadProducto: [1, [Validators.required, cantidadMayorQueCero()]],
     });
@@ -322,21 +324,23 @@ export class VentaComponent implements DoCheck {
 
     try {
       const productoActivo = await this.productoService.verificarProductoActivo(codigo);
-      const cantidadValida = await this.productoService.verificarProductoCantidad(cantidad, codigo);
+      let formaVenta = this.formaVenta[this.productosForm.get('formaVenta')!.value] == undefined ? '':this.formaVenta[this.productosForm.get('formaVenta')!.value];
+      const cantidadValida = await this.productoService.verificarProductoCantidad(cantidad, codigo, formaVenta);
 
       if (!productoActivo || !cantidadValida) {
         this.hayStock = false;
         return;
       }
 
-      const precio = this.productosForm.get('precioProducto')?.value;
+      const precio = this.productosForm.get('precio')?.value;
+      const precioEntero = parseInt(precio.replace(/[\$,]/g, ''), 10);
       const nombre = this.productosForm.get('nombreProducto')?.value;
-      const productoExistente = this.listProductos.find(prod => prod.codigo === codigo);
-
+      const productoExistente = this.listProductos.find(prod => prod.codigo === codigo && prod.formaVenta === formaVenta);
       if (productoExistente) {
         productoExistente.cantidad += cantidad;
+        console.log(productoExistente);
       } else {
-        const producto = ProductoDTO.crearProductoDTO(codigo, nombre, precio, cantidad);
+        const producto = CarritoProductoDTO.crearProducto(codigo, nombre, precioEntero, cantidad, formaVenta);
         this.listProductos.push(producto);
       }
 
@@ -373,7 +377,7 @@ export class VentaComponent implements DoCheck {
    * Este metodo se encarga de eliminar un producto de la lista de productos de la factura
    * @param producto Producto a eliminar
    */
-  protected eliminarPorId(producto: ProductoDTO): void {
+  protected eliminarPorId(producto: CarritoProductoDTO): void {
     const indice = this.listProductos.indexOf(producto);
     if (indice !== -1) {
       this.listProductos.splice(indice, 1);
@@ -412,7 +416,7 @@ export class VentaComponent implements DoCheck {
       this.productoSeleccionado = null
       return;
     }
-    this.stockProducto = producto.cantidad;
+    //this.stockProducto = producto.cantidad;
     this.productoSeleccionado = producto;
     this.productosForm.patchValue({
       nombreProducto: producto.nombre,
@@ -602,12 +606,31 @@ export class VentaComponent implements DoCheck {
 
   }
 
-
   cambiarPrecio() {
     if (this.productoSeleccionado) {
+      let precio = this.formasVentaProductoSeleccionado[this.productosForm.get('formaVenta')!.value].precioVenta;
+      this.productosForm.get('precio')?.setValue("$"+precio.toLocaleString('en-US'));
+      this.cantidadDisponible = this.formasVentaProductoSeleccionado[this.productosForm.get('formaVenta')!.value].cantidad;
+    }
+
+
+  }
+
+  patchearProducto() {
+    let codigoProd = this.productosForm.get('codigoProducto')?.value;
+    let producto = this.productos.find(prod => prod.codigo == codigoProd);
+
+    if(producto){
+      this.productoSeleccionado = producto;
+      this.seleccionarProductoDeLista(producto);
+    }else{
+      this.productoSeleccionado = null;
       this.productosForm.patchValue({
-        precioProducto: this.formaVenta[this.productosForm.get('formaVenta')!.value] == undefined ? '':this.formaVenta[this.productosForm.get('formaVenta')!.value]
+        nombreProducto: '',
+        precioProducto: ''
       });
+      this.formaVenta = [];
     }
   }
+
 }

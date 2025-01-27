@@ -3,6 +3,7 @@ import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 import { ProductoDTO } from 'src/app/dto/producto/ProductoDTO';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { ProductoAlertService } from 'src/app/utils/product-alert/productoAlert.service';
+import { MenuComponent } from '../../menu/menu.component';
 @Component({
   selector: 'app-home-producto',
   templateUrl: './home-producto.component.html',
@@ -20,6 +21,7 @@ export class HomeProductoComponent {
   productoSeleccionado!: ProductoCompletoDTO;
   private productoService: ProductoService = inject(ProductoService);
   private productoAlert: ProductoAlertService = inject(ProductoAlertService);
+  private menuComponent: MenuComponent = inject(MenuComponent);
   protected paginaActual: number = 0;
   protected totalPaginas!: number;
   protected paginas: number[] = [];
@@ -153,6 +155,7 @@ export class HomeProductoComponent {
   }
 
   abrirModal(codigo: string): void {
+    this.menuComponent.cerrarMenu();
     this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
       this.productoSeleccionado = producto;
       this.productoSeleccionado = {
@@ -163,7 +166,6 @@ export class HomeProductoComponent {
           day: 'numeric'
         })
       };
-      console.log(this.productoSeleccionado);
     });
     this.modalAbierto = true;
   }

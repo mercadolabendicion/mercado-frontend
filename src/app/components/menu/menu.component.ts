@@ -44,4 +44,11 @@ export class MenuComponent {
     localStorage.removeItem('id');
     this.router.navigate(['/login']);
   }
+
+  public cerrarMenu() {
+
+    if (!this.estadoMenu) {
+      this.toggleCollapse();
+    }
+  }
 }
