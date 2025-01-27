@@ -17,7 +17,7 @@ export class HomeProductoComponent {
   protected modoOculto: boolean = true;
   protected totalProductos: number = 0;
   modalAbierto = false;
-  productoSeleccionado!: ProductoCompletoDTO | null;
+  productoSeleccionado!: ProductoCompletoDTO;
   private productoService: ProductoService = inject(ProductoService);
   private productoAlert: ProductoAlertService = inject(ProductoAlertService);
   protected paginaActual: number = 0;
@@ -155,6 +155,14 @@ export class HomeProductoComponent {
   abrirModal(codigo: string): void {
     this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
       this.productoSeleccionado = producto;
+      this.productoSeleccionado = {
+        ...producto,
+        fechaCreacion: new Date(producto.fechaCreacion).toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      };
       console.log(this.productoSeleccionado);
     });
     this.modalAbierto = true;

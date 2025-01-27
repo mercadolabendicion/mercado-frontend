@@ -58,37 +58,73 @@
     </div>
 
   </div>
-  <div class="modal" [ngClass]="{ 'show': modalAbierto }" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+  <div class="modal" [ngClass]="{ show: modalAbierto }" (click)="cerrarModal()">
+    <div class="modal-dialog modal-xl" (click)="$event.stopPropagation()">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Detalles del Producto</h5>
-          <button type="button" class="close" (click)="cerrarModal()" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+          <button type="button" class="btn-close" (click)="cerrarModal()"></button>
         </div>
-        <div class="modal-body">
-          <p><strong>Código:</strong> {{ productoSeleccionado?.codigo }}</p>
-          <p><strong>Nombre:</strong> {{ productoSeleccionado?.nombre }}</p>
-          <p><strong>Activo:</strong> {{ productoSeleccionado?.activo ? 'Sí' : 'No' }}</p>
-          <p><strong>Fecha de Creación:</strong> {{ productoSeleccionado?.fechaCreacion | date }}</p>
-          <h6>Formas de Venta:</h6>
-          <ul>
-            <li *ngFor="let forma of productoSeleccionado?.formaVentas">
-              <strong>Nombre:</strong> {{ forma.nombre }} <br>
-              <strong>Precio de compra:</strong> {{ forma.precioCompra | currency }} <br>
-              <strong>Precio de venta:</strong> {{ forma.precioVenta | currency }} <br>
-              <strong>Cantidad:</strong> {{ forma.cantidad }}
-            </li>
-          </ul>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
-        </div>
+        @if(productoSeleccionado){
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="codigo" class="form-label">Código</label>
+                <input type="text" id="codigo" class="form-control" [(ngModel)]="productoSeleccionado.codigo" readonly />
+              </div>
+              <div class="col-md-6">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" id="nombre" class="form-control" [(ngModel)]="productoSeleccionado.nombre" readonly />
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="activo" class="form-label">Activo</label>
+                <input type="text" id="activo" class="form-control" [(ngModel)]="productoSeleccionado.activo" readonly />
+              </div>
+              <div class="col-md-6">
+                <label for="fechaCreacion" class="form-label">Fecha de Creación</label>
+                <input type="text" id="fechaCreacion" class="form-control" [(ngModel)]="productoSeleccionado.fechaCreacion" readonly />
+              </div>
+            </div>
+            <h6 class="mt-4">Formas de Venta</h6>
+            <div *ngIf="productoSeleccionado?.formaVentas; else sinDatos">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Precio de compra</th>
+                    <th>Precio de venta</th>
+                    <th>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let forma of productoSeleccionado?.formaVentas">
+                    <td>
+                      <input type="text" class="form-control" [(ngModel)]="forma.nombre" readonly />
+                    </td>
+                    <td>
+                      <input type="text" class="form-control" [(ngModel)]="forma.precioCompra" readonly />
+                    </td>
+                    <td>
+                      <input type="text" class="form-control" [(ngModel)]="forma.precioVenta" readonly />
+                    </td>
+                    <td>
+                      <input type="text" class="form-control" [(ngModel)]="forma.cantidad" readonly />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <ng-template #sinDatos>
+              <p class="text-muted">No hay formas de venta disponibles.</p>
+            </ng-template>
+          </div>
+        }
       </div>
     </div>
   </div>
-</div>
+  
 
   <div class="d-flex justify-content-center align-items-center mt-3 flex-wrap" *ngIf="modoOculto">
     <nav aria-label="Page navigation" class="w-100">

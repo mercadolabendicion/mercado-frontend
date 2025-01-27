@@ -5,7 +5,7 @@ export class ProductoCompletoDTO{
     codigo!: string;
     nombre!: string;
     activo!: boolean;
-    fechaCreacion!: Date;
+    fechaCreacion!: string;
     formaVentas!: FormaVenta[];
 
 }

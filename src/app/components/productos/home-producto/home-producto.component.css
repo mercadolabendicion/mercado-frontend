@@ -229,7 +229,7 @@ button#nuevo:hover {
 }
 
 .modal-dialog {
-  max-width: 500px;
+  max-width: 900px;
   margin: 1.75rem auto;
 }
 
@@ -244,3 +244,7 @@ button#nuevo:hover {
   justify-content: space-between;
   align-items: center;
 }
+.modal-body {
+  padding: 2rem; /* Mayor separación interna */
+}
+
