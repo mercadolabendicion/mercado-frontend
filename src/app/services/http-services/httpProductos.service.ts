@@ -6,10 +6,12 @@ import { ProductoDTO } from '../../dto/producto/ProductoDTO';
 import { ActualizarProductoDTO } from '../../dto/producto/ActualizarProductoDTO';
 import { CrearProductoDTO } from '../../dto/producto/CrearProductoDTO';
 import { Page } from 'src/app/dto/pageable/Page';
+import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 @Injectable({
   providedIn: 'root'
 })
 export class HttpProductoService {
+
   
   private URL_API: string = environment.ApiUrl;
   private http: HttpClient = inject(HttpClient);
@@ -64,5 +66,9 @@ export class HttpProductoService {
 
   getTodosLosProductos(): Observable<ProductoDTO[]> {
     return this.http.get<ProductoDTO[]>(`${this.URL_API}/productos/todos`);
+  }
+
+  obtenerProductoCompleto(codigo: string): Observable<ProductoCompletoDTO> {
+    return this.http.get<ProductoCompletoDTO>(`${this.URL_API}/productos/obtener-producto-completo/${codigo}`);
   }
 }

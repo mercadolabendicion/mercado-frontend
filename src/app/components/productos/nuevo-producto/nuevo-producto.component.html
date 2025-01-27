@@ -30,20 +30,12 @@
         </span>
       </div>
 
-      <p class="datos">Precio de compra:</p>
-      <div class="form-group">
-        <input type="text" class="form-control" formControlName="precioCompra" placeholder="Precio de compra">
-        <span class="text-danger"
-          *ngIf="formulario.get('precioCompra') && formulario.get('precioCompra')!.errors && formulario.get('precioCompra')!.touched">
-          Por favor, ingrese solo texto
-        </span>
-      </div>
     </form>
 
 
     <!-- Nuevo Componente -->
-    <h3 class="mt-4">Formas de compra y venta</h3>
-    <p class="text-muted mb-2">
+    <h4 class="mt-4 text-center">Formas de compra y venta</h4>
+    <p class="text-muted mb-2" id="parrafo-desc">
       A continuación podrá describir de qué maneras compró y cómo se va a vender el producto, definir el valor neto y a
       qué precios se van a vender cada tipo de producto; Ej: (Cajas, Sellos, Unidades)
     </p>
@@ -59,13 +51,13 @@
                   <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
                 </div>
                 <div class="col-md-3 col-sm-12">
-                  <input type="text" class="form-control" formControlName="precioCompra" placeholder="$ Compra">
+                  <input type="text" (input)="validarNumero($event)" class="form-control" formControlName="precioCompra" placeholder="$ Compra">
                 </div>
                 <div class="col-md-3 col-sm-12">
-                  <input type="text" class="form-control" formControlName="precioVenta" placeholder="$ Venta">
+                  <input type="text" (input)="validarNumero($event)" class="form-control" formControlName="precioVenta" placeholder="$ Venta">
                 </div>
                 <div class="col-md-3 col-sm-12">
-                  <input type="number" class="form-control" formControlName="cantidad" placeholder="Cantidad">
+                  <input type="number" min="0" class="form-control" formControlName="cantidad" placeholder="Cantidad">
                 </div>
               </div>
             </div>

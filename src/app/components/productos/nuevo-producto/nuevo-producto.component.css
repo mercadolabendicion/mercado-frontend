@@ -118,6 +118,9 @@ button:hover {
   transform: scale(1.05); /* Pequeña animación de escala */
 }
 
+#parrafo-desc{
+  font-size: 0.7rem;
+}
 
 @media (max-width: 576px) {
   .formulario {

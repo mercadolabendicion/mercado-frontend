@@ -208,4 +208,11 @@ export class NuevoProductoComponent implements OnInit {
     }
   }
 
+  validarNumero(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const valor = parseFloat(input.value);
+    if (isNaN(valor) || valor < 0) input.value = ''; 
+
+  }
+
 }

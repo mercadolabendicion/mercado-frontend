@@ -9,7 +9,6 @@ export class FormaVenta{
     cantidad!: number;
     activo!: boolean;
 
-
     static toEntity(forma: FormGroup): FormaVenta {
         let formaVenta = new FormaVenta();
         console.log(forma);

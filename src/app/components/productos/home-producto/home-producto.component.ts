@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 import { ProductoDTO } from 'src/app/dto/producto/ProductoDTO';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { ProductoAlertService } from 'src/app/utils/product-alert/productoAlert.service';
@@ -9,14 +10,14 @@ import { ProductoAlertService } from 'src/app/utils/product-alert/productoAlert.
 })
 export class HomeProductoComponent {
 
-
   private productos: ProductoDTO[];
   private productosTodos!: ProductoDTO[];
   protected productosEditar!: ProductoDTO;
   protected filtroProductos: ProductoDTO[];
   protected modoOculto: boolean = true;
   protected totalProductos: number = 0;
-
+  modalAbierto = false;
+  productoSeleccionado!: ProductoCompletoDTO | null;
   private productoService: ProductoService = inject(ProductoService);
   private productoAlert: ProductoAlertService = inject(ProductoAlertService);
   protected paginaActual: number = 0;
@@ -149,5 +150,17 @@ export class HomeProductoComponent {
   irPagina(pagina: number) {
     this.paginaActual = pagina;
     this.cargarVentas();
+  }
+
+  abrirModal(codigo: string): void {
+    this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
+      this.productoSeleccionado = producto;
+      console.log(this.productoSeleccionado);
+    });
+    this.modalAbierto = true;
+  }
+
+  cerrarModal(): void {
+    this.modalAbierto = false;
   }
 }
