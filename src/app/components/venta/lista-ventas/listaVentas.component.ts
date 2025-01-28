@@ -7,6 +7,7 @@ import { VentaService } from 'src/app/services/domainServices/venta.service';
 import { FacturaDTO } from 'src/app/dto/factura/FacturaDTO';
 import { CrearFacturaDTO } from 'src/app/dto/factura/CrearFacturaDTO';
 import { MenuComponent } from '../../menu/menu.component';
+import { CrearEFacturaDTO } from 'src/app/dto/efactura/CrearEFacturaDTO';
 
 @Component({
   selector: 'app-lista-ventas',
@@ -70,11 +71,9 @@ export class ListaVentasComponent {
   protected confirmarGenerarFactura(idVenta: number | undefined) {
     if (this.ventaSeleccionada) {
       this.facturaService.imprimirFactura(this.ventaRealizada);
-      console.log("id venta: " + idVenta);
       if (idVenta != undefined && idVenta != null) {
         let factura = new CrearFacturaDTO(idVenta);
         this.facturaService.crearFactura(factura);
-        console.log("Factura creada");
       }
     }
   }
@@ -203,5 +202,10 @@ export class ListaVentasComponent {
   irPagina(pagina: number) {
     this.paginaActual = pagina;
     this.cargarVentas();
+  }
+
+  generarFacturaE(ventaId: number) {
+    let factura = CrearEFacturaDTO.crearCrearEFacturaDTO(ventaId);
+    this.ventaService.crearEFactura(factura);
   }
 }

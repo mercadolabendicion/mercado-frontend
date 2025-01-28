@@ -11,11 +11,13 @@ import { VentaDTO } from "src/app/dto/venta/VentaDTO";
 import { FullVentaDTO } from "src/app/dto/venta/FullVentaDTO";
 import { Page } from "src/app/dto/pageable/Page";
 import { CarritoProductoDTO } from "src/app/dto/producto/CarritoProductoDTO";
+import { CrearEFacturaDTO } from "src/app/dto/efactura/CrearEFacturaDTO";
 
 @Injectable({
   providedIn: 'root'
 })
 export class VentaService {
+ 
 
   private httpVentaService: HttpVentaService = inject(HttpVentaService);
   private alert: AlertService = inject(AlertService);
@@ -38,8 +40,7 @@ export class VentaService {
     this.alert.simpleInputAlert().then((result) => {
       if (!this.validarDinero(result, total)) return resolve(false);
       if (!this.verificarExistenciaCliente(venta.cliente)) return resolve(false);
-      venta.dineroRecibido = result-venta.descuento;
-      console.log(venta.dineroRecibido);
+      venta.dineroRecibido = result;
       venta.cambio = this.dinero - total;
       this.guardarVenta(venta, total);
     })});
@@ -145,8 +146,9 @@ export class VentaService {
     }
     listProductos.map(producto => {
       let detalleVenta = new DetalleVentaDTO();
-      //detalleVenta.cantidad = producto.cantidad;
+      detalleVenta.cantidad = producto.cantidad;
       detalleVenta.codigoProducto = producto.codigo;
+      detalleVenta.nombreformaVenta = producto.formaVenta;
       venta.agregarDetalle(detalleVenta);
     });
 
@@ -207,4 +209,14 @@ export class VentaService {
     this.alert.simpleErrorAlert('El total de la venta no puede ser negativo');
   }
 
+  crearEFactura(efactura: CrearEFacturaDTO) {
+    this.httpVentaService.crearFacturaElectronica(efactura).subscribe({
+      next: () => {
+        this.alert.simpleSuccessAlert('Factura electrónica generada correctamente');
+      },
+      error: (error) => {
+        this.alert.simpleErrorAlert(error.error.mensaje);
+      }
+    });
+  }
 }

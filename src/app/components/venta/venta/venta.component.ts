@@ -143,7 +143,6 @@ export class VentaComponent implements DoCheck {
     const venta = this.crearVentaDTO();
     if (!this.validarProductosVenta(venta)) return;
     this.procesarVenta(venta);
-    let formaDeVenta = this.formaVenta[this.formulario.get('formaDeVenta')!.value] == undefined ? '':this.formaVenta[this.formulario.get('formaDeVenta')!.value];
   }
   /**
    * Este metodo se encarga de validar si los campos del formulario están completos
@@ -345,7 +344,7 @@ export class VentaComponent implements DoCheck {
       }
 
       this.resetForms();
-      //this.subtotal = this.listProductos.reduce((total, producto) => total + producto.precioCompra * producto.cantidad, 0);
+      this.subtotal = this.listProductos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0);
       this.calcularValores();
     } catch (error) {
       console.error(error);
@@ -367,7 +366,7 @@ export class VentaComponent implements DoCheck {
    * Este metodo se encarga de calcular el subtotal, igv y total de la factura
    */
   private calcularValores(): void {
-    //this.subtotal = this.listProductos.reduce((total: number, producto: ProductoDTO) => total + (producto.precioCompra * producto.cantidad), 0);
+    this.subtotal = this.listProductos.reduce((total: number, producto: CarritoProductoDTO) => total + (producto.precio * producto.cantidad), 0);
     this.igv = this.subtotal * (this.porcentajeIva / 100);
     this.total = this.subtotal - this.descuento;
     this.totalReal = this.total;
@@ -392,7 +391,7 @@ export class VentaComponent implements DoCheck {
    * @returns void
    */
   protected seleccionarProducto(): void {
-    const idProducto = this.productosForm.get('codigoProducto')?.value;
+    const idProducto = this.productosForm.get('producto')?.value;
     if (!idProducto || idProducto.trim() === '') {
       this.productosForm.reset();
       this.productoSeleccionado = null;

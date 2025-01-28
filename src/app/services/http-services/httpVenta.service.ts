@@ -6,11 +6,13 @@ import { Observable } from 'rxjs';
 import { VentaDTO } from '../../dto/venta/VentaDTO';
 import { FullVentaDTO } from '../../dto/venta/FullVentaDTO';
 import { Page } from 'src/app/dto/pageable/Page';
+import { CrearEFacturaDTO } from 'src/app/dto/efactura/CrearEFacturaDTO';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpVentaService {
+  
 
   private URL_API: string = environment.ApiUrl;
   private http: HttpClient = inject(HttpClient);
@@ -39,4 +41,7 @@ export class HttpVentaService {
     return this.http.delete<boolean>(`${this.URL_API}/venta/cancelar/${idVenta}`);
   }
 
+  crearFacturaElectronica(efactura: CrearEFacturaDTO) {
+    return this.http.post(`${this.URL_API}/efactura/guardar`, efactura);
+  }
 }
