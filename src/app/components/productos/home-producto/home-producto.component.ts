@@ -28,6 +28,9 @@ export class HomeProductoComponent {
   protected totalPaginas!: number;
   protected paginas: number[] = [];
   productoForm!: FormGroup;
+  valorFormateado: string = ''; // Para almacenar el valor con formato de dinero 
+    protected valorDescuento: string | null = null;
+    private descuento!: number;
 
   constructor(private fb: FormBuilder) {
     this.productos = [];
@@ -269,4 +272,20 @@ export class HomeProductoComponent {
     this.modalAbiertoEditar = false;
   }
   
+  formatearValor(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const valorSinFormato = input.value.replace(/[^\d]/g, ''); // Elimina caracteres no numéricos
+    const valorNumerico = parseInt(valorSinFormato, 10);
+    this.descuento = 0;
+
+    if (!isNaN(valorNumerico)) {
+      this.valorFormateado = valorNumerico.toLocaleString('en-US'); // Formato con comas
+      this.valorDescuento = this.valorFormateado;
+      input.value = this.valorFormateado;
+      if(this.valorDescuento != ''){
+        this.descuento = valorNumerico;
+      }
+    } 
+  }
+
 }
