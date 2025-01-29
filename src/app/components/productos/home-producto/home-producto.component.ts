@@ -4,6 +4,7 @@ import { ProductoDTO } from 'src/app/dto/producto/ProductoDTO';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { ProductoAlertService } from 'src/app/utils/product-alert/productoAlert.service';
 import { MenuComponent } from '../../menu/menu.component';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-home-producto',
   templateUrl: './home-producto.component.html',
@@ -18,6 +19,7 @@ export class HomeProductoComponent {
   protected modoOculto: boolean = true;
   protected totalProductos: number = 0;
   modalAbierto = false;
+  modalAbiertoEditar = false;
   productoSeleccionado!: ProductoCompletoDTO;
   private productoService: ProductoService = inject(ProductoService);
   private productoAlert: ProductoAlertService = inject(ProductoAlertService);
@@ -25,16 +27,19 @@ export class HomeProductoComponent {
   protected paginaActual: number = 0;
   protected totalPaginas!: number;
   protected paginas: number[] = [];
+  productoForm!: FormGroup;
 
-  constructor() {
+  constructor(private fb: FormBuilder) {
     this.productos = [];
     this.filtroProductos = [];
   }
+
 
   ngOnInit() {
     this.obtenerProductos(0);
     this.obtenerProductosTodos();
     this.updateProductoCount();
+    this.inicializarFormulario();
   }
 
   /**
@@ -170,7 +175,98 @@ export class HomeProductoComponent {
     this.modalAbierto = true;
   }
 
+  abrirModalEditar(codigo: string): void {
+    this.menuComponent.cerrarMenu();
+    this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
+      this.productoSeleccionado = producto;
+      this.productoSeleccionado = {
+        ...producto,
+        fechaCreacion: new Date(producto.fechaCreacion).toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      };
+    });
+    this.modalAbiertoEditar = true;
+  }
+/** 
+  actualizarProducto(producto: ProductoDTO) {
+    this.productoService.actualizar(producto).subscribe((productoActualizado: ProductoCompletoDTO) => {
+      this.productoSeleccionado = productoActualizado;
+    });
+    }*/
+/**
+    actualizarProducto(): void {
+      console.log("📢 Producto actualizado con los siguientes datos:");
+      console.log(this.productoForm.value);
+    }
+ */
+    inicializarFormulario(): void {
+      this.productoForm = this.fb.group({
+        codigo: [this.productoSeleccionado?.codigo || ''],
+        nombre: [this.productoSeleccionado?.nombre || ''],
+        activo: [this.productoSeleccionado?.activo || false],
+        fechaCreacion: [this.productoSeleccionado?.fechaCreacion || ''],
+        formaVentas: this.fb.array(this.productoSeleccionado?.formaVentas?.map(forma => this.fb.group({
+          nombre: [forma.nombre || ''],
+          precioCompra: [forma.precioCompra || 0],
+          precioVenta: [forma.precioVenta || 0],
+          cantidad: [forma.cantidad || 0]
+        })) || [])
+      });
+    }
+
+    get formaVentas(): FormArray {
+      return this.productoForm.get('formaVentas') as FormArray;
+    }
+  
+
+
+    actualizarProducto(): void {
+      let codigo = this.productoSeleccionado.codigo;
+      let nombre = this.productoSeleccionado.nombre;
+      let activo = this.productoSeleccionado.activo;
+      let fechaCreacion = this.productoSeleccionado.fechaCreacion;
+      let formaNombre;
+      let formaPrecioCompra;
+      let formaPrecioVenta;
+      let formaCantidad;
+      
+      console.log("Producto actualizado con los siguientes datos:");
+      console.log("Código:", codigo);
+      console.log("Nombre:", nombre);
+      console.log("Activo:", activo);
+      console.log("Fecha de creación:", fechaCreacion);
+    
+      if (this.productoSeleccionado.formaVentas && this.productoSeleccionado.formaVentas.length > 0) {
+        console.log("📦 Formas de Venta:");
+        this.productoSeleccionado.formaVentas.forEach((forma, index) => {
+          console.log(`🔹 Forma ${index + 1}:`);
+          formaNombre = forma.nombre;
+          console.log("   - Nombre:", formaNombre);
+          formaPrecioCompra = forma.precioCompra;
+          console.log("   - Precio de compra:", formaPrecioCompra);
+          formaPrecioVenta = forma.precioVenta;
+          console.log("   - Precio de venta:", formaPrecioVenta);
+          formaCantidad = forma.cantidad;
+          console.log("   - Cantidad:", formaCantidad);
+        });
+      } else {
+        console.log("⚠️ No hay formas de venta registradas.");
+      }
+
+
+
+    }
+    
+
   cerrarModal(): void {
     this.modalAbierto = false;
   }
+
+  cerrarModalEditar(): void {
+    this.modalAbiertoEditar = false;
+  }
+  
 }
