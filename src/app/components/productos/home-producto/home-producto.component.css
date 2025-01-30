@@ -61,14 +61,7 @@ td.eliminar, th.eliminar{
   height: 100%;
 }
 
-td button{
-  background: rgb(255, 255, 255);
-  border: 1px solid transparent;
-  border-radius: 2px;
-  text-align: center;
-  cursor: pointer;
-  margin: 0 5px;
-}
+
 
 td button.editar, td button.check{
   background: none;
@@ -182,10 +175,6 @@ button#nuevo:hover {
   }
 }
 
-.red {
-  color: red;
-}
-
 
 .pagination {
   flex-wrap: wrap; /* Permite que las páginas se ajusten en pantallas pequeñas */
@@ -206,10 +195,6 @@ button#nuevo:hover {
   }
 }
 
-.red-x {
-  color: red;
-  font-size: 23px;
-}
 
 .modal {
   display: none;
