@@ -36,17 +36,6 @@
             </small>
           </div>
 
-          <div class="form-group mb-3">
-            <p class="datos">Está activo?</p>
-            <select formControlName="activo" class="form-control">
-              <option [selected]="true" value="1">Si</option>
-              <option value="0">No</option>
-            </select>
-            <small *ngIf="formulario.get('activo')!.invalid && (formulario.get('activo')?.dirty || formulario.get('activo')?.touched)" class="text-danger">
-              Por favor, seleccione una opción válida.
-            </small>
-          </div>
-
           <button type="submit" class="btn btn-primary">
             Guardar Datos
           </button>

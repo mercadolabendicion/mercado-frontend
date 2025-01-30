@@ -6,26 +6,16 @@
       </h1>
     </div>
 
-    <label for="">Cliente: </label>
-
+    <label class="mt-5">Cliente </label>
+    <hr class="opacity-100">
     <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
 
       <div class="row gy-3 align-items-center">
-        <!-- No. Venta -->
-        <div class="col-lg-1 col-md-6 col-12">
-          <label for="numFactura" class="form-label">No. Venta:</label>
-          <input class="form-control disabled-input" type="text" formControlName="numFactura"
-            placeholder="Número de Factura">
-          <span *ngIf="formulario.get('numFactura')?.errors && formulario.get('numFactura')?.touched">
-            Por favor, ingrese solo texto en el campo de nombre.
-          </span>
-        </div>
-
         <!-- Cédula del cliente -->
         <div class="col-lg-3 col-md-6 col-12 position-relative">
-          <label for="cliente" class="form-label">Cédula del cliente:</label>
+          <p for="cliente">Cédula del cliente:</p>
           <input class="form-control" type="text" formControlName="cliente" id="cedulaCliente"
-            (input)="filtrarClientes()" placeholder="Cédula del cliente">
+            (input)="filtrarClientes()" placeholder="123456789">
 
           <!-- Lista flotante -->
           <div class="popup position-absolute w-100" *ngIf="clientesFiltrados.length > 0">
@@ -45,9 +35,9 @@
 
 
         <!-- Nombre -->
-        <div class="col-lg-4 col-md-6 col-12">
-          <label for="nombre" class="form-label">Nombre:</label>
-          <input class="form-control disabled-input" type="text" formControlName="nombre" placeholder="Nombre"
+        <div class="col-lg-5 col-md-6 col-12">
+          <p for="nombre">Nombre:</p>
+          <input class="form-control disabled-input" type="text" formControlName="nombre" placeholder="Juan perez"
             [value]="clienteSeleccionado?.nombre">
           <span
             *ngIf="formulario.get('nombre')?.invalid && (formulario.get('nombre')?.dirty || formulario.get('nombre')?.touched)">
@@ -57,8 +47,8 @@
 
         <!-- Dirección -->
         <div class="col-lg-4 col-md-6 col-12">
-          <label for="direccion" class="form-label">Dirección:</label>
-          <input class="form-control disabled-input" type="text" formControlName="direccion" placeholder="Dirección"
+          <p for="direccion" class="form-label">Dirección</p>
+          <input class="form-control disabled-input" type="text" formControlName="direccion" placeholder="Armenia"
             [value]="clienteSeleccionado?.direccion">
           <span
             *ngIf="formulario.get('direccion')?.invalid && (formulario.get('direccion')?.dirty || formulario.get('direccion')?.touched)">
@@ -77,17 +67,17 @@
 
     </form>
 
-    <div class="productos mt-4">
-      <label>Producto a agregar:</label>
-
+    <div class="productos mt-5">
+      <label>Producto a agregar</label>
+      <hr class="opacity-100">
       <div [formGroup]="productosForm">
         <div class="row gy-3">
 
           <!-- Id producto -->
-          <div class="col-lg-3 col-md-6 col-12 position-relative">
-            <label for="codigoProducto" class="form-label">Id producto:</label>
+          <div class="col-lg-5 col-md-6 col-12 position-relative">
+            <p for="codigoProducto" class="form-label">Codigo producto</p>
             <input class="form-control" type="text" formControlName="codigoProducto" id="codigoProducto"
-              placeholder="Producto" (input)="filtrarProductos()" (keyup)="patchearProducto()" 
+              placeholder="1A2B3C4B" (input)="filtrarProductos()" (keyup)="patchearProducto()" 
               (paste)="patchearProducto()">
 
             <div class="popup position-absolute w-100" *ngIf="productosFiltrados.length > 0">
@@ -105,10 +95,10 @@
           </div>
 
           <!-- Nombre producto -->
-          <div class="col-lg-4 col-md-6 col-12">
-            <label for="nombreProducto" class="form-label">Nombre producto:</label>
+          <div class="col-lg-7 col-md-6 col-12">
+            <p for="nombreProducto" class="form-label">Nombre producto</p>
             <input type="text" id="nombreProducto" class="form-control disabled-input option-venta" formControlName="nombreProducto"
-              placeholder="Nombre del producto" [value]="productoSeleccionado?.nombre">
+              placeholder="Acetaminofen" [value]="productoSeleccionado?.nombre">
             <span
               *ngIf="productosForm.get('nombreProducto')!.invalid && (productosForm.get('nombreProducto')!.dirty || productosForm.get('nombreProducto')!.touched)">
               Por favor, ingrese un valor válido.
@@ -116,10 +106,10 @@
           </div>
 
           <!-- Combo de formas de venta -->
-          <div class="col-lg-3 col-md-6 col-12">
-            <label for="formaVenta" class="form-label">Forma de venta:</label>
+          <div class="col-lg-5 col-md-6 col-12">
+            <p for="formaVenta" class="form-label">Forma de venta</p>
 
-            <select class="form-select option-venta" formControlName="formaVenta" (change)="cambiarPrecio()">
+            <select class="form-select option-venta" formControlName="formaVenta" (change)="cambiarPrecio()" >
               <option value=""  disabled selected>Seleccione una forma de venta</option>
               <option *ngFor="let formaDeVenta of formaVenta; let i = index" [value]="i"  >
                 {{formaDeVenta}}
@@ -132,10 +122,10 @@
           </div>
 
           <!-- Precio producto -->
-          <div class="col-lg-2 col-md-6 col-12">
-            <label for="precioProducto" class="form-label">Precio:</label>
+          <div class="col-lg-5 col-md-6 col-12">
+            <p for="precioProducto" class="form-label">Precio</p>
             <input type="text" class="form-control disabled-input" formControlName="precio"
-                   placeholder="Precio del producto">
+                   placeholder="$ --------">
             <span *ngIf="productosForm.get('precio')!.invalid && 
                          (productosForm.get('precio')!.dirty || productosForm.get('precio')!.touched)">
               Por favor, ingrese un valor válido.
@@ -144,8 +134,8 @@
 
 
           <!-- Cantidad -->
-          <div class="col-lg-3 col-md-6 col-12">
-            <label for="cantidadProducto" class="form-label">Cantidad:</label>
+          <div class="col-lg-2 col-md-6 col-12">
+            <p for="cantidadProducto" class="form-label">Cantidad</p>
             <input type="number" id="cantidadProducto" class="form-control" formControlName="cantidadProducto"
               placeholder="Cantidad del producto" min="1" max="{{cantidadDisponible}}">
               <p>Disponible: {{cantidadDisponible}}</p>

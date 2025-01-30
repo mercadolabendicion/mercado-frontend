@@ -54,7 +54,7 @@ td.eliminar, th.eliminar{
 
 td button{
   background: rgb(255, 255, 255);
-  border: 1px solid red;
+  border: 1px solid transparent;
   border-radius: 2px;
   text-align: center;
   cursor: pointer;

@@ -41,7 +41,6 @@ export class EditarClienteComponent {
       nombre: ['', [Validators.required, soloTexto()]],
       direccion: ['', [Validators.required,]],
       correo: ['', [Validators.required, validarCorreo()]],
-      activo: ['', [Validators.required]],
       fechaCreacion: ['', [Validators.required]],
   
     });
@@ -73,8 +72,8 @@ export class EditarClienteComponent {
     } 
 
     
-    const { cedula, nombre, direccion, correo, activo } = this.personaForm.value;
-    let cliente = ActualizarClienteDTO.crearActualizarClienteDTO(cedula, nombre, direccion, correo, activo);
+    const { cedula, nombre, direccion, correo} = this.personaForm.value;
+    let cliente = ActualizarClienteDTO.crearActualizarClienteDTO(cedula, nombre, direccion, correo);
     
     this.httpClienteService.actualizar(cliente, this.personaEditar.id).subscribe({
       next: ()=>{

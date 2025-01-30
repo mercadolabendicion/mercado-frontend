@@ -23,6 +23,7 @@ import { ListaVentasComponent } from './components/venta/lista-ventas/listaVenta
 import { ProductoAlertService } from './utils/product-alert/productoAlert.service';
 import { CajaComponent } from './page/caja/caja.component';
 import { ConfiguracionComponent } from './page/configuracion/configuracion.component';
+import { FacturacionElectronicaComponent } from './page/facturacion-electronica/facturacion-electronica.component';
 
 
 @NgModule({
@@ -45,7 +46,8 @@ import { ConfiguracionComponent } from './page/configuracion/configuracion.compo
     PrincipalComponent,
     VentaComponent,
     ConfiguracionComponent,
-    ListaVentasComponent
+    ListaVentasComponent,
+    FacturacionElectronicaComponent
   ],
   imports: [
     BrowserModule,

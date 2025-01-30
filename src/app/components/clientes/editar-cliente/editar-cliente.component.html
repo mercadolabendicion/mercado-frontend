@@ -37,18 +37,6 @@
       </span>
     </div>
 
-    <div class="form-group">
-      <label for="activo">Activo:</label>
-      <select class="form-control" id="activo" formControlName="activo">
-        <option [selected]="true" value=true>Si</option>
-        <option value=false>No</option>
-      </select>
-      <span class="text-danger"
-        *ngIf="personaForm.get('activo')?.invalid && (personaForm.get('activo')?.dirty || personaForm.get('activo')?.touched)">
-        Por favor, ingrese un valor válido.
-      </span>
-    </div>
-
     <button type="submit" class="btn btn-primary">
       Guardar
     </button>

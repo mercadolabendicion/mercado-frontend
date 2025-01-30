@@ -321,11 +321,11 @@ export class VentaComponent implements DoCheck {
     const codigo = this.productosForm.get('codigoProducto')?.value;
 
     try {
-      const productoActivo = await this.productoService.verificarProductoActivo(codigo);
+      const productoEliminado = await this.productoService.verificarProductoEliminado(codigo);
       let formaVenta = this.formaVenta[this.productosForm.get('formaVenta')!.value] == undefined ? '':this.formaVenta[this.productosForm.get('formaVenta')!.value];
       const cantidadValida = await this.productoService.verificarProductoCantidad(cantidad, codigo, formaVenta);
 
-      if (!productoActivo || !cantidadValida) {
+      if (productoEliminado || !cantidadValida) {
         this.hayStock = false;
         return;
       }

@@ -36,7 +36,6 @@ export class EditarProductoComponent {
       nombre: ['', [Validators.required]],
       precio: ['', [Validators.required, validarDecimalConDosDecimales()]],
       cantidad: ['', [Validators.required, validarDecimalConDosDecimales()]],
-      activo: [1],
       fechaCreacion: ['', [Validators.required]],
     });
   }
@@ -55,9 +54,9 @@ export class EditarProductoComponent {
    */
  
   protected guardar(): void {
-     /** 
-    const { codigo, nombre, precio, cantidad, activo } = this.personaForm.value;
-    let productoActualizar = ActualizarProductoDTO.act(codigo, nombre, precio, cantidad);
+    /**
+    const { codigo, nombre, precio, cantidad} = this.personaForm.value;
+    let productoActualizar = ActualizarProductoDTO.crearProducto(codigo, nombre, precio, cantidad);
     if (!this.personaForm.valid) {
       Object.values(this.personaForm.controls).forEach(control => {
         control.markAsTouched();
@@ -65,9 +64,9 @@ export class EditarProductoComponent {
       return;
     } 
     this.productoService.actualizar(productoActualizar);
-    */
+     */
   }
-
+ 
   abrirModal(codigo: string): void {
     this.menuComponent.cerrarMenu();
     this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {

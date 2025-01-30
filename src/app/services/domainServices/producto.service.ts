@@ -79,15 +79,15 @@ export class ProductoService {
      * @param codigo es el código del producto a verificar
      * @returns un booleano que indica si el producto está activo
      */
-    public verificarProductoActivo(codigo: string): Promise<boolean> {
+    public verificarProductoEliminado(codigo: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            this.httpProductoService.verificarActivo(codigo).subscribe({
+            this.httpProductoService.fueEliminado(codigo).subscribe({
                 next: (response) => {
-                    if (!response) this.alert.simpleErrorAlert('El producto no está activo');
+                    if (response) this.alert.simpleErrorAlert('El producto fue eliminado');
                     resolve(response);
                 },
                 error: (error) => {
-                    this.alert.simpleErrorAlert('Error al verificar producto activo');
+                    this.alert.simpleErrorAlert('Error al verificar si el producto esta eliminado');
                     reject(false);
                 }
             });

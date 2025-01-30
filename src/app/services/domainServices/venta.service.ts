@@ -12,6 +12,7 @@ import { FullVentaDTO } from "src/app/dto/venta/FullVentaDTO";
 import { Page } from "src/app/dto/pageable/Page";
 import { CarritoProductoDTO } from "src/app/dto/producto/CarritoProductoDTO";
 import { CrearEFacturaDTO } from "src/app/dto/efactura/CrearEFacturaDTO";
+import { EFacturaDTO } from "src/app/dto/efactura/EFacturaDTO";
 
 @Injectable({
   providedIn: 'root'
@@ -212,11 +213,15 @@ export class VentaService {
   crearEFactura(efactura: CrearEFacturaDTO) {
     this.httpVentaService.crearFacturaElectronica(efactura).subscribe({
       next: () => {
-        this.alert.simpleSuccessAlert('Factura electrónica generada correctamente');
+        this.alert.simpleSuccessAlert('Se ha guardado el intento de generar una factura eléctrónica. Debe continuar con el proceso en la nueva ventana.');
       },
       error: (error) => {
         this.alert.simpleErrorAlert(error.error.mensaje);
       }
     });
+  }
+
+  obtenerFacturasElectronicas(page: number): Observable<Page<EFacturaDTO>> {
+    return this.httpVentaService.obtenerEFacturas(page);
   }
 }
