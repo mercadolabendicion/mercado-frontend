@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import Swal from 'sweetalert2';
 import numeral from 'numeral';
+import { environment } from '../env/env';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AlertService {
+
+  private nombreNegocio = environment.nombreNegocio;
   constructor() { }
 
   simpleSuccessAlert(message: string): void {
     Swal.fire({
-      title: "Remates la 7ma",
+      title: this.nombreNegocio,
       text: message,
       icon: "success"
     });
@@ -18,7 +21,7 @@ export class AlertService {
 
   simpleErrorAlert(message: string): void {
     Swal.fire({
-      title: "Remates la 7ma",
+      title: this.nombreNegocio,
       text: message,
       icon: "error"
     });
@@ -41,7 +44,7 @@ export class AlertService {
 
   simpleInfoAlert(message: string) {
     Swal.fire({
-      title: "Remates la 7ma",
+      title: this.nombreNegocio,
       text: message,
       icon: "info"
     });

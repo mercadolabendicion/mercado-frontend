@@ -11,16 +11,6 @@
     <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
 
       <div class="row gy-3 align-items-center">
-        <!-- No. Venta -->
-        <div class="col-lg-1 col-md-6 col-12">
-          <label for="numFactura" class="form-label">No. Venta:</label>
-          <input class="form-control disabled-input" type="text" formControlName="numFactura"
-            placeholder="Número de Factura">
-          <span *ngIf="formulario.get('numFactura')?.errors && formulario.get('numFactura')?.touched">
-            Por favor, ingrese solo texto en el campo de nombre.
-          </span>
-        </div>
-
         <!-- Cédula del cliente -->
         <div class="col-lg-3 col-md-6 col-12 position-relative">
           <label for="cliente" class="form-label">Cédula del cliente:</label>
