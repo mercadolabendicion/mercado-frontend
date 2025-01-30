@@ -53,9 +53,11 @@ export class EditarProductoComponent {
    * Este método se encarga de guardar el producto en la base de datos
    * @returns 
    */
+ 
   protected guardar(): void {
+     /** 
     const { codigo, nombre, precio, cantidad, activo } = this.personaForm.value;
-    let productoActualizar = ActualizarProductoDTO.crearProducto(codigo, nombre, precio, cantidad);
+    let productoActualizar = ActualizarProductoDTO.act(codigo, nombre, precio, cantidad);
     if (!this.personaForm.valid) {
       Object.values(this.personaForm.controls).forEach(control => {
         control.markAsTouched();
@@ -63,6 +65,7 @@ export class EditarProductoComponent {
       return;
     } 
     this.productoService.actualizar(productoActualizar);
+    */
   }
 
   abrirModal(codigo: string): void {

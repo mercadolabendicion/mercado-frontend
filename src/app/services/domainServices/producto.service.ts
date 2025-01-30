@@ -152,7 +152,8 @@ export class ProductoService {
      * Metodo para actualizar un producto en la base de datos
      * @param productoActualizar contiene los datos del producto a actualizar
      */
-    public actualizar(productoActualizar: ActualizarProductoDTO): void {
+    public actualizar(productoActualizar: ActualizarProductoDTO): Observable<void> {
+        return new Observable((observer) => {
         this.httpProductoService.actualizar(productoActualizar).subscribe({
             next: () => {
                 this.alert.simpleSuccessAlert('Producto actualizado correctamente');
@@ -161,6 +162,7 @@ export class ProductoService {
                 this.alert.simpleErrorAlert(error.error.mensaje);
             }
         });
+    });
     }
 
     /**

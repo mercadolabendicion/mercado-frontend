@@ -255,7 +255,6 @@ export class VentaComponent implements DoCheck {
     this.formulario.reset();
     this.generarIdFactura();
     this.clienteSeleccionado = null;
-    this.ngOnInit();
   }
 
   /**

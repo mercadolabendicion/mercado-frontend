@@ -4,7 +4,9 @@ import { ProductoDTO } from 'src/app/dto/producto/ProductoDTO';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { ProductoAlertService } from 'src/app/utils/product-alert/productoAlert.service';
 import { MenuComponent } from '../../menu/menu.component';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActualizarProductoDTO } from 'src/app/dto/producto/ActualizarProductoDTO';
+import { ActualizarFormaVentaDTO } from 'src/app/dto/producto/ActualizarFormaVentaDTO';
 @Component({
   selector: 'app-home-producto',
   templateUrl: './home-producto.component.html',
@@ -17,6 +19,8 @@ export class HomeProductoComponent {
   protected productosEditar!: ProductoDTO;
   protected filtroProductos: ProductoDTO[];
   protected modoOculto: boolean = true;
+  protected productoAuxActualizar: ProductoDTO | null = null;
+  protected ProductoNuevoActualizado: ProductoDTO | null = null; // Para almacenar el producto actualizado
   protected totalProductos: number = 0;
   modalAbierto = false;
   modalAbiertoEditar = false;
@@ -27,10 +31,11 @@ export class HomeProductoComponent {
   protected paginaActual: number = 0;
   protected totalPaginas!: number;
   protected paginas: number[] = [];
-  productoForm!: FormGroup;
+  actualizarProductoForm!: FormGroup;
   valorFormateado: string = ''; // Para almacenar el valor con formato de dinero 
-    protected valorDescuento: string | null = null;
-    private descuento!: number;
+  protected valorDescuento: string | null = null;
+  descuento: number = 0;
+
 
   constructor(private fb: FormBuilder) {
     this.productos = [];
@@ -42,7 +47,13 @@ export class HomeProductoComponent {
     this.obtenerProductos(0);
     this.obtenerProductosTodos();
     this.updateProductoCount();
-    this.inicializarFormulario();
+    this.actualizarProductoForm = this.fb.group({
+      codigo: [Validators.required],
+      nombre: [Validators.required],
+      impuesto: [[Validators.required, Validators.min(0)]],
+      fechaCreacion: [Validators.required],
+      formaCantidad: [Validators.required]
+    });
   }
 
   /**
@@ -193,76 +204,55 @@ export class HomeProductoComponent {
     });
     this.modalAbiertoEditar = true;
   }
-/** 
-  actualizarProducto(producto: ProductoDTO) {
-    this.productoService.actualizar(producto).subscribe((productoActualizado: ProductoCompletoDTO) => {
-      this.productoSeleccionado = productoActualizado;
-    });
-    }*/
-/**
-    actualizarProducto(): void {
-      console.log("📢 Producto actualizado con los siguientes datos:");
-      console.log(this.productoForm.value);
-    }
- */
-    inicializarFormulario(): void {
-      this.productoForm = this.fb.group({
-        codigo: [this.productoSeleccionado?.codigo || ''],
-        nombre: [this.productoSeleccionado?.nombre || ''],
-        activo: [this.productoSeleccionado?.activo || false],
-        fechaCreacion: [this.productoSeleccionado?.fechaCreacion || ''],
-        formaVentas: this.fb.array(this.productoSeleccionado?.formaVentas?.map(forma => this.fb.group({
-          nombre: [forma.nombre || ''],
-          precioCompra: [forma.precioCompra || 0],
-          precioVenta: [forma.precioVenta || 0],
-          cantidad: [forma.cantidad || 0]
-        })) || [])
+
+  actualizarProducto(): void {
+    let codigo = this.productoSeleccionado.codigo;
+    let nombre = this.productoSeleccionado.nombre;
+    let impuesto = this.productoSeleccionado.impuesto;
+    let fechaCreacion = this.productoSeleccionado.fechaCreacion;
+    let formaNombre = '';
+    let formaPrecioCompra = 0;
+    let formaPrecioVenta = 0;
+    let formaCantidad = 0;
+    let activo = true;
+
+    if (this.productoSeleccionado.formaVentas && this.productoSeleccionado.formaVentas.length > 0) {
+      console.log("📦 Formas de Venta:");
+      this.productoSeleccionado.formaVentas.forEach((forma, index) => {
+        console.log(`🔹 Forma ${index + 1}:`);
+        formaNombre = forma.nombre;
+        console.log("   - Nombre:", formaNombre);
+        formaPrecioCompra = forma.precioCompra;
+        console.log("   - Precio de compra:", formaPrecioCompra);
+        formaPrecioVenta = forma.precioVenta;
+        console.log("   - Precio de venta:", formaPrecioVenta);
+        formaCantidad = forma.cantidad;
+        console.log("   - Cantidad:", formaCantidad);
       });
+    } else {
+      console.log("⚠️ No hay formas de venta registradas.");
     }
 
-    get formaVentas(): FormArray {
-      return this.productoForm.get('formaVentas') as FormArray;
+    if (this.actualizarProductoForm.valid) {
+      //let producto = ActualizarProductoDTO.actualizarProducto(codigo, nombre, impuesto, activo);
+      const producto = this.actualizarProductoForm.getRawValue();
+      this.productoService.actualizar(producto).subscribe({
+        next: () => {
+          this.cerrarModalEditar();
+        },
+        error: (err: any) => {
+          console.error('Error al actualizar el producto:', err);
+        }
+      });
+
+      let datosFormaVenta = ActualizarFormaVentaDTO.actualizarFormaVenta(formaNombre, formaPrecioCompra, formaPrecioVenta, formaCantidad);
+
+    } else {
+      console.log('Formulario inválido');
     }
-  
 
+  }
 
-    actualizarProducto(): void {
-      let codigo = this.productoSeleccionado.codigo;
-      let nombre = this.productoSeleccionado.nombre;
-      let activo = this.productoSeleccionado.activo;
-      let fechaCreacion = this.productoSeleccionado.fechaCreacion;
-      let formaNombre;
-      let formaPrecioCompra;
-      let formaPrecioVenta;
-      let formaCantidad;
-      
-      console.log("Producto actualizado con los siguientes datos:");
-      console.log("Código:", codigo);
-      console.log("Nombre:", nombre);
-      console.log("Activo:", activo);
-      console.log("Fecha de creación:", fechaCreacion);
-    
-      if (this.productoSeleccionado.formaVentas && this.productoSeleccionado.formaVentas.length > 0) {
-        console.log("📦 Formas de Venta:");
-        this.productoSeleccionado.formaVentas.forEach((forma, index) => {
-          console.log(`🔹 Forma ${index + 1}:`);
-          formaNombre = forma.nombre;
-          console.log("   - Nombre:", formaNombre);
-          formaPrecioCompra = forma.precioCompra;
-          console.log("   - Precio de compra:", formaPrecioCompra);
-          formaPrecioVenta = forma.precioVenta;
-          console.log("   - Precio de venta:", formaPrecioVenta);
-          formaCantidad = forma.cantidad;
-          console.log("   - Cantidad:", formaCantidad);
-        });
-      } else {
-        console.log("⚠️ No hay formas de venta registradas.");
-      }
-
-
-
-    }
-    
 
   cerrarModal(): void {
     this.modalAbierto = false;
@@ -271,7 +261,7 @@ export class HomeProductoComponent {
   cerrarModalEditar(): void {
     this.modalAbiertoEditar = false;
   }
-  
+
   formatearValor(event: Event): void {
     const input = event.target as HTMLInputElement;
     const valorSinFormato = input.value.replace(/[^\d]/g, ''); // Elimina caracteres no numéricos
@@ -282,10 +272,10 @@ export class HomeProductoComponent {
       this.valorFormateado = valorNumerico.toLocaleString('en-US'); // Formato con comas
       this.valorDescuento = this.valorFormateado;
       input.value = this.valorFormateado;
-      if(this.valorDescuento != ''){
+      if (this.valorDescuento != '') {
         this.descuento = valorNumerico;
       }
-    } 
+    }
   }
 
 }
