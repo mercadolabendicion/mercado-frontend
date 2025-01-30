@@ -12,7 +12,7 @@ export const environment = {
   imageUrl: '../../assets/404-status-code.png',
 
   //Este es el nombre de la tienda
-  nombreNegocio: 'Remates la 7a',
+  nombreNegocio: 'Droguería La Fachada',
   direccionNegocio: 'Quimbaya Quindío Cra. 7 N.14-11',
   gerenteNegocio: 'Alcides Duque',
   fechaExpedicion: '2024/12/10',
