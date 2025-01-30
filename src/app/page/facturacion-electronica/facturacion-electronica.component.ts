@@ -1,12 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { VentaDTO } from 'src/app/dto/venta/VentaDTO';
-import { FullVentaDTO } from 'src/app/dto/venta/FullVentaDTO';
-import { FacturaService } from 'src/app/services/domainServices/factura.service';
 import { VentaService } from 'src/app/services/domainServices/venta.service';
-import { FacturaDTO } from 'src/app/dto/factura/FacturaDTO';
-import { CrearFacturaDTO } from 'src/app/dto/factura/CrearFacturaDTO';
 import { MenuComponent } from 'src/app/components/menu/menu.component';
+import { EFacturaDTO } from 'src/app/dto/efactura/EFacturaDTO';
 
 @Component({
   selector: 'app-facturacion-electronica',
@@ -15,14 +11,11 @@ import { MenuComponent } from 'src/app/components/menu/menu.component';
 })
 export class FacturacionElectronicaComponent {
 
-  protected ventas: VentaDTO[];
-  protected ventasFiltradas: VentaDTO[];
+  protected ventas: EFacturaDTO[];
+  protected ventasFiltradas: EFacturaDTO[];
   public sumaTotal: number = 0;
-  formVenta!: FormGroup;
-  protected ventaSeleccionada: VentaDTO | null;
-  protected ventaRealizada!: FullVentaDTO;
+  protected formulario!: FormGroup;
   private fb: FormBuilder = inject(FormBuilder);
-  private facturaService: FacturaService = inject(FacturaService);
   private ventaService: VentaService = inject(VentaService);
   private menuComponent: MenuComponent = inject(MenuComponent);
   protected paginaActual: number = 0;
@@ -32,7 +25,6 @@ export class FacturacionElectronicaComponent {
   constructor() {
     this.ventas = [];
     this.ventasFiltradas = [];
-    this.ventaSeleccionada = null;
   }
 
   ngOnInit() {
@@ -44,7 +36,7 @@ export class FacturacionElectronicaComponent {
    * Método para construir el formulario
    */
   private buildForm() {
-    this.formVenta = this.fb.group({
+    this.formulario = this.fb.group({
       fecha: [this.getFechaActual()]
     });
   }
@@ -54,7 +46,7 @@ export class FacturacionElectronicaComponent {
    * a través del servicio de ventas
    */
   private obtenerVentas(page: number) {
-    this.ventaService.obtenerVentas(page).subscribe(data => {
+    this.ventaService.obtenerFacturasElectronicas(page).subscribe(data => {
       this.totalPaginas = data.totalPages;
       this.ventas = data.content;
       this.ventasFiltradas = data.content;
@@ -62,43 +54,6 @@ export class FacturacionElectronicaComponent {
     })
   }
 
-  /**
-   * Método para imprimir una factura
-   * en el servicio de factura
-   * @param factura
-   */
-  protected confirmarGenerarFactura(idVenta: number | undefined) {
-    if (this.ventaSeleccionada) {
-      this.facturaService.imprimirFactura(this.ventaRealizada);
-      console.log("id venta: " + idVenta);
-      if (idVenta != undefined && idVenta != null) {
-        let factura = new CrearFacturaDTO(idVenta);
-        this.facturaService.crearFactura(factura);
-        console.log("Factura creada");
-      }
-    }
-  }
-
-  /**
-   * Método para cerrar la previsualización de una venta
-   * y limpiar los datos de la venta seleccionada
-   */
-  protected cerrarPrevisualizacion() {
-    this.ventaSeleccionada = null;
-  }
-
-  /**
-   * Este método se encarga de mostrar la previsualización de una venta
-   * con los detalles de la venta seleccionada
-   * @param venta contiene los datos de la venta seleccionada
-   */
-  protected mostrarPrevisualizacion(venta: VentaDTO) {
-    this.cerrarMenu();
-    this.ventaSeleccionada = venta;
-    this.ventaService.obtenerVenta(venta.id).subscribe(data => {
-      this.ventaRealizada = data;
-    });
-  }
 
   /**
    * Este método se encarga de cerrar el menu y asi
@@ -108,7 +63,6 @@ export class FacturacionElectronicaComponent {
     if (!this.menuComponent.estadoMenu) {
       this.menuComponent.toggleCollapse();
     }
-    console.log('el menu esta', this.menuComponent.estadoMenu);
   }
 
   /**
@@ -118,7 +72,7 @@ export class FacturacionElectronicaComponent {
   protected buscar(evento: Event) {
     const input = (evento.target as HTMLInputElement).value.toLowerCase();
 
-    this.ventasFiltradas = this.ventas.filter((venta: VentaDTO) => {
+    this.ventasFiltradas = this.ventas.filter((venta: EFacturaDTO) => {
       const valoresBusqueda = [
         venta.id.toString(),
         venta.fecha.toString(),
@@ -135,8 +89,8 @@ export class FacturacionElectronicaComponent {
    * Método para filtrar las ventas por fecha
    */
   public filtrarFecha() {
-    let fecha = this.formVenta.get('fecha')?.value;
-    this.ventasFiltradas = this.ventas.filter((venta: VentaDTO) =>
+    let fecha = this.formulario.get('fecha')?.value;
+    this.ventasFiltradas = this.ventas.filter((venta: EFacturaDTO) =>
       venta.fecha.includes(fecha)
     );
   }
@@ -158,23 +112,6 @@ export class FacturacionElectronicaComponent {
     this.obtenerVentas(0);
   }
 
-  /**
-   * Este método se encarga de eliminar una venta de la base de datos
-   * @param idVenta es el id de la venta a eliminar
-   */
-  public eliminarVenta(idVenta: number) {
-    this.ventaService.preguntarEliminarVenta().then((result) => {
-      if (result) {
-        this.eliminarVentaSinConfirmar(idVenta);
-      }
-    });
-  }
-
-  private eliminarVentaSinConfirmar(idVenta: number) {
-    this.ventaService.eliminarVenta(idVenta).subscribe(
-      { next: () => { this.obtenerVentas(0); } }
-    );
-  }
 
   paginaAnterior() {
     if (this.paginaActual > 0) {  

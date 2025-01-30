@@ -7,6 +7,7 @@ import { VentaDTO } from '../../dto/venta/VentaDTO';
 import { FullVentaDTO } from '../../dto/venta/FullVentaDTO';
 import { Page } from 'src/app/dto/pageable/Page';
 import { CrearEFacturaDTO } from 'src/app/dto/efactura/CrearEFacturaDTO';
+import { EFacturaDTO } from 'src/app/dto/efactura/EFacturaDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -44,4 +45,9 @@ export class HttpVentaService {
   crearFacturaElectronica(efactura: CrearEFacturaDTO) {
     return this.http.post(`${this.URL_API}/efactura/guardar`, efactura);
   }
+
+  obtenerEFacturas(page: number): Observable<Page<EFacturaDTO>> {
+    return this.http.get<Page<EFacturaDTO>>(`${this.URL_API}/efactura/obtener-efacturas?page=${page}`);
+  }
+  
 }
