@@ -209,7 +209,6 @@ export class HomeProductoComponent {
       this.productoForm = this.fb.group({
         codigo: [this.productoSeleccionado?.codigo || ''],
         nombre: [this.productoSeleccionado?.nombre || ''],
-        activo: [this.productoSeleccionado?.activo || false],
         fechaCreacion: [this.productoSeleccionado?.fechaCreacion || ''],
         formaVentas: this.fb.array(this.productoSeleccionado?.formaVentas?.map(forma => this.fb.group({
           nombre: [forma.nombre || ''],

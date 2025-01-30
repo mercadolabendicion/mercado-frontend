@@ -36,7 +36,6 @@ export class EditarProductoComponent {
       nombre: ['', [Validators.required]],
       precio: ['', [Validators.required, validarDecimalConDosDecimales()]],
       cantidad: ['', [Validators.required, validarDecimalConDosDecimales()]],
-      activo: [1],
       fechaCreacion: ['', [Validators.required]],
     });
   }
@@ -54,7 +53,7 @@ export class EditarProductoComponent {
    * @returns 
    */
   protected guardar(): void {
-    const { codigo, nombre, precio, cantidad, activo } = this.personaForm.value;
+    const { codigo, nombre, precio, cantidad} = this.personaForm.value;
     let productoActualizar = ActualizarProductoDTO.crearProducto(codigo, nombre, precio, cantidad);
     if (!this.personaForm.valid) {
       Object.values(this.personaForm.controls).forEach(control => {

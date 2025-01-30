@@ -27,18 +27,6 @@
         </span>
       </div>
     </div>
-    <div>
-      <label for="activo">Activo:</label>
-      <div>
-        <select name="" id="activo" formControlName="activo">
-          <option [selected]="true" value="1">Sí</option>
-          <option value="0">No</option>
-        </select>
-        <span *ngIf="personaForm.get('activo')?.invalid && (personaForm.get('activo')?.dirty || personaForm.get('activo')?.touched)">
-          Por favor, seleccione un valor válido.
-        </span>
-      </div>
-    </div>
     <button type="submit">Guardar</button>
   </form>
 </div>
@@ -71,8 +59,8 @@
           </div>
           <div class="row mb-3">
             <div class="col-md-6">
-              <label for="activo" class="form-label"><strong>Activo</strong></label>
-              <input type="text" id="activo" class="form-control" [(ngModel)]="productoSeleccionado.activo" readonly />
+              <label for="impuesto" class="form-label"><strong>Impuesto</strong></label>
+              <input type="text" id="activo" class="form-control" [(ngModel)]="productoSeleccionado.nombre" readonly />
             </div>
             <div class="col-md-6">
               <label for="fechaCreacion" class="form-label"><strong>Fecha de Creación</strong></label>

@@ -27,7 +27,6 @@
               <th>Nombre</th>
               <th>Direccion</th>
               <th class="d-none d-md-table-cell">Correo</th>
-              <th class="d-none d-md-table-cell">Activo</th>
               <th class="d-none d-md-table-cell">FechaCreacion</th>
               <th class="eliminar">Acciones</th>
             </tr>
@@ -39,7 +38,6 @@
               <td>{{ cliente.nombre }}</td>
               <td>{{ cliente.direccion }}</td>
               <td class="d-none d-md-table-cell">{{ cliente.correo }}</td>
-              <td class="d-none d-md-table-cell">{{ cliente.activo == true ? "Si":"No"}}</td>
               <td class="d-none d-md-table-cell">{{ cliente.fechaCreacion | date }}</td>
               <td class="eliminar">
                 <button (click)="eliminarPorId(cliente.id)">❌</button>
