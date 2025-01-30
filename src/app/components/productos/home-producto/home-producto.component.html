@@ -25,7 +25,6 @@
             <tr>
               <th>Código</th>
               <th>Nombre</th>
-              <th class="d-none d-md-table-cell">FechaCreacion</th>
               <th class="eliminar">Acciones</th>
             </tr>
           </thead>
@@ -36,7 +35,6 @@
             <tr *ngFor="let producto of filtroProductos; let i=index">
               <td>{{ producto.codigo }}</td>
               <td>{{ producto.nombre }}</td>
-              <td class="d-none d-md-table-cell">{{ producto.fechaCreacion | date }}</td>
               <td class="eliminar">
                 <button class="editar" (click)="abrirModal(producto.codigo)">👁️</button>
                 <button class="editar red-x" (click)="eliminarProductoCodigo(producto.codigo)">
