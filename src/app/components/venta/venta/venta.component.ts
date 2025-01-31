@@ -244,13 +244,20 @@ export class VentaComponent implements DoCheck {
   private async procesarVenta(venta: CrearVentaDTO): Promise<void> {
     this.calcularValores();
     try {
-      await this.ventaService.crearVenta(venta, this.total);
-      this.finalizarVenta();
-      this.menuComponent.listarVentas();
+      const ventaCreada = await this.ventaService.crearVenta(venta, this.total);
+  
+      // Solo se ejecutan estas líneas si la promesa retorna true
+      if (ventaCreada) {
+        this.finalizarVenta();
+        this.menuComponent.listarVentas();
+      } else {
+        console.error('La venta no se pudo procesar correctamente.');
+      }
     } catch (error) {
       console.error("Error al procesar la venta:", error);
     }
-  } 
+  }
+  
 
   /**
    * Este metodo limpia los campos del formulario y genera un nuevo id de factura

@@ -37,9 +37,9 @@ export class ListaVentasComponent {
   }
 
   ngOnInit() {
+    this.obtenerVentasTodas();
     this.obtenerVentas(0);
     this.buildForm();
-    this.obtenerVentasTodas();
   }
 
   /**
@@ -90,11 +90,11 @@ export class ListaVentasComponent {
    * Este método se encarga de obtener las ventas de la base de datos
    * a través del servicio de ventas
    */
-  private obtenerVentas(page: number) {
+  public obtenerVentas(page: number) {
     this.ventaService.obtenerVentas(page).subscribe(data => {
+      this.ventasFiltradas = data.content;
       this.totalPaginas = data.totalPages;
       this.ventas = data.content;
-      this.ventasFiltradas = data.content;
       this.generarPaginas();
     })
   }

@@ -8,6 +8,8 @@ import { ProductoService } from 'src/app/services/domainServices/producto.servic
 import { ClienteDTO } from 'src/app/dto/cliente/ClienteDTO';
 import { VentaDTO } from 'src/app/dto/venta/VentaDTO';
 import { VentaService } from 'src/app/services/domainServices/venta.service';
+import { VentaComponent } from '../venta/venta/venta.component';
+import { ListaVentasComponent } from '../venta/lista-ventas/listaVentas.component';
 
 @Component({
   selector: 'app-menu',
