@@ -24,6 +24,8 @@ import { ProductoAlertService } from './utils/product-alert/productoAlert.servic
 import { CajaComponent } from './page/caja/caja.component';
 import { ConfiguracionComponent } from './page/configuracion/configuracion.component';
 import { FacturacionElectronicaComponent } from './page/facturacion-electronica/facturacion-electronica.component';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
 
 @NgModule({
@@ -54,10 +56,16 @@ import { FacturacionElectronicaComponent } from './page/facturacion-electronica/
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatDialogModule
     // PageModule
   ],
-  providers: [ListaVentasComponent, ProductoAlertService],
+  providers: [ListaVentasComponent, ProductoAlertService, provideAnimationsAsync(), 
+    {
+    provide: MatDialogRef,
+    useValue: {}
+    }
+],
   exports:[CardComponent],
   bootstrap: [AppComponent]
 })

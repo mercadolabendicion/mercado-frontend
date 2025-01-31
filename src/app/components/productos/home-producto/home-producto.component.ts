@@ -4,10 +4,12 @@ import { ProductoDTO } from 'src/app/dto/producto/ProductoDTO';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { ProductoAlertService } from 'src/app/utils/product-alert/productoAlert.service';
 import { MenuComponent } from '../../menu/menu.component';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActualizarProductoDTO } from 'src/app/dto/producto/ActualizarProductoDTO';
-import { ActualizarFormaVentaDTO } from 'src/app/dto/producto/ActualizarFormaVentaDTO';
 import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
+import { EditarProductoComponent } from '../editar-producto/editar-producto.component';
+import { MatDialog } from '@angular/material/dialog';
+
 @Component({
   selector: 'app-home-producto',
   templateUrl: './home-producto.component.html',
@@ -38,6 +40,7 @@ export class HomeProductoComponent {
   descuento: number = 0;
   protected formasVentaEditar: FormaVenta[];
   protected idProductoSeleccionado: string = '';
+  private dialog: MatDialog = inject(MatDialog);
 
   constructor(private fb: FormBuilder) {
     this.productos = [];
@@ -195,11 +198,19 @@ export class HomeProductoComponent {
   }
 
   abrirModalEditar(codigo: string): void {
-    this.formasVentaEditar = [];
-    this.menuComponent.cerrarMenu();
+    //this.menuComponent.cerrarMenu();
     this.idProductoSeleccionado = codigo;
     this.modalAbiertoEditar = true;
+    const dialogRef = this.dialog.open(EditarProductoComponent, {
+      width: '1500px',  // Opcional: ajusta el ancho según necesites
+      data: { codigo }  // Pasa el cliente a editar
+    });
     //envio el producto al componente de editar
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('El modal se cerró', result);
+      // Aquí podrías actualizar la lista de clientes, etc.
+    });
     }
 
   get formasVentasFormArray(): FormArray {

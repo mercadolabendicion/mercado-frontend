@@ -1,11 +1,10 @@
-import { Component, EventEmitter, inject, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Inject, inject, Input, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { validarDecimalConDosDecimales } from '../../../validators/validatorFn';
-import { AlertService } from 'src/app/utils/alert.service';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { MenuComponent } from '../../menu/menu.component';
-import { ProductoDTO } from 'src/app/dto/producto/ProductoDTO';
 import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+
 @Component({
   selector: 'app-editar-producto',
   templateUrl: './editar-producto.component.html',
@@ -19,14 +18,19 @@ export class EditarProductoComponent {
   @Input() productoSeleccionado: any; // Recibe el producto a editar
   @Output() modoOculto = new EventEmitter();
   private fb: FormBuilder = inject(FormBuilder);
-  private menuComponent: MenuComponent = inject(MenuComponent);
+  //private menuComponent: MenuComponent = inject(MenuComponent);
   private productoService: ProductoService = inject(ProductoService);
   modalAbierto = false;
   @Input() idProducto: string = '';
   @Output() cerrar = new EventEmitter<void>();
   protected producto : ProductoCompletoDTO | null = null;
+  @Inject(MAT_DIALOG_DATA) public codigo: any;
 
   productoForm!: FormGroup;
+
+  constructor(
+    public dialogRef: MatDialogRef<EditarProductoComponent> // Puedes definir una interfaz para 'data'
+  ) {}
 
 
   ngOnInit(): void {
@@ -82,7 +86,7 @@ export class EditarProductoComponent {
 
   abrirModal(codigo: string): void {
     this.modalAbierto = true;
-    this.menuComponent.cerrarMenu();
+    //this.menuComponent.cerrarMenu();
     /*this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
       this.productoSeleccionado = producto;
       this.productoSeleccionado = {

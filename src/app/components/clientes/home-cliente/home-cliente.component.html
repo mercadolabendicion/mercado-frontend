@@ -52,9 +52,16 @@
 
     <div class="pup-up" [ngClass]="{ 'oculto': modoOculto }">
       <div class="pop-up-container">
+        <div class="modal" tabindex="-1">
+          <div class="modal-dialog">
+
+
         <span class="cerrar" (click)="editarModoOcuto()">❌</span>
-        <app-editar-cliente class="editar" [personaEditar]="personaEditar"
+        <app-editar-cliente class="editar zindex-modal" [personaEditar]="personaEditar"
           (modoOculto)="editarModoOcuto()"></app-editar-cliente>
+
+          </div>
+        </div>
       </div>
     </div>
   </div>
