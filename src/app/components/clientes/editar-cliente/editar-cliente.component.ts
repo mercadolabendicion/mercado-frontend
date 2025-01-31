@@ -37,7 +37,7 @@ export class EditarClienteComponent {
   private formBuild(): void {
     this.personaForm = this.fb.group({
       idCliente: '',
-      cedula: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*'), Validators.maxLength(15)]],
+      cedula: [{value: '', disabled: true}, [Validators.required, Validators.pattern('[a-zA-Z0-9]*'), Validators.maxLength(15)]],
       nombre: ['', [Validators.required, soloTexto()]],
       direccion: ['', [Validators.required,]],
       correo: ['', [Validators.required, validarCorreo()]],

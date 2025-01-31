@@ -1,44 +1,64 @@
-<div class="container mt-4 pop-up">
+<div class="container mt-3">
   <form [formGroup]="personaForm" (ngSubmit)="guardar()">
 
-    <div class="form-group">
-      <label for="Cedula">Cedula:</label>
-      <input maxlength="15" type="text" class="form-control" formControlName="cedula" placeholder="Cedula">
-      <span class="text-danger"
-        *ngIf="personaForm.get('cedula') && personaForm.get('cedula')!.errors && personaForm.get('cedula')!.touched">
-        Por favor, ingrese solo números
-      </span>
+    <div class="row">
+      <!-- Primera columna -->
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="cedula"><strong>Cédula:</strong></label>
+          <div class="mt-1">
+            <input maxlength="15" type="text" class="form-control" formControlName="cedula" placeholder="Cédula">
+            <span class="text-danger" *ngIf="personaForm.get('cedula')?.invalid && personaForm.get('cedula')?.touched">
+              Por favor, ingrese solo números
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-12 mt-4">
+        <div class="form-group">
+          <label for="nombre"><strong>Nombre:</strong></label>
+          <div class="mt-1">
+            <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
+            <span class="text-danger" *ngIf="personaForm.get('nombre')?.invalid && personaForm.get('nombre')?.touched">
+              Por favor, ingrese solo texto.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-12 mt-4">
+        <div class="form-group">
+          <label for="direccion"><strong>Dirección:</strong></label>
+          <div class="mt-1">
+            <input type="text" class="form-control" formControlName="direccion" placeholder="Dirección">
+            <span class="text-danger"
+              *ngIf="personaForm.get('direccion')?.invalid && personaForm.get('direccion')?.touched">
+              Por favor, ingrese un valor válido.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-12 mt-4">
+        <div class="form-group">
+          <label for="correo"><strong>Correo:</strong></label>
+          <div class="mt-1">
+            <input type="email" class="form-control" formControlName="correo" placeholder="Correo">
+            <span class="text-danger" *ngIf="personaForm.get('correo')?.invalid && personaForm.get('correo')?.touched">
+              Por favor, ingrese un correo válido.
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="nombre">Nombre:</label>
-      <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
-      <span class="text-danger"
-        *ngIf="personaForm.get('nombre') && personaForm.get('nombre')!.errors && personaForm.get('nombre')!.touched">
-        Por favor, ingrese solo texto.
-      </span>
+    <!-- Botón centrado -->
+    <div class="d-flex justify-content-center mt-4">
+      <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
+        Guardar
+      </button>
     </div>
 
-    <div class="form-group">
-      <label for="direccion">Direccion:</label>
-      <input type="text" class="form-control" formControlName="direccion" placeholder="Direccion">
-      <span class="text-danger"
-        *ngIf="personaForm.get('direccion')?.invalid && (personaForm.get('direccion')?.dirty || personaForm.get('direccion')?.touched)">
-        Por favor, ingrese un valor válido.
-      </span>
-    </div>
-
-    <div class="form-group">
-      <label for="correo">Correo:</label>
-      <input type="email" class="form-control" formControlName="correo" placeholder="Correo">
-      <span class="text-danger"
-        *ngIf="personaForm.get('correo')?.invalid && (personaForm.get('correo')?.dirty || personaForm.get('correo')?.touched)">
-        Por favor, ingrese un correo válido.
-      </span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-      Guardar
-    </button>
   </form>
 </div>
