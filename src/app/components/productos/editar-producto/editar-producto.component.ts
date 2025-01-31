@@ -1,11 +1,11 @@
 import { Component, EventEmitter, inject, Input, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { validarDecimalConDosDecimales } from '../../../validators/validatorFn';
-import { ActualizarProductoDTO } from '../../../dto/producto/ActualizarProductoDTO';
 import { AlertService } from 'src/app/utils/alert.service';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
-import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 import { MenuComponent } from '../../menu/menu.component';
+import { ProductoDTO } from 'src/app/dto/producto/ProductoDTO';
+import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 @Component({
   selector: 'app-editar-producto',
   templateUrl: './editar-producto.component.html',
@@ -13,46 +13,59 @@ import { MenuComponent } from '../../menu/menu.component';
 })
 export class EditarProductoComponent {
 
-  
-  
+
+
   @Input() productosEditar: any = {};
   @Input() productoSeleccionado: any; // Recibe el producto a editar
-  @Input() modalAbiertoEditar: boolean = false;
   @Output() modoOculto = new EventEmitter();
   private fb: FormBuilder = inject(FormBuilder);
-    private menuComponent: MenuComponent = inject(MenuComponent);
+  private menuComponent: MenuComponent = inject(MenuComponent);
   private productoService: ProductoService = inject(ProductoService);
-  private alert: AlertService = inject(AlertService);
   modalAbierto = false;
-  protected personaForm!: FormGroup;
+  @Input() idProducto: string = '';
+  @Output() cerrar = new EventEmitter<void>();
+  protected producto : ProductoCompletoDTO | null = null;
 
   productoForm!: FormGroup;
 
 
   ngOnInit(): void {
-    this.personaForm = this.fb.group({
-      idProducto: '',
-      codigo: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]],
-      nombre: ['', [Validators.required]],
-      precio: ['', [Validators.required, validarDecimalConDosDecimales()]],
-      cantidad: ['', [Validators.required, validarDecimalConDosDecimales()]],
-      fechaCreacion: ['', [Validators.required]],
+    this.productoForm = this.fb.group({
+      codigo: ['', Validators.required],
+      nombre: ['', Validators.required],
+      impuesto: ['', Validators.required],
+      fechaCreacion: ['', Validators.required],
+      formasVentas: this.fb.array([]) // Añade un FormArray para formasVentas
     });
   }
 
-
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['productosEditar'] && this.productosEditar) {
-      this.personaForm.patchValue(this.productosEditar);
+    if (changes['idProducto'] && this.idProducto) {
+      this.productoService.obtenerProductoCompleto(this.idProducto).subscribe((producto) => {
+        this.producto = producto;
+        this.modalAbierto = true; // Abre el modal al cargar el producto
+        this.inicializarFormulario(); // Inicializa el formulario con los datos
+      });
     }
-    console.log(this.productosEditar);
   }
-  
+
+  private inicializarFormulario(): void {
+    if (this.producto) {
+      this.productoForm.patchValue({
+        codigo: this.producto.codigo,
+        nombre: this.producto.nombre,
+        impuesto: this.producto.impuesto,
+        fechaCreacion: this.producto.fechaCreacion
+      });
+      // Inicializar formas de venta si es necesario
+    }
+  }
+
   /**
    * Este método se encarga de guardar el producto en la base de datos
    * @returns 
    */
- 
+
   protected guardar(): void {
     /**
     const { codigo, nombre, precio, cantidad} = this.personaForm.value;
@@ -66,10 +79,11 @@ export class EditarProductoComponent {
     this.productoService.actualizar(productoActualizar);
      */
   }
- 
+
   abrirModal(codigo: string): void {
+    this.modalAbierto = true;
     this.menuComponent.cerrarMenu();
-    this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
+    /*this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
       this.productoSeleccionado = producto;
       this.productoSeleccionado = {
         ...producto,
@@ -79,13 +93,11 @@ export class EditarProductoComponent {
           day: 'numeric'
         })
       };
-    });
-    this.modalAbierto = true;
+    });*/
   }
 
 
   cerrarModal(): void {
-    this.modalAbierto = false;
   }
 
 }
