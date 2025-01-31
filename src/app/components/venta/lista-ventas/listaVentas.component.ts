@@ -16,6 +16,7 @@ import { CrearEFacturaDTO } from 'src/app/dto/efactura/CrearEFacturaDTO';
 export class ListaVentasComponent {
 
   protected ventas: VentaDTO[];
+  protected ventasTodas!: VentaDTO[];
   protected ventasFiltradas: VentaDTO[];
   public sumaTotal: number = 0;
   protected formVenta!: FormGroup;
@@ -36,6 +37,7 @@ export class ListaVentasComponent {
   }
 
   ngOnInit() {
+    this.obtenerVentasTodas();
     this.obtenerVentas(0);
     this.buildForm();
   }
@@ -49,15 +51,50 @@ export class ListaVentasComponent {
     });
   }
 
+    /**
+   * Este metodo se encarga de guardar en la variable clientesTodos
+   * todos los clientes que se encuentran en LocalStorage con la variable clientes
+   */
+  obtenerVentasTodas() {
+    this.ventasTodas = JSON.parse(localStorage.getItem('ventas') || '[]');
+  }
+
+    /**
+     * Busca una venta por su cliente
+     * @param cliente 
+     */
+    protected buscar(event: Event): void {
+      const inputElement = event.target as HTMLInputElement;
+      const busqueda = inputElement.value.trim().toLowerCase();
+      console.log(this.ventasTodas);
+      this.ventasFiltradas = this.ventasTodas.filter((venta: VentaDTO) =>
+        this.coincideBusqueda(venta, busqueda)
+      );
+    }
+
+    /**
+     * Este método verifica si un cliente coincide con la búsqueda
+     * @param cliente DTO del cliente
+     * @param busqueda String de búsqueda
+     * @returns boolean que indica si el cliente coincide con la búsqueda
+     */
+    private coincideBusqueda(venta: VentaDTO, busqueda: string): boolean {
+      return (
+        venta.id.toString().includes(busqueda) ||
+        venta.cliente.toLowerCase().includes(busqueda) ||
+        venta.total.toString().includes(busqueda)
+      );
+    }
+
   /**
    * Este método se encarga de obtener las ventas de la base de datos
    * a través del servicio de ventas
    */
-  private obtenerVentas(page: number) {
+  public obtenerVentas(page: number) {
     this.ventaService.obtenerVentas(page).subscribe(data => {
+      this.ventasFiltradas = data.content;
       this.totalPaginas = data.totalPages;
       this.ventas = data.content;
-      this.ventasFiltradas = data.content;
       this.generarPaginas();
     })
   }
@@ -110,31 +147,11 @@ export class ListaVentasComponent {
   }
 
   /**
-   * Este método se encarga de filtrar las ventas por un valor de búsqueda
-   * @param evento contiene el evento de búsqueda
-   */
-  protected buscar(evento: Event) {
-    const input = (evento.target as HTMLInputElement).value.toLowerCase();
-
-    this.ventasFiltradas = this.ventas.filter((venta: VentaDTO) => {
-      const valoresBusqueda = [
-        venta.id.toString(),
-        venta.fecha.toString(),
-        venta.cliente.toString(),
-        venta.toString(),
-        venta.total.toString(),
-      ];
-
-      return valoresBusqueda.some(valor => valor.toLowerCase().includes(input));
-    });
-  }
-
-  /**
    * Método para filtrar las ventas por fecha
    */
   public filtrarFecha() {
     let fecha = this.formVenta.get('fecha')?.value;
-    this.ventasFiltradas = this.ventas.filter((venta: VentaDTO) =>
+    this.ventasFiltradas = this.ventasTodas.filter((venta: VentaDTO) =>
       venta.fecha.includes(fecha)
     );
   }

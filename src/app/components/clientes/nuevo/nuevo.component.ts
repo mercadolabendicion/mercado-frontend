@@ -4,6 +4,7 @@ import { soloTexto, validarCorreo} from 'src/app/validators/validatorFn';
 import { CrearClienteDTO } from 'src/app/dto/cliente/CrearClienteDTO';
 import { ClienteAlertService } from 'src/app/utils/cliente-alert/clienteAlert.service';
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
+import { MenuComponent } from '../../menu/menu.component';
 @Component({
   selector: 'app-nuevo',
   templateUrl: './nuevo.component.html',
@@ -16,6 +17,7 @@ export class NuevoComponent {
   private formBuilder:FormBuilder = inject(FormBuilder);
   private clienteService: ClienteService = inject(ClienteService);
   private clientAlert: ClienteAlertService = inject(ClienteAlertService);
+  private menuComponent: MenuComponent = inject(MenuComponent);
 
   ngOnInit(): void {
     this.formulario = this.formBuilder.group({
@@ -35,6 +37,7 @@ export class NuevoComponent {
       const cliente = CrearClienteDTO.crearCliente(cedula, nombre, direccion, correo);
       this.clienteService.crearCliente(cliente);
       this.formulario.reset();
+      this.menuComponent.listarClientes();
     }
   }
 

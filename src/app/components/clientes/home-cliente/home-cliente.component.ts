@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { ClienteDTO } from '../../../dto/cliente/ClienteDTO';
 import { ClienteAlertService } from 'src/app/utils/cliente-alert/clienteAlert.service';
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
+import { MenuComponent } from '../../menu/menu.component';
 
 @Component({
   selector: 'app-home-cliente',
@@ -23,6 +24,7 @@ export class HomeClienteComponent {
   protected paginaActual: number = 0;
   protected totalPaginas!: number;
   protected paginas: number[] = [];
+  private menuComponent: MenuComponent = inject(MenuComponent);
 
   constructor() {
     this.personaEditar = new ClienteDTO();
@@ -33,8 +35,9 @@ export class HomeClienteComponent {
 
   ngOnInit() {
     this.obtenerClientes(this.paginaActual);
-    this.obteneClientesTodos();
+    this.obtenerClientesTodos();
     this.updateClienteCount();
+    this.menuComponent.listarClientes();
   }
 
   /**
@@ -48,9 +51,9 @@ export class HomeClienteComponent {
 
   /**
    * Este metodo se encarga de guardar en la variable clientesTodos
-   * todos los productos que se encuentran en LocalStorage con la variable productos
+   * todos los clientes que se encuentran en LocalStorage con la variable clientes
    */
-  obteneClientesTodos() {
+  obtenerClientesTodos() {
     this.clientesTodos = JSON.parse(localStorage.getItem('clientes') || '[]');
   }
 
@@ -158,4 +161,9 @@ export class HomeClienteComponent {
     this.paginaActual = pagina;
     this.cargarVentas();
   }
+
+  cerrarMenu() {
+    this.menuComponent.cerrarMenu();
+  }
+
 }

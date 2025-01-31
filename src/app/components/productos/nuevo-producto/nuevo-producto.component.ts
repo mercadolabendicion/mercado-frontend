@@ -7,6 +7,7 @@ import { ProductoAlertService } from 'src/app/utils/product-alert/productoAlert.
 import { from, of, switchMap } from 'rxjs';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
+import { MenuComponent } from '../../menu/menu.component';
 
 @Component({
   selector: 'app-nuevo-producto',
@@ -25,6 +26,7 @@ export class NuevoProductoComponent implements OnInit {
   private alert: AlertService = inject(AlertService);
   private productoService: ProductoService = inject(ProductoService);
   private productoAlertService: ProductoAlertService = inject(ProductoAlertService);
+  private menuComponent: MenuComponent = inject(MenuComponent);
 
 
   ngOnInit(): void {
@@ -93,6 +95,7 @@ export class NuevoProductoComponent implements OnInit {
     let impuesto = this.tipoImpuesto[this.formulario.get('impuesto')!.value] == undefined ? '':this.tipoImpuesto[this.formulario.get('impuesto')!.value];
     let producto = CrearProductoDTO.crearProductoDTO(codigo, nombre,impuesto, precioCompra, formasVentaEntities);
     this.productoService.guardarProducto(producto);
+    this.menuComponent.listarProductos();
   }
 
   /**

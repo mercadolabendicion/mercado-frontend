@@ -8,9 +8,9 @@
     <div class="row">
       <form [formGroup]="formVenta">
         <div class="row">
-          <div class="col-6">
+          <div class="col-8">
             <div class="buscar">
-              <input type="text" id="buscar" (keyup)="buscar($event)" placeholder="  Buscar cliente...">
+              <input type="text" id="buscar" (keyup)="buscar($event)" placeholder="  Buscar venta...">
             </div>
           </div>
           <div class="col-4">
@@ -21,15 +21,7 @@
               </div>
             </div>
           </div>
-          <div class="col-2">
-            <div class="row  align-items-center justify-content-center text-center">
-              <button id="nuevo" class="btn btn-primary" (click)="reset()">
-                <span class="d-none d-md-inline">Todas las ventas</span>
-                <span class="d-inline d-md-none">Todo</span>
-              </button>
-            </div>
           </div>
-        </div>
       </form>
     </div>
   </div>
@@ -41,7 +33,6 @@
           <table class="table table-bordered table-hover">
             <thead>
               <tr>
-                <th>Numero de Factura</th>
                 <th>Nombre cliente</th>
                 <th>Fecha y hora</th>
                 <th>Total</th>
@@ -49,8 +40,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let venta of ventasFiltradas">
-                <td class="text-left">{{ venta.id }}</td>
+              @for(venta of ventasFiltradas; track venta.id){
+              <tr>
                 <td class="text-left">{{ venta.cliente }}</td>
                 <td class="text-left">{{ venta.fecha | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                 <td class="text-left">$ {{ venta.total | number:'1.0-0' }}</td>
@@ -65,6 +56,7 @@
                     </button>
                   </div>
                 </td>
+              }
             </tbody>
           </table>
         </div>

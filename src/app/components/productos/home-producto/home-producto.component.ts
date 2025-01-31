@@ -57,6 +57,7 @@ export class HomeProductoComponent {
       fechaCreacion: ['', Validators.required],
       formasVentas: this.fb.array([])
     });
+    this.menuComponent.listarProductos();
   }
 
   /**

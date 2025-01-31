@@ -5,6 +5,7 @@ import { soloTexto, validarCorreo } from '../../../validators/validatorFn';
 import { ActualizarClienteDTO } from '../../../dto/cliente/ActualizarClienteDTO';
 import { AlertService } from 'src/app/utils/alert.service';
 import { ClienteDTO } from '../../../dto/cliente/ClienteDTO';
+import { MenuComponent } from '../../menu/menu.component';
 
 
 @Component({
@@ -21,6 +22,7 @@ export class EditarClienteComponent {
   private fb: FormBuilder = inject(FormBuilder);
   private httpClienteService: HttpClientesService = inject(HttpClientesService);
   private alert: AlertService = inject(AlertService);
+    private menuComponent: MenuComponent = inject(MenuComponent);
  
   /**
    * Metodo que crea el formulario reactivo del frontend
@@ -37,7 +39,7 @@ export class EditarClienteComponent {
   private formBuild(): void {
     this.personaForm = this.fb.group({
       idCliente: '',
-      cedula: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*'), Validators.maxLength(15)]],
+      cedula: [{value: '', disabled: true}, [Validators.required, Validators.pattern('[a-zA-Z0-9]*'), Validators.maxLength(15)]],
       nombre: ['', [Validators.required, soloTexto()]],
       direccion: ['', [Validators.required,]],
       correo: ['', [Validators.required, validarCorreo()]],
@@ -84,7 +86,7 @@ export class EditarClienteComponent {
         this.alert.simpleErrorAlert(error.error.mensaje);
       }
     });
-     
+    this.menuComponent.listarClientes();
   }
 
 }
