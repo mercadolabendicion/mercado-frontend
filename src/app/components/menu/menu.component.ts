@@ -72,7 +72,7 @@ export class MenuComponent {
 
   /**
    * Este método se encarga de listar todos los productos disponibles en la base de datos,
-   * haciendo solicitudes hasta que no se reciban más productos.
+   * haciendo solicitudes hasta que no se reciban más productos y carga todo en el localstorage
    */
   public listarProductos(): void {
     let page = 0;
@@ -87,6 +87,8 @@ export class MenuComponent {
             obtenerProductosRecursivamente(paginaActual + 1); // Llama a la siguiente página
           } else {
             console.log('Todos los productos han sido cargados:', this.productos.length);
+          // Almacena los productos en localStorage después de haber cargado todos los productos
+          localStorage.setItem('productos', JSON.stringify(this.productos)); 
           }
         },
         error: (err) => {
@@ -102,7 +104,7 @@ export class MenuComponent {
 
   /**
    * Este método se encarga de listar todos los clientes disponibles en la base de datos,
-   * haciendo solicitudes hasta que no se reciban más productos.
+   * haciendo solicitudes hasta que no se reciban más clientes y carga todo en el localstorage.
    */
   public listarClientes(): void {
     let page = 0;
@@ -117,6 +119,8 @@ export class MenuComponent {
             obtenerClientesRecursivamente(paginaActual + 1); // Llama a la siguiente página
           } else {
             console.log('Todos los clientes han sido cargados:', this.clientes.length);
+          // Almacena los clientes en localStorage después de haber cargado todos los clientes
+          localStorage.setItem('clientes', JSON.stringify(this.clientes)); 
           }
         },
         error: (err) => {
@@ -131,7 +135,7 @@ export class MenuComponent {
 
   /**
    * Este metodo se encarga de listar todos las ventas disponibles en la base de datos,
-   * haciendo solicitudes hasta que no se reciban más ventas.
+   * haciendo solicitudes hasta que no se reciban más ventas y carga todo en el localstorage.
    */
   public listarVentas(): void {
     let page = 0;
@@ -146,6 +150,8 @@ export class MenuComponent {
             obtenerVentasRecursivamente(paginaActual + 1); // Llama a la siguiente página
           } else {
             console.log('Todas las ventas han sido cargadas:', this.ventas.length);
+          // Almacena los ventas en localStorage después de haber cargado todos los ventas
+          localStorage.setItem('ventas', JSON.stringify(this.ventas)); 
           }
         },
         error: (err) => {

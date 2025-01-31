@@ -55,7 +55,6 @@ export class HomeProductoComponent {
       formaCantidad: [Validators.required]
     });
     this.menuComponent.listarProductos();
-    this.menuComponent.listarClientes();
   }
 
   /**

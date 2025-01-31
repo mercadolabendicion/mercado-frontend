@@ -35,8 +35,9 @@ export class HomeClienteComponent {
 
   ngOnInit() {
     this.obtenerClientes(this.paginaActual);
-    this.obteneClientesTodos();
+    this.obtenerClientesTodos();
     this.updateClienteCount();
+    this.menuComponent.listarClientes();
   }
 
   /**
@@ -50,9 +51,9 @@ export class HomeClienteComponent {
 
   /**
    * Este metodo se encarga de guardar en la variable clientesTodos
-   * todos los productos que se encuentran en LocalStorage con la variable productos
+   * todos los clientes que se encuentran en LocalStorage con la variable clientes
    */
-  obteneClientesTodos() {
+  obtenerClientesTodos() {
     this.clientesTodos = JSON.parse(localStorage.getItem('clientes') || '[]');
   }
 

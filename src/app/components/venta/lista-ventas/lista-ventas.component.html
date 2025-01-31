@@ -10,7 +10,7 @@
         <div class="row">
           <div class="col-8">
             <div class="buscar">
-              <input type="text" id="buscar" (keyup)="buscar($event)" placeholder="  Buscar cliente...">
+              <input type="text" id="buscar" (keyup)="buscar($event)" placeholder="  Buscar venta...">
             </div>
           </div>
           <div class="col-4">
@@ -40,7 +40,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let venta of ventasFiltradas">
+              @for(venta of ventasFiltradas; track venta.id){
+              <tr>
                 <td class="text-left">{{ venta.cliente }}</td>
                 <td class="text-left">{{ venta.fecha | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                 <td class="text-left">$ {{ venta.total | number:'1.0-0' }}</td>
@@ -55,6 +56,7 @@
                     </button>
                   </div>
                 </td>
+              }
             </tbody>
           </table>
         </div>
