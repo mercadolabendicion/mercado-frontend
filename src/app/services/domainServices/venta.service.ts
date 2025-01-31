@@ -13,6 +13,7 @@ import { Page } from "src/app/dto/pageable/Page";
 import { CarritoProductoDTO } from "src/app/dto/producto/CarritoProductoDTO";
 import { CrearEFacturaDTO } from "src/app/dto/efactura/CrearEFacturaDTO";
 import { EFacturaDTO } from "src/app/dto/efactura/EFacturaDTO";
+import { lastValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -38,14 +39,31 @@ export class VentaService {
 
   public crearVenta(venta: CrearVentaDTO, total: number): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-    this.alert.simpleInputAlert().then((result) => {
-      if (!this.validarDinero(result, total)) return resolve(false);
-      if (!this.verificarExistenciaCliente(venta.cliente)) return resolve(false);
-      venta.dineroRecibido = result;
-      venta.cambio = this.dinero - total;
-      this.guardarVenta(venta, total);
-    })});
+      this.alert.simpleInputAlert().then((result) => {
+        if (!this.validarDinero(result, total)) {
+          resolve(false);
+          return;
+        }
+        if (!this.verificarExistenciaCliente(venta.cliente)) {
+          resolve(false);
+          return;
+        }
+  
+        try {
+          venta.dineroRecibido = result;
+          venta.cambio = this.dinero - total;
+  
+          // Asegurar que `guardarVenta()` también retorne una promesa
+          this.guardarVenta(venta, total)
+            .then(() => resolve(true))
+            .catch((error) => reject(error)); // En caso de fallo, se rechaza la promesa
+        } catch (error) {
+          reject(error);
+        }
+      }).catch((error) => reject(error)); // Manejar errores en `simpleInputAlert()`
+    });
   }
+  
 
   /**
    * Este metodo se encarga de validar el dinero ingresado por el usuario
@@ -85,16 +103,15 @@ export class VentaService {
    * @param total  total de la venta
    * @param dinero dinero ingresado por el usuario
    */
-  private guardarVenta(venta: CrearVentaDTO, total: number) {
-    this.httpVentaService.guardarFactura(venta).subscribe({
-      next: () => {
-        this.mostrarCambio(total);
-      },
-
-      error: (error) => { this.alert.simpleErrorAlert(error.error.mensaje); }
+  private guardarVenta(venta: CrearVentaDTO, total: number): Promise<void> {
+    return lastValueFrom(this.httpVentaService.guardarFactura(venta)).then(() => {
+      this.mostrarCambio(total);
+    }).catch(error => {
+      this.alert.simpleErrorAlert(error.error.mensaje);
+      throw error; // Rechaza la promesa si hay error
     });
   }
-
+  
   /**
    * Este metodo se encarga de mostrar el cambio al usuario 
    * @param dinero Cantidad de dinero dada por el usuario

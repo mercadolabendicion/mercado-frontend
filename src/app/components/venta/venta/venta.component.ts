@@ -241,12 +241,16 @@ export class VentaComponent implements DoCheck {
    * Este metodo se encarga de guardar la venta en la base de datos
    * @param venta 
    */
-  private procesarVenta(venta: CrearVentaDTO): void {
+  private async procesarVenta(venta: CrearVentaDTO): Promise<void> {
     this.calcularValores();
-    this.ventaService.crearVenta(venta, this.total).then(() => {
-      this.finalizarVenta()
-    });
-  }
+    try {
+      await this.ventaService.crearVenta(venta, this.total);
+      this.finalizarVenta();
+      this.menuComponent.listarVentas();
+    } catch (error) {
+      console.error("Error al procesar la venta:", error);
+    }
+  } 
 
   /**
    * Este metodo limpia los campos del formulario y genera un nuevo id de factura
@@ -254,6 +258,7 @@ export class VentaComponent implements DoCheck {
   private finalizarVenta(): void {
     this.formulario.reset();
     this.generarIdFactura();
+    this.resetListProductos();
     this.clienteSeleccionado = null;
   }
 

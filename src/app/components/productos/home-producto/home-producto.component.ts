@@ -54,6 +54,8 @@ export class HomeProductoComponent {
       fechaCreacion: [Validators.required],
       formaCantidad: [Validators.required]
     });
+    this.menuComponent.listarProductos();
+    this.menuComponent.listarClientes();
   }
 
   /**
