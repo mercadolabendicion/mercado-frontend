@@ -151,7 +151,7 @@ export class ListaVentasComponent {
    */
   public filtrarFecha() {
     let fecha = this.formVenta.get('fecha')?.value;
-    this.ventasFiltradas = this.ventas.filter((venta: VentaDTO) =>
+    this.ventasFiltradas = this.ventasTodas.filter((venta: VentaDTO) =>
       venta.fecha.includes(fecha)
     );
   }
