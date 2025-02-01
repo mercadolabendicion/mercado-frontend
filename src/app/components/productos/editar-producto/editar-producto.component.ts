@@ -253,15 +253,10 @@ export class EditarProductoComponent {
     + nombreForma + ' para el producto '+ this.productoSeleccionado?.nombre+'? \t\n'
     + 'Esta acción no se puede deshacer.').then((response) => {
       if(response){
-        //this.formasVentas.removeAt(fila);
-        console.log(response);
-        console.log(codigo);
-        console.log(nombreForma);
-
+        this.formasVentas.removeAt(fila);
         this.productoService.eliminarFormaVenta(codigo, nombreForma);
-
-
         this.alert.simpleSuccessAlert('Forma de venta eliminada');
+        this.abrirModal(codigo);
       }
     });
 
