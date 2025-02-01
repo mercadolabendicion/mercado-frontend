@@ -137,7 +137,7 @@ export class ProductoService {
         return new Promise((resolve, reject) => {
             this.httpProductoService.eliminarPorCodigo(codigo).subscribe({
                 next: () => {
-                    this.alert.simpleSuccessAlert("Cliente eliminado correctamente");
+                    this.alert.simpleSuccessAlert("Producto eliminado correctamente");
                     resolve();
                 },
                 error: (error) => {

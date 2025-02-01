@@ -57,6 +57,8 @@ export class ListaVentasComponent {
    */
   obtenerVentasTodas() {
     this.ventasTodas = JSON.parse(localStorage.getItem('ventas') || '[]');
+    this.ventasFiltradas = this.ventasTodas;
+    this.ventas = this.ventasTodas;
   }
 
     /**
