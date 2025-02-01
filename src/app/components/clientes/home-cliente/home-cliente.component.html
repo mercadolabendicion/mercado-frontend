@@ -39,9 +39,13 @@
               <td>{{ cliente.direccion }}</td>
               <td class="d-none d-md-table-cell">{{ cliente.correo }}</td>
               <td class="d-none d-md-table-cell">{{ cliente.fechaCreacion | date }}</td>
-              <td>
-                <button (click)="eliminarPorId(cliente.id)" class="mx-2">❌</button>
-                <button class="editar" (click)="toggleModoEdicion(cliente)" class="mx-2">✏️</button>
+              <td class="eliminar">
+                <button (click)="eliminarPorId(cliente.id)">
+                  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 48 48">
+                    <path fill="#f44336" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"></path><path fill="#fff" d="M29.656,15.516l2.828,2.828l-14.14,14.14l-2.828-2.828L29.656,15.516z"></path><path fill="#fff" d="M32.484,29.656l-2.828,2.828l-14.14-14.14l2.828-2.828L32.484,29.656z"></path>
+                  </svg>
+                </button>
+                <button class="editar" data-bs-toggle="modal" data-bs-target="#editarClienteModal" (click)="cerrarMenu()" (click)="toggleModoEdicion(cliente)">✏️</button>
               </td>
             </tr>
             }
@@ -49,19 +53,18 @@
         </table>
       </div>
     </div>
+  </div>
 
-    <div class="pup-up" [ngClass]="{ 'oculto': modoOculto }">
-      <div class="pop-up-container">
-        <div class="modal" tabindex="-1">
-          <div class="modal-dialog">
-
-
-        <span class="cerrar" (click)="editarModoOcuto()">❌</span>
-        <app-editar-cliente class="editar zindex-modal" [personaEditar]="personaEditar"
-          (modoOculto)="editarModoOcuto()"></app-editar-cliente>
-
-          </div>
-        </div>
+<!-- Modal de Bootstrap -->
+<div class="modal" id="editarClienteModal" tabindex="-1" aria-labelledby="editarClienteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editarClienteModalLabel">Editar Cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body"> 
+        <app-editar-cliente [personaEditar]="personaEditar" (modoOculto)="editarModoOcuto()"></app-editar-cliente>
       </div>
     </div>
   </div>
@@ -90,3 +93,5 @@
       </ul>
     </nav>
   </div>
+
+</div>
