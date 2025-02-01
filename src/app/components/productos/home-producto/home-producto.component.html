@@ -79,7 +79,9 @@
           </div>
           <h6 class="mt-4">Formas de Venta</h6>
           <div *ngIf="productoSeleccionado?.formaVentas; else sinDatos">
-            <table class="table table-bordered">
+            <div class="table-container2">
+              <div class="table-scroll">
+                <table class="table">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -107,6 +109,8 @@
                 </tr>
               </tbody>
             </table>
+            </div>
+            </div>
           </div>
         </div>
 

@@ -27,6 +27,18 @@
   padding: 20px;
 }
 
+.btnAggFormas{
+  background-color: transparent;
+  border-style: solid;
+  border-color: rgb(195, 205, 214);
+  border-width: 2px;
+  color: black;
+}
+
+.btnAggFormas:hover{
+  background-color: rgb(255, 255, 255);
+  border-color: rgb(67, 164, 255);
+}
 .form-control, .form-select {
   border-radius: 5px;
   border: 1px solid #ccc;
@@ -77,9 +89,27 @@
   overflow-y: auto;
   border-radius: 10px;
   border: 1px solid #ddd;
-  padding: 10px;
   background-color: #f8f9fa;
+  position: relative;
 }
+
+.table-container-title {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.table-header {
+  background: white; /* Asegura que el encabezado no se mezcle con el scroll */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.table-body-scroll {
+  max-height: 300px; /* Ajusta la altura según lo necesites */
+  overflow-y: auto;
+}
+
 
 /* Asegura que la tabla ocupe el 100% del ancho disponible */
 .table-scroll {

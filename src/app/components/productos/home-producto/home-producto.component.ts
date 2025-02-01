@@ -201,7 +201,7 @@ export class HomeProductoComponent {
     this.idProductoSeleccionado = codigo;
     this.modalAbiertoEditar = true;
     const dialogRef = this.dialog.open(EditarProductoComponent, {
-      data: codigo,  
+      data: codigo,
     });
     //envio el producto al componente de editar
 

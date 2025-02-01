@@ -17,7 +17,8 @@ import { ActualizarFormaVentaDTO } from 'src/app/dto/producto/ActualizarFormaVen
 export class EditarProductoComponent {
 
   productoSeleccionado: ProductoCompletoDTO | null = null;
-  @Output() modoOculto = new EventEmitter();
+  mostrarInputs = false;
+  @Output() modoOculto = new EventEmitter();  
   private fb: FormBuilder = inject(FormBuilder);
   private menuComponent: MenuComponent = inject(MenuComponent);
   private productoService: ProductoService = inject(ProductoService);
@@ -259,7 +260,9 @@ export class EditarProductoComponent {
         this.abrirModal(codigo);
       }
     });
-
-    
+  }
+  
+  agregarFila(): void {
+    this.mostrarInputs = true;
   }
 }

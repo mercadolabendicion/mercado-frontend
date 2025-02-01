@@ -249,3 +249,15 @@ button#nuevo:hover {
     border-radius: 0;
   }
 }
+.table-container2 {
+  max-height: 300px; /* Ajusta este valor según el diseño */
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background-color: #f8f9fa;
+}
+/* Asegura que la tabla ocupe el 100% del ancho disponible */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
+}
