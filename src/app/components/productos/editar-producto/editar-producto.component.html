@@ -2,9 +2,9 @@
   <form [formGroup]="productoForm">
     <div class="modal-dialog modal-xl" (click)="$event.stopPropagation()">
       <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">✏️ Editar Detalles del Producto</h5>
-          <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+        <div class="bg-primary text-white text-center row">
+          <h5 class="col-lg-10">✏️ Editar Detalles del Producto</h5>
+          <button type="button" class="btn-close col-lg-2" (click)="cerrarModal()"></button>
         </div>
         <div *ngIf="productoSeleccionado; else cargando">
           <div class="modal-body">
@@ -37,7 +37,7 @@
 
             <h5 class="mt-4">Formas de Venta</h5>
             <div *ngIf="productoSeleccionado?.formaVentas; else sinDatos">
-              <table class="table table-bordered">
+              <table class="table table-formas">
                 <thead>
                   <tr>
                     <th>Nombre</th>
