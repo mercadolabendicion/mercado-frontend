@@ -8,6 +8,7 @@ import { from, of, switchMap } from 'rxjs';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 import { MenuComponent } from '../../menu/menu.component';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-nuevo-producto',
@@ -27,6 +28,7 @@ export class NuevoProductoComponent implements OnInit {
   private productoService: ProductoService = inject(ProductoService);
   private productoAlertService: ProductoAlertService = inject(ProductoAlertService);
   private menuComponent: MenuComponent = inject(MenuComponent);
+  private decimalPipe: DecimalPipe = inject(DecimalPipe);
 
 
   ngOnInit(): void {
@@ -56,7 +58,7 @@ export class NuevoProductoComponent implements OnInit {
     );
   }
 
-    eliminarFila(indice: number) {
+  eliminarFila(indice: number) {
     this.formasVenta.removeAt(indice);
   }
 
@@ -85,15 +87,15 @@ export class NuevoProductoComponent implements OnInit {
    * @returns void
    */
   onSubmit(): void {
-    
+
     if (!this.formulario.valid) {
       Object.values(this.formulario.controls).forEach(control => { control.markAsTouched(); });
       return;
     }
     const { codigo, nombre, precioCompra } = this.formulario.value;
-    const formasVentaEntities = this.formasVenta.controls.map(forma =>FormaVenta.toEntity(forma as FormGroup));
-    let impuesto = this.tipoImpuesto[this.formulario.get('impuesto')!.value] == undefined ? '':this.tipoImpuesto[this.formulario.get('impuesto')!.value];
-    let producto = CrearProductoDTO.crearProductoDTO(codigo, nombre,impuesto, precioCompra, formasVentaEntities);
+    const formasVentaEntities = this.formasVenta.controls.map(forma => FormaVenta.toEntity(forma as FormGroup));
+    let impuesto = this.tipoImpuesto[this.formulario.get('impuesto')!.value] == undefined ? '' : this.tipoImpuesto[this.formulario.get('impuesto')!.value];
+    let producto = CrearProductoDTO.crearProductoDTO(codigo, nombre, impuesto, precioCompra, formasVentaEntities);
     this.productoService.guardarProducto(producto);
     this.menuComponent.listarProductos();
   }
@@ -104,10 +106,13 @@ export class NuevoProductoComponent implements OnInit {
    */
   protected formatearValor(event: Event): void {
     const input = event.target as HTMLInputElement;
-    // Obtener y formatear el valor
-    const valorNumerico = this.obtenerValorNumerico(input.value);
-    // Actualizar el valor formateado
-    input.value = this.actualizarValorFormateado(valorNumerico);
+    let valorNumerico = this.obtenerValorNumerico(input.value);
+
+    if (valorNumerico !== null) {
+      input.value = '$ ' + this.decimalPipe.transform(valorNumerico, '1.0-0') || '';
+    } else {
+      input.value = '';
+    }
   }
 
   /**
@@ -116,23 +121,10 @@ export class NuevoProductoComponent implements OnInit {
    * @returns Valor numérico o null si no se puede convertir
    */
   private obtenerValorNumerico(valor: string): number | null {
-    const valorSinFormato = valor.replace(/[^\d]/g, ''); // Elimina caracteres no numéricos
-    const valorNumerico = parseInt(valorSinFormato, 10);
-    return isNaN(valorNumerico) ? null : valorNumerico;
-  }
-
-  /**
-   * Este método se encarga de actualizar el valor formateado de un input
-   * @param valor Valor numérico a formatear
-   * @returns Valor formateado
-   */
-  private actualizarValorFormateado(valor: number | null): string {
-    if (valor !== null) {
-      this.valorFormateado = valor.toLocaleString('en-US'); // Formato con comas
-      return this.valorFormateado;
-    }
-    this.valorFormateado = '';
-    return '';
+    // Elimina caracteres no numéricos excepto el punto decimal
+  let valorSinFormato = valor.replace(/[^0-9,]/g, '').replace(',', '').replace('$', '');
+  let valorNumerico = parseFloat(valorSinFormato);
+  return isNaN(valorNumerico) ? null : valorNumerico;
   }
 
   /**
@@ -214,7 +206,7 @@ export class NuevoProductoComponent implements OnInit {
   validarNumero(event: Event) {
     const input = event.target as HTMLInputElement;
     const valor = parseFloat(input.value);
-    if (isNaN(valor) || valor < 0) input.value = ''; 
+    if (isNaN(valor) || valor < 0) input.value = '';
 
   }
 

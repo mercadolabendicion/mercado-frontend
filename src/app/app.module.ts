@@ -26,6 +26,7 @@ import { ConfiguracionComponent } from './page/configuracion/configuracion.compo
 import { FacturacionElectronicaComponent } from './page/facturacion-electronica/facturacion-electronica.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { DecimalPipe } from '@angular/common';
 
 
 @NgModule({
@@ -66,7 +67,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
     useValue: {}
     },
     { provide: MAT_DIALOG_DATA, useValue: {} },
-    MenuComponent
+    MenuComponent,
+    DecimalPipe
 ],
   exports:[CardComponent],
   bootstrap: [AppComponent]
