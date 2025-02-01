@@ -5,6 +5,10 @@ import { MenuComponent } from '../../menu/menu.component';
 import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ActualizarProductoDTO } from 'src/app/dto/producto/ActualizarProductoDTO';
+import { AlertService } from 'src/app/utils/alert.service';
+import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
+import { ActualizarFormaVentaCompletoDTO } from 'src/app/dto/producto/ActualizarFormaVentaCompletoDTO';
+import { ActualizarFormaVentaDTO } from 'src/app/dto/producto/ActualizarFormaVentaDTO';
 
 @Component({
   selector: 'app-editar-producto',
@@ -21,13 +25,15 @@ export class EditarProductoComponent {
   @Input() idProducto: string = '';
   @Output() cerrar = new EventEmitter<void>();
   protected producto: ProductoCompletoDTO | null = null;
-  
+  private alert: AlertService = inject(AlertService);
+  private productoActualizado!: ActualizarProductoDTO;
+
   productoForm!: FormGroup;
 
   constructor(
-    public dialogRef: MatDialogRef<EditarProductoComponent>, 
-    @Inject(MAT_DIALOG_DATA) public codigo: string 
-  ) {}
+    public dialogRef: MatDialogRef<EditarProductoComponent>,
+    @Inject(MAT_DIALOG_DATA) public codigo: string
+  ) { }
 
   ngOnInit(): void {
     this.productoForm = this.fb.group({
@@ -38,7 +44,6 @@ export class EditarProductoComponent {
       formasVentas: this.fb.array([])  // FormArray inicializado vacío
     });
 
-    console.log(this.codigo);
     this.abrirModal(this.codigo);
   }
 
@@ -58,7 +63,6 @@ export class EditarProductoComponent {
         })
       };
       this.productoSeleccionado = productoFormateado;
-      console.log(productoFormateado);
 
       // Actualiza los valores del formulario
       this.productoForm.patchValue({
@@ -82,6 +86,7 @@ export class EditarProductoComponent {
 
     formasVentas.forEach((forma) => {
       formasArray.push(this.fb.group({
+        nombreAnterior: [forma.nombre, Validators.required],
         nombre: [forma.nombre, Validators.required],
         precioCompra: [forma.precioCompra, Validators.required],
         precioVenta: [forma.precioVenta, Validators.required],
@@ -99,42 +104,130 @@ export class EditarProductoComponent {
   }
 
   guardarCambios(): void {
-    
-    this.actualizarNombreImpuesto();
 
+    let response1 = this.actualizarNombreImpuesto();
+    let response2 = this.actualizarFormasVenta();
+    if(response1 && response2){
+      this.requestActualizarProducto();
+    }
+    
   }
 
+  actualizarFormasVenta(): boolean {
+    // Obtenemos el valor completo del formulario.
+    const productoData = this.productoForm.value;
+    // Obtenemos el FormArray que contiene las formas de venta.
+    const formasVentasFormArray = this.productoForm.get('formasVentas') as FormArray;
+    // Lista donde almacenaremos los DTO creados.
+    const listaFormasVentaDTO: ActualizarFormaVentaCompletoDTO[] = [];
+  
+    // Iteramos cada uno de los controles del FormArray.
+    formasVentasFormArray.controls.forEach((control, index) => {
+      const forma = control.value;
+      const fila = `\n Revise la fila ${index + 1}`;
+  
+      // Validaciones individuales (ejemplo)
+      if (!forma.nombre || forma.nombre.trim() === '') {
+        this.alert.simpleErrorAlert('El nombre de la forma de venta no puede ser vacío.' + fila);
+        return;
+      }
+      if (forma.precioCompra == null) {
+        this.alert.simpleErrorAlert('El precio de compra no puede ser vacío.' + fila);
+        return;
+      }
+      if (forma.precioVenta == null) {
+        this.alert.simpleErrorAlert('El precio de venta no puede ser vacío.' + fila);
+        return;
+      }
+      if (forma.cantidad == null) {
+        this.alert.simpleErrorAlert('La cantidad no puede ser vacía.' + fila);
+        return;
+      }
+  
+      // Aquí puedes crear el objeto ActualizarFormaVentaDTO que forma parte de tu DTO completo.
+      // Suponiendo que ActualizarFormaVentaDTO tiene propiedades: precioCompra, precioVenta y cantidad.
+      const datosFormaVentaDTO = new ActualizarFormaVentaDTO();
+      datosFormaVentaDTO.precioCompra = forma.precioCompra;
+      datosFormaVentaDTO.precioVenta = forma.precioVenta;
+      datosFormaVentaDTO.cantidad = forma.cantidad;
+      datosFormaVentaDTO.nuevoNombre = forma.nombre;
+  
+      // Crea el DTO completo usando el método estático de fábrica.
+      // En este ejemplo, se utiliza el código del producto para el parámetro "codigo".
+      const formaVentaCompletoDTO = ActualizarFormaVentaCompletoDTO.ActualizarFormaVentaCompleto(
+        productoData.codigo,  // O el valor que corresponda para el código
+        forma.nombreAnterior,         // El nombre de la forma de venta
+        datosFormaVentaDTO,    // Los datos de la forma de venta
 
-  actualizarNombreImpuesto(): void {
+      );
+  
+      // Agrega el DTO a la lista.
+      listaFormasVentaDTO.push(formaVentaCompletoDTO);
+    });
+  
+    // Ejemplo de validación de nombres duplicados (simplificado):
+    for (let i = 0; i < listaFormasVentaDTO.length; i++) {
+      for (let j = i + 1; j < listaFormasVentaDTO.length; j++) {
+        // Compara los nombres en minúsculas y sin espacios.
+        const nombreI = listaFormasVentaDTO[i].nombreFormaVenta.toLowerCase().replace(/\s/g, '');
+        const nombreJ = listaFormasVentaDTO[j].nombreFormaVenta.toLowerCase().replace(/\s/g, '');
+        if (nombreI === nombreJ) {
+          this.alert.simpleErrorAlert('No puede haber dos formas de venta con el mismo nombre.');
+          return false;
+        }
+      }
+    }
+  
+    console.log(listaFormasVentaDTO);
+    return true;
+  }  
 
-    if (this.productoForm.valid) {
+  actualizarNombreImpuesto(): boolean {
+
       const productoData = this.productoForm.value;
-      
-      /*const formasVentaData = productoData.formasVentas.map((forma: any) => ({
-        nombre: forma.nombre,
-        precioCompra: forma.precioCompra,
-        precioVenta: forma.precioVenta,
-        cantidad: forma.cantidad
-      }));*/
+      console.log(this.productoForm);
 
       const productoActualizado: ActualizarProductoDTO = ActualizarProductoDTO.actualizarProducto(
         productoData.codigo,
         productoData.nombre,
         productoData.impuesto
       );
-      console.log("Producto a actualizar",productoActualizado);
+      
+      if(productoActualizado == null || undefined){
+        this.alert.simpleErrorAlert('No se encontró el producto seleccionado');
+        return false;
+      }
 
-      this.productoService.actualizar(productoActualizado).subscribe({
-        next: () => {
-          this.cerrarModal();
-          this.menuComponent.listarProductos();
-        },
-        error: (err) => {
-          console.error('Error al actualizar producto:', err);
-        }
-      });
-    }
+      if(productoActualizado.codigo != productoActualizado.codigo){
+        this.alert.simpleErrorAlert('El código del producto no puede ser modificado');
+        return false;
+      }
 
+      if(productoActualizado.nombre == null || productoActualizado.nombre == ''){
+        this.alert.simpleErrorAlert('El nombre del producto no puede ser vacío');
+        return false;
+      }
 
+      if(productoActualizado.impuesto == null || productoActualizado.impuesto == ''){
+        this.alert.simpleErrorAlert('El impuesto del producto no puede ser vacío');
+        return false;
+      }
+
+      this.productoActualizado = productoActualizado;
+
+      return true;
+
+  }
+
+  requestActualizarProducto(): void {
+    this.productoService.actualizar(this.productoActualizado).subscribe({
+      next: () => {
+        this.cerrarModal();
+        this.menuComponent.listarProductos();
+      },
+      error: (err) => {
+        console.error('Error al actualizar producto:', err);
+      }
+    });
   }
 }

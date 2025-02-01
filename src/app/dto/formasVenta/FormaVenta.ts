@@ -7,7 +7,6 @@ export class FormaVenta{
     precioCompra!: number;
     precioVenta!: number;
     cantidad!: number;
-    activo!: boolean;
 
     static toEntity(forma: FormGroup): FormaVenta {
         let formaVenta = new FormaVenta();
@@ -15,7 +14,6 @@ export class FormaVenta{
         formaVenta.precioCompra = forma.get('precioCompra')?.value;
         formaVenta.precioVenta = forma.get('precioVenta')?.value;
         formaVenta.cantidad = forma.get('cantidad')?.value;
-        formaVenta.activo = true;
         return formaVenta;
     }
 }
