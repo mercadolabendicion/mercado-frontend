@@ -96,7 +96,11 @@ export class NuevoProductoComponent implements OnInit {
     const formasVentaEntities = this.formasVenta.controls.map(forma => FormaVenta.toEntity(forma as FormGroup));
     let impuesto = this.tipoImpuesto[this.formulario.get('impuesto')!.value] == undefined ? '' : this.tipoImpuesto[this.formulario.get('impuesto')!.value];
     let producto = CrearProductoDTO.crearProductoDTO(codigo, nombre, impuesto, precioCompra, formasVentaEntities);
-    this.productoService.guardarProducto(producto);
+    this.productoService.guardarProducto(producto).subscribe((data) => {
+      if (data) {
+        this.formulario.reset();
+      }
+    });
     this.menuComponent.listarProductos();
   }
 
