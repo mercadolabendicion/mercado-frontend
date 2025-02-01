@@ -46,15 +46,6 @@
       </div>
     </div>
 
-    <div class="pup-up" [ngClass]="{ 'oculto': modoOculto }">
-      <div class="pop-up-container">
-        <span class="cerrar" (click)="editarModoOcuto()">❌</span>
-        <app-editar-producto class="editar" [productosEditar]="productosEditar"
-          (modoOculto)="editarModoOcuto()"></app-editar-producto>
-      </div>
-    </div>
-  </div>
-
   <div class="modal" [ngClass]="{ show: modalAbierto }" (click)="cerrarModal()">
     <div class="modal-dialog modal-xl" (click)="$event.stopPropagation()">
       <div class="modal-content bg-transparent border-0">
@@ -136,13 +127,6 @@
       </div>
     </div>
   </div>
-
-
-   @if(idProductoSeleccionado){
-    
-      <app-editar-producto [idProducto]="idProductoSeleccionado" (cerrar)="cerrarModalEditar()"></app-editar-producto>
-   }
-
   </div>
 
 

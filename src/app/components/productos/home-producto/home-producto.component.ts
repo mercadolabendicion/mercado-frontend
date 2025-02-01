@@ -198,20 +198,19 @@ export class HomeProductoComponent {
   }
 
   abrirModalEditar(codigo: string): void {
-    //this.menuComponent.cerrarMenu();
     this.idProductoSeleccionado = codigo;
     this.modalAbiertoEditar = true;
     const dialogRef = this.dialog.open(EditarProductoComponent, {
-      width: '1500px',  // Opcional: ajusta el ancho según necesites
-      data: { codigo }  // Pasa el cliente a editar
+      width: '1500px',  
+      data: codigo,  
+      height: '800px'
     });
     //envio el producto al componente de editar
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('El modal se cerró', result);
-      // Aquí podrías actualizar la lista de clientes, etc.
     });
-    }
+  }
 
   get formasVentasFormArray(): FormArray {
     return this.actualizarProductoForm.get('formasVentas') as FormArray;

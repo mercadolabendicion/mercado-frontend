@@ -1,75 +1,78 @@
-<div class="modal" [ngClass]="{ show: modalAbierto }" (click)="cerrarModal()" >
+<div (click)="cerrarModal()">
   <form [formGroup]="productoForm">
-  <div class="modal-dialog modal-xl" (click)="$event.stopPropagation()">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">✏️ Editar Detalles del Producto</h5>
-        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
-      </div>
-      @if(productoSeleccionado){
-      <div class="modal-body">
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="codigo" class="form-label"><strong>Código</strong></label>
-            <input type="text" id="codigo" class="form-control" formControlName="codigo" readonly
-              [value]="productoSeleccionado.codigo" />
-          </div>
-          <div class="col-md-6">
-            <label for="nombre" class="form-label"><strong>Nombre</strong></label>
-            <input type="text" id="nombre" class="form-control" formControlName="nombre" />
-          </div>
+    <div class="modal-dialog modal-xl" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">✏️ Editar Detalles del Producto</h5>
+          <button type="button" class="btn-close" (click)="cerrarModal()"></button>
         </div>
+        <div *ngIf="productoSeleccionado; else cargando">
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="codigo" class="form-label"><strong>Código</strong></label>
+                <input type="text" id="codigo" class="form-control" formControlName="codigo" readonly
+                  [value]="productoSeleccionado.codigo" />
+              </div>
+              <div class="col-md-6">
+                <label for="nombre" class="form-label"><strong>Nombre</strong></label>
+                <input type="text" id="nombre" class="form-control" formControlName="nombre" />
+              </div>
+            </div>
 
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="impuesto" class="form-label"><strong>Tipo de impuesto</strong></label>
-            <select id="impuesto" class="form-control" formControlName="impuesto"
-              [value]="productoSeleccionado.impuesto">
-              <option value="IVA">IVA</option>
-              <option value="Excento de IVA">Excento de IVA</option>
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label for="fechaCreacion" class="form-label"><strong>Fecha de Creación</strong></label>
-            <input type="text" id="fechaCreacion" class="form-control" formControlName="fechaCreacion" readonly />
-          </div>
-        </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="impuesto" class="form-label"><strong>Tipo de impuesto</strong></label>
+                <select id="impuesto" class="form-control" formControlName="impuesto"
+                  [value]="productoSeleccionado.impuesto">
+                  <option value="IVA">IVA</option>
+                  <option value="Excento de IVA">Excento de IVA</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="fechaCreacion" class="form-label"><strong>Fecha de Creación</strong></label>
+                <input type="text" id="fechaCreacion" class="form-control" formControlName="fechaCreacion" readonly />
+              </div>
+            </div>
 
-        <h6 class="mt-4">Formas de Venta</h6>
-        <div *ngIf="productoSeleccionado?.formaVentas; else sinDatos">
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Precio de compra</th>
-                <th>Precio de venta</th>
-                <th>Cantidad</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let forma; let i = index">
-                <td>
-                  <input type="text" class="form-control" formControlName="nuevoNombre" />
-                </td>
-                <td>
-                  <input type="number" class="form-control" formControlName="precioCompra" />
-                </td>
-                <td>
-                  <input type="number" class="form-control" formControlName="precioVenta" />
-                </td>
-                <td>
-                  <input type="number" class="form-control" formControlName="cantidad" />
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            <h5 class="mt-4">Formas de Venta</h5>
+            <div *ngIf="productoSeleccionado?.formaVentas; else sinDatos">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Precio de compra</th>
+                    <th>Precio de venta</th>
+                    <th>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let forma; let i = index">
+                    <td>
+                      <input type="text" class="form-control" formControlName="nuevoNombre" />
+                    </td>
+                    <td>
+                      <input type="number" class="form-control" formControlName="precioCompra" />
+                    </td>
+                    <td>
+                      <input type="number" class="form-control" formControlName="precioVenta" />
+                    </td>
+                    <td>
+                      <input type="number" class="form-control" formControlName="cantidad" />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
-      }
+      <ng-template #sinDatos>
+        <p class="text-muted">No hay formas de venta disponibles.</p>
+      </ng-template>
     </div>
-    <ng-template #sinDatos>
-      <p class="text-muted">No hay formas de venta disponibles.</p>
-    </ng-template>
-  </div>
-</form>
+  </form>
 </div>
+<ng-template #cargando>
+  <p class="text-muted">Cargando información del producto...</p>
+</ng-template>

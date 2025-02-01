@@ -18,19 +18,21 @@ export class EditarProductoComponent {
   @Input() productoSeleccionado: any; // Recibe el producto a editar
   @Output() modoOculto = new EventEmitter();
   private fb: FormBuilder = inject(FormBuilder);
-  //private menuComponent: MenuComponent = inject(MenuComponent);
+  private menuComponent: MenuComponent = inject(MenuComponent);
   private productoService: ProductoService = inject(ProductoService);
   modalAbierto = false;
   @Input() idProducto: string = '';
   @Output() cerrar = new EventEmitter<void>();
   protected producto : ProductoCompletoDTO | null = null;
-  @Inject(MAT_DIALOG_DATA) public codigo: any;
+  
 
   productoForm!: FormGroup;
 
   constructor(
-    public dialogRef: MatDialogRef<EditarProductoComponent> // Puedes definir una interfaz para 'data'
-  ) {}
+    public dialogRef: MatDialogRef<EditarProductoComponent>, 
+    @Inject(MAT_DIALOG_DATA) public codigo: string 
+  ) {
+  }
 
 
   ngOnInit(): void {
@@ -41,29 +43,18 @@ export class EditarProductoComponent {
       fechaCreacion: ['', Validators.required],
       formasVentas: this.fb.array([]) // Añade un FormArray para formasVentas
     });
+    this.productoSeleccionado = {
+      codigo: 'ABC123',
+      nombre: 'Producto de prueba',
+      impuesto: 'IVA',
+      fechaCreacion: '1 de enero de 2025',
+      formaVentas: []  // o lo que corresponda
+    };
+    console.log(this.codigo);
+    this.abrirModal(this.codigo);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['idProducto'] && this.idProducto) {
-      this.productoService.obtenerProductoCompleto(this.idProducto).subscribe((producto) => {
-        this.producto = producto;
-        this.modalAbierto = true; // Abre el modal al cargar el producto
-        this.inicializarFormulario(); // Inicializa el formulario con los datos
-      });
-    }
-  }
 
-  private inicializarFormulario(): void {
-    if (this.producto) {
-      this.productoForm.patchValue({
-        codigo: this.producto.codigo,
-        nombre: this.producto.nombre,
-        impuesto: this.producto.impuesto,
-        fechaCreacion: this.producto.fechaCreacion
-      });
-      // Inicializar formas de venta si es necesario
-    }
-  }
 
   /**
    * Este método se encarga de guardar el producto en la base de datos
@@ -86,10 +77,10 @@ export class EditarProductoComponent {
 
   abrirModal(codigo: string): void {
     this.modalAbierto = true;
-    //this.menuComponent.cerrarMenu();
-    /*this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
-      this.productoSeleccionado = producto;
-      this.productoSeleccionado = {
+    this.menuComponent.cerrarMenu();
+    this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
+      // Formatear la fecha si es necesario
+      const productoFormateado = {
         ...producto,
         fechaCreacion: new Date(producto.fechaCreacion).toLocaleDateString('es-ES', {
           year: 'numeric',
@@ -97,11 +88,23 @@ export class EditarProductoComponent {
           day: 'numeric'
         })
       };
-    });*/
+      this.productoSeleccionado = productoFormateado;
+  
+      // Actualiza los controles del formulario
+      this.productoForm.patchValue({
+        codigo: productoFormateado.codigo,
+        nombre: productoFormateado.nombre,
+        impuesto: productoFormateado.impuesto,
+        fechaCreacion: productoFormateado.fechaCreacion,
+        // Si formasVentas es un FormArray, actualízalo según corresponda
+      });
+    });
   }
+  
 
 
   cerrarModal(): void {
+    this.dialogRef.close();
   }
 
 }

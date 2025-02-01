@@ -25,7 +25,7 @@ import { CajaComponent } from './page/caja/caja.component';
 import { ConfiguracionComponent } from './page/configuracion/configuracion.component';
 import { FacturacionElectronicaComponent } from './page/facturacion-electronica/facturacion-electronica.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
 
 @NgModule({
@@ -64,7 +64,9 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
     {
     provide: MatDialogRef,
     useValue: {}
-    }
+    },
+    { provide: MAT_DIALOG_DATA, useValue: {} },
+    MenuComponent
 ],
   exports:[CardComponent],
   bootstrap: [AppComponent]
