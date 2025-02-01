@@ -8,12 +8,11 @@ import { CrearProductoDTO } from '../../dto/producto/CrearProductoDTO';
 import { Page } from 'src/app/dto/pageable/Page';
 import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
+import { ActualizarFormaVentaCompletoDTO } from 'src/app/dto/producto/ActualizarFormaVentaCompletoDTO';
 @Injectable({
   providedIn: 'root'
 })
 export class HttpProductoService {
-  
-
 
   private URL_API: string = environment.ApiUrl;
   private http: HttpClient = inject(HttpClient);
@@ -72,5 +71,9 @@ export class HttpProductoService {
 
   obtenerFormasVentaByCodigo(codigo: string): Observable<FormaVenta[]> {
     return this.http.get<FormaVenta[]>(`${this.URL_API}/productos/obtener-formas-venta/${codigo}`);
+  }
+
+  actualizarFormaVenta(formaVenta: ActualizarFormaVentaCompletoDTO): Observable<void> {
+    return this.http.put<void>(`${this.URL_API}/productos/actualizar-forma-venta`, formaVenta);
   }
 }

@@ -6,7 +6,6 @@ import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ActualizarProductoDTO } from 'src/app/dto/producto/ActualizarProductoDTO';
 import { AlertService } from 'src/app/utils/alert.service';
-import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 import { ActualizarFormaVentaCompletoDTO } from 'src/app/dto/producto/ActualizarFormaVentaCompletoDTO';
 import { ActualizarFormaVentaDTO } from 'src/app/dto/producto/ActualizarFormaVentaDTO';
 
@@ -27,6 +26,7 @@ export class EditarProductoComponent {
   protected producto: ProductoCompletoDTO | null = null;
   private alert: AlertService = inject(AlertService);
   private productoActualizado!: ActualizarProductoDTO;
+  private formasVentasActualizadas: ActualizarFormaVentaCompletoDTO[] = [];
 
   productoForm!: FormGroup;
 
@@ -109,6 +109,7 @@ export class EditarProductoComponent {
     let response2 = this.actualizarFormasVenta();
     if(response1 && response2){
       this.requestActualizarProducto();
+      this.requestActualizarFormasVenta();
     }
     
   }
@@ -169,8 +170,8 @@ export class EditarProductoComponent {
     for (let i = 0; i < listaFormasVentaDTO.length; i++) {
       for (let j = i + 1; j < listaFormasVentaDTO.length; j++) {
         // Compara los nombres en minúsculas y sin espacios.
-        const nombreI = listaFormasVentaDTO[i].nombreFormaVenta.toLowerCase().replace(/\s/g, '');
-        const nombreJ = listaFormasVentaDTO[j].nombreFormaVenta.toLowerCase().replace(/\s/g, '');
+        const nombreI = listaFormasVentaDTO[i].formaVentaDTO.nuevoNombre.toLowerCase().replace(/\s/g, '');
+        const nombreJ = listaFormasVentaDTO[j].formaVentaDTO.nuevoNombre.toLowerCase().replace(/\s/g, '');
         if (nombreI === nombreJ) {
           this.alert.simpleErrorAlert('No puede haber dos formas de venta con el mismo nombre.');
           return false;
@@ -178,14 +179,13 @@ export class EditarProductoComponent {
       }
     }
   
-    console.log(listaFormasVentaDTO);
+    this.formasVentasActualizadas = listaFormasVentaDTO;
     return true;
   }  
 
   actualizarNombreImpuesto(): boolean {
 
       const productoData = this.productoForm.value;
-      console.log(this.productoForm);
 
       const productoActualizado: ActualizarProductoDTO = ActualizarProductoDTO.actualizarProducto(
         productoData.codigo,
@@ -229,5 +229,18 @@ export class EditarProductoComponent {
         console.error('Error al actualizar producto:', err);
       }
     });
+  }
+
+  requestActualizarFormasVenta(): void {
+    this.formasVentasActualizadas.forEach((formaVenta) => {
+      this.productoService.actualizarFormaVenta(formaVenta).subscribe({
+        next: () => {},
+        error: (err) => {
+          this.alert.simpleErrorAlert(err);
+        }
+      });
+    });  
+    this.menuComponent.listarProductos();
+    this.cerrarModal();
   }
 }
