@@ -4,6 +4,7 @@ import { ProductoService } from 'src/app/services/domainServices/producto.servic
 import { MenuComponent } from '../../menu/menu.component';
 import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ActualizarProductoDTO } from 'src/app/dto/producto/ActualizarProductoDTO';
 
 @Component({
   selector: 'app-editar-producto',
@@ -95,5 +96,45 @@ export class EditarProductoComponent {
 
   cerrarModal(): void {
     this.dialogRef.close();
+  }
+
+  guardarCambios(): void {
+    
+    this.actualizarNombreImpuesto();
+
+  }
+
+
+  actualizarNombreImpuesto(): void {
+
+    if (this.productoForm.valid) {
+      const productoData = this.productoForm.value;
+      
+      /*const formasVentaData = productoData.formasVentas.map((forma: any) => ({
+        nombre: forma.nombre,
+        precioCompra: forma.precioCompra,
+        precioVenta: forma.precioVenta,
+        cantidad: forma.cantidad
+      }));*/
+
+      const productoActualizado: ActualizarProductoDTO = ActualizarProductoDTO.actualizarProducto(
+        productoData.codigo,
+        productoData.nombre,
+        productoData.impuesto
+      );
+      console.log("Producto a actualizar",productoActualizado);
+
+      this.productoService.actualizar(productoActualizado).subscribe({
+        next: () => {
+          this.cerrarModal();
+          this.menuComponent.listarProductos();
+        },
+        error: (err) => {
+          console.error('Error al actualizar producto:', err);
+        }
+      });
+    }
+
+
   }
 }

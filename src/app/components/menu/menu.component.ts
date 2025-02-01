@@ -57,7 +57,7 @@ export class MenuComponent {
   }
 
   public cerrarMenu() {
-
+    
     if (!this.estadoMenu) {
       this.toggleCollapse();
     }

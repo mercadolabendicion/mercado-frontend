@@ -2,15 +2,13 @@ export class ActualizarProductoDTO {
     
     codigo!: string;
     nombre!: string;
-    tipoImpuesto!: string;
-    activo!: boolean;
+    impuesto!: string;
 
-    static actualizarProducto(codigo: string, nombre: string, tipoImpuesto: string, activo: boolean): ActualizarProductoDTO {
+    static actualizarProducto(codigo: string, nombre: string, tipoImpuesto: string): ActualizarProductoDTO {
         let producto = new ActualizarProductoDTO();
         producto.codigo = codigo;
         producto.nombre = nombre;
-        producto.tipoImpuesto = tipoImpuesto;
-        producto.activo = activo;
+        producto.impuesto = tipoImpuesto;
         return producto;
     }
 }

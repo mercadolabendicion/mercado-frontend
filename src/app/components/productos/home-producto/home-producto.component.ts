@@ -206,7 +206,7 @@ export class HomeProductoComponent {
     //envio el producto al componente de editar
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('El modal se cerró', result);
+      this.obtenerProductos(0);
     });
   }
 
