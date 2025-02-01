@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { HttpProductoService } from "../http-services/httpProductos.service";
-import { Observable, of } from "rxjs";
+import { catchError, map, Observable, of, tap } from "rxjs";
 import { AlertService } from "src/app/utils/alert.service";
 import { ProductoDTO } from "src/app/dto/producto/ProductoDTO";
 import { ActualizarProductoDTO } from "src/app/dto/producto/ActualizarProductoDTO";
@@ -169,13 +169,15 @@ export class ProductoService {
      * Este método se encarga de guardar un producto en la base de datos
      * @param producto es el producto a guardar
      */
-    public guardarProducto(producto: CrearProductoDTO): void {
-        this.httpProductoService.enviarDatos(producto).subscribe({
-            next: () => { this.alert.simpleSuccessAlert('Producto guardado correctamente'); },
-            error: (error) => {
+    public guardarProducto(producto: CrearProductoDTO): Observable<boolean> {
+        return this.httpProductoService.enviarDatos(producto).pipe(
+            tap(() => this.alert.simpleSuccessAlert('Producto guardado correctamente')),
+            map(() => true),
+            catchError((error) => {
                 this.alert.simpleErrorAlert(error.error.mensaje);
-            }
-        });
+                return of(false); // Retorna un Observable con `false`
+            })
+        );
     }
 
     /**

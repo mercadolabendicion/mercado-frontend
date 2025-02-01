@@ -51,10 +51,10 @@
                   <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
                 </div>
                 <div class="col-md-3 col-sm-12">
-                  <input type="text" (input)="validarNumero($event)" class="form-control" formControlName="precioCompra" placeholder="$ Compra">
+                  <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioCompra" placeholder="$ Compra">
                 </div>
                 <div class="col-md-3 col-sm-12">
-                  <input type="text" (input)="validarNumero($event)" class="form-control" formControlName="precioVenta" placeholder="$ Venta">
+                  <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioVenta" placeholder="$ Venta">
                 </div>
                 <div class="col-md-3 col-sm-12">
                   <input type="number" min="0" class="form-control" formControlName="cantidad" placeholder="Cantidad">
