@@ -47,6 +47,7 @@
                   <th>Precio de compra</th>
                   <th>Precio de venta</th>
                   <th>Cantidad</th>
+                  <th>Eliminar</th>
                 </tr>
               </thead>
               <tbody formArrayName="formasVentas">
@@ -55,6 +56,7 @@
                   <td><input type="number" class="form-control" formControlName="precioCompra"/></td>
                   <td><input type="number" class="form-control" formControlName="precioVenta"/></td>
                   <td><input type="number" class="form-control" formControlName="cantidad"/></td>
+                  <td><button type="button" class="btn btn-danger" (click)="eliminarFormaVenta(i)">Ｘ</button></td>
                 </tr>
               </tbody>
             </table>

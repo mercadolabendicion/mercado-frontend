@@ -13,6 +13,7 @@ import { ActualizarFormaVentaCompletoDTO } from 'src/app/dto/producto/Actualizar
   providedIn: 'root'
 })
 export class HttpProductoService {
+  
 
   private URL_API: string = environment.ApiUrl;
   private http: HttpClient = inject(HttpClient);
@@ -75,5 +76,9 @@ export class HttpProductoService {
 
   actualizarFormaVenta(formaVenta: ActualizarFormaVentaCompletoDTO): Observable<void> {
     return this.http.put<void>(`${this.URL_API}/productos/actualizar-forma-venta`, formaVenta);
+  }
+  
+  eliminarFormaVenta(codigo: string, nombreForma: string) {
+    return this.http.delete(`${this.URL_API}/productos/eliminar-forma-venta/${codigo}/${nombreForma}`);
   }
 }

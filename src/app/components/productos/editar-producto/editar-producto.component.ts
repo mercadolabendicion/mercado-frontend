@@ -15,6 +15,7 @@ import { ActualizarFormaVentaDTO } from 'src/app/dto/producto/ActualizarFormaVen
   styleUrls: ['./editar-producto.component.css']
 })
 export class EditarProductoComponent {
+
   productoSeleccionado: ProductoCompletoDTO | null = null;
   @Output() modoOculto = new EventEmitter();
   private fb: FormBuilder = inject(FormBuilder);
@@ -242,5 +243,28 @@ export class EditarProductoComponent {
     });  
     this.menuComponent.listarProductos();
     this.cerrarModal();
+  }
+
+  eliminarFormaVenta(fila: number) {
+    let nombreForma = this.formasVentas.controls[fila].get('nombre')!.value;
+    let codigo = this.productoSeleccionado!.codigo;
+
+   this.alert.confirmAlert('Eliminar forma de venta','¿Está seguro que desea eliminar la forma de venta ' 
+    + nombreForma + ' para el producto '+ this.productoSeleccionado?.nombre+'? \t\n'
+    + 'Esta acción no se puede deshacer.').then((response) => {
+      if(response){
+        //this.formasVentas.removeAt(fila);
+        console.log(response);
+        console.log(codigo);
+        console.log(nombreForma);
+
+        this.productoService.eliminarFormaVenta(codigo, nombreForma);
+
+
+        this.alert.simpleSuccessAlert('Forma de venta eliminada');
+      }
+    });
+
+    
   }
 }

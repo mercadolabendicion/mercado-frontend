@@ -14,8 +14,6 @@ import { ActualizarFormaVentaCompletoDTO } from "src/app/dto/producto/Actualizar
     providedIn: 'root'
 })
 export class ProductoService {
-    
-    
    
     private httpProductoService: HttpProductoService = inject(HttpProductoService);
     private alert: AlertService = inject(AlertService);
@@ -224,6 +222,17 @@ export class ProductoService {
 
     actualizarFormaVenta(formaVenta: ActualizarFormaVentaCompletoDTO):Observable<void> {
         return this.httpProductoService.actualizarFormaVenta(formaVenta);
+    }
+
+    eliminarFormaVenta(codigo: string, nombreForma: string) {
+        this.httpProductoService.eliminarFormaVenta(codigo, nombreForma).subscribe({
+            next: () => {
+                this.alert.simpleSuccessAlert('Forma de venta eliminada correctamente');
+            },
+            error: (error) => {
+                this.alert.simpleErrorAlert(error.error.mensaje);
+            }
+        });
     }
 
 }
