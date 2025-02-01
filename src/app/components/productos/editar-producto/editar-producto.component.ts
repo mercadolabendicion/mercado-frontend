@@ -226,7 +226,7 @@ export class EditarProductoComponent {
         this.menuComponent.listarProductos();
       },
       error: (err) => {
-        console.error('Error al actualizar producto:', err);
+        this.alert.simpleErrorAlert(err);
       }
     });
   }
