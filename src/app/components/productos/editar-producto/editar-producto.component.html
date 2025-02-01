@@ -46,23 +46,26 @@
                     <th>Cantidad</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr *ngFor="let forma; let i = index">
+                <tbody formArrayName="formasVentas" class="table-formas">
+                  <tr *ngFor="let forma of formasVentas.controls; let i = index" [formGroupName]="i">
                     <td>
-                      <input type="text" class="form-control" formControlName="nuevoNombre" />
+                      <input type="text" class="form-control" formControlName="nombre"/>
                     </td>
                     <td>
-                      <input type="number" class="form-control" formControlName="precioCompra" />
+                      <input type="number" class="form-control" formControlName="precioCompra"/>
                     </td>
                     <td>
-                      <input type="number" class="form-control" formControlName="precioVenta" />
+                      <input type="number" class="form-control" formControlName="precioVenta"/>
                     </td>
                     <td>
-                      <input type="number" class="form-control" formControlName="cantidad" />
+                      <input type="number" class="form-control" formControlName="cantidad"/>
                     </td>
                   </tr>
                 </tbody>
               </table>
+            </div>     
+            <div class="justify-content-center align-items-center d-flex">
+              <button type="submit" class="btn btn-primary ">Guardar cambios</button>
             </div>
           </div>
         </div>

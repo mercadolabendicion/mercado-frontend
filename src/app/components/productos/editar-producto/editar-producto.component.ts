@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, inject, Input, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { MenuComponent } from '../../menu/menu.component';
 import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
@@ -11,11 +11,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./editar-producto.component.css']
 })
 export class EditarProductoComponent {
-
-
-
-  @Input() productosEditar: any = {};
-  @Input() productoSeleccionado: any; // Recibe el producto a editar
+  productoSeleccionado: ProductoCompletoDTO | null = null;
   @Output() modoOculto = new EventEmitter();
   private fb: FormBuilder = inject(FormBuilder);
   private menuComponent: MenuComponent = inject(MenuComponent);
@@ -23,17 +19,14 @@ export class EditarProductoComponent {
   modalAbierto = false;
   @Input() idProducto: string = '';
   @Output() cerrar = new EventEmitter<void>();
-  protected producto : ProductoCompletoDTO | null = null;
+  protected producto: ProductoCompletoDTO | null = null;
   
-
   productoForm!: FormGroup;
 
   constructor(
     public dialogRef: MatDialogRef<EditarProductoComponent>, 
     @Inject(MAT_DIALOG_DATA) public codigo: string 
-  ) {
-  }
-
+  ) {}
 
   ngOnInit(): void {
     this.productoForm = this.fb.group({
@@ -41,45 +34,20 @@ export class EditarProductoComponent {
       nombre: ['', Validators.required],
       impuesto: ['', Validators.required],
       fechaCreacion: ['', Validators.required],
-      formasVentas: this.fb.array([]) // Añade un FormArray para formasVentas
+      formasVentas: this.fb.array([])  // FormArray inicializado vacío
     });
-    this.productoSeleccionado = {
-      codigo: 'ABC123',
-      nombre: 'Producto de prueba',
-      impuesto: 'IVA',
-      fechaCreacion: '1 de enero de 2025',
-      formaVentas: []  // o lo que corresponda
-    };
+
     console.log(this.codigo);
     this.abrirModal(this.codigo);
   }
 
-
-
   /**
-   * Este método se encarga de guardar el producto en la base de datos
-   * @returns 
+   * Cargar datos en el formulario, incluyendo las formas de venta.
    */
-
-  protected guardar(): void {
-    /**
-    const { codigo, nombre, precio, cantidad} = this.personaForm.value;
-    let productoActualizar = ActualizarProductoDTO.crearProducto(codigo, nombre, precio, cantidad);
-    if (!this.personaForm.valid) {
-      Object.values(this.personaForm.controls).forEach(control => {
-        control.markAsTouched();
-      });
-      return;
-    } 
-    this.productoService.actualizar(productoActualizar);
-     */
-  }
-
   abrirModal(codigo: string): void {
     this.modalAbierto = true;
     this.menuComponent.cerrarMenu();
     this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
-      // Formatear la fecha si es necesario
       const productoFormateado = {
         ...producto,
         fechaCreacion: new Date(producto.fechaCreacion).toLocaleDateString('es-ES', {
@@ -89,22 +57,43 @@ export class EditarProductoComponent {
         })
       };
       this.productoSeleccionado = productoFormateado;
-  
-      // Actualiza los controles del formulario
+      console.log(productoFormateado);
+
+      // Actualiza los valores del formulario
       this.productoForm.patchValue({
         codigo: productoFormateado.codigo,
         nombre: productoFormateado.nombre,
         impuesto: productoFormateado.impuesto,
         fechaCreacion: productoFormateado.fechaCreacion,
-        // Si formasVentas es un FormArray, actualízalo según corresponda
       });
+
+      // Cargar formas de venta en el FormArray
+      this.setFormasVentas(productoFormateado.formaVentas);
     });
   }
-  
 
+  /**
+   * Inicializa el FormArray de formasVentas con los datos obtenidos.
+   */
+  private setFormasVentas(formasVentas: any[]): void {
+    const formasArray = this.productoForm.get('formasVentas') as FormArray;
+    formasArray.clear(); // Limpia antes de agregar nuevos valores
+
+    formasVentas.forEach((forma) => {
+      formasArray.push(this.fb.group({
+        nombre: [forma.nombre, Validators.required],
+        precioCompra: [forma.precioCompra, Validators.required],
+        precioVenta: [forma.precioVenta, Validators.required],
+        cantidad: [forma.cantidad, Validators.required]
+      }));
+    });
+  }
+
+  get formasVentas(): FormArray {
+    return this.productoForm.get('formasVentas') as FormArray;
+  }
 
   cerrarModal(): void {
     this.dialogRef.close();
   }
-
 }

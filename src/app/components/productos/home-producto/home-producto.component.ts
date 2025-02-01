@@ -201,7 +201,7 @@ export class HomeProductoComponent {
     this.idProductoSeleccionado = codigo;
     this.modalAbiertoEditar = true;
     const dialogRef = this.dialog.open(EditarProductoComponent, {
-      width: '1500px',  
+      width: '700px',  
       data: codigo,  
       height: '800px'
     });

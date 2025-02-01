@@ -249,3 +249,8 @@ button#nuevo:hover {
     border-radius: 0;
   }
 }
+
+.table-formas{
+  max-height: 300px; 
+  overflow-y: auto;
+}
