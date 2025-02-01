@@ -256,7 +256,6 @@ export class EditarProductoComponent {
         this.formasVentas.removeAt(fila);
         this.productoService.eliminarFormaVenta(codigo, nombreForma);
         this.alert.simpleSuccessAlert('Forma de venta eliminada');
-        this.abrirModal(codigo);
       }
     });
 
