@@ -8,6 +8,7 @@ import { ActualizarProductoDTO } from 'src/app/dto/producto/ActualizarProductoDT
 import { AlertService } from 'src/app/utils/alert.service';
 import { ActualizarFormaVentaCompletoDTO } from 'src/app/dto/producto/ActualizarFormaVentaCompletoDTO';
 import { ActualizarFormaVentaDTO } from 'src/app/dto/producto/ActualizarFormaVentaDTO';
+import { GuardarFormaVenta } from 'src/app/dto/formasVenta/GuardarFormaVenta';
 
 @Component({
   selector: 'app-editar-producto',
@@ -43,6 +44,10 @@ export class EditarProductoComponent {
       nombre: ['', Validators.required],
       impuesto: ['', Validators.required],
       fechaCreacion: ['', Validators.required],
+      nombreNuevaForma: [''],
+      precioCompraNuevaForma: [''],
+      precioVentaNuevaForma: [''],
+      cantidadNuevaForma: [''],
       formasVentas: this.fb.array([])  // FormArray inicializado vacío
     });
 
@@ -107,13 +112,46 @@ export class EditarProductoComponent {
 
   guardarCambios(): void {
 
+    console.log(this.productoForm.value);
     let response1 = this.actualizarNombreImpuesto();
     let response2 = this.actualizarFormasVenta();
+    let response3 = this.cargarNuevaFormaVenta();
     if(response1 && response2){
       this.requestActualizarProducto();
       this.requestActualizarFormasVenta();
     }
     
+  }
+
+  cargarNuevaFormaVenta(): boolean {
+
+    const productoData = this.productoForm.value;
+    const formaVenta = {
+      nombre: productoData.nombreNuevaForma,
+      precioCompra: productoData.precioCompraNuevaForma,
+      precioVenta: productoData.precioVentaNuevaForma,
+      cantidad: productoData.cantidadNuevaForma
+    };
+
+    if (!formaVenta.nombre || formaVenta.nombre.trim() === '') {
+      return false;
+    }
+    if (formaVenta.precioCompra == null) {
+      return false;
+    }
+    if (formaVenta.precioVenta == null) {
+      return false;
+    }
+    if (formaVenta.cantidad == null) {
+      return false;
+    }
+
+    let guardarFormaVenta = GuardarFormaVenta.crearFormaVenta(productoData.codigo, formaVenta.nombre, formaVenta.precioCompra, formaVenta.precioVenta, formaVenta.cantidad);
+    this.productoService.guardarFormaVenta(guardarFormaVenta);
+
+    return true;
+
+
   }
 
   actualizarFormasVenta(): boolean {

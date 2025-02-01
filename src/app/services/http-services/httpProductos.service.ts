@@ -9,10 +9,12 @@ import { Page } from 'src/app/dto/pageable/Page';
 import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 import { ActualizarFormaVentaCompletoDTO } from 'src/app/dto/producto/ActualizarFormaVentaCompletoDTO';
+import { GuardarFormaVenta } from 'src/app/dto/formasVenta/GuardarFormaVenta';
 @Injectable({
   providedIn: 'root'
 })
 export class HttpProductoService {
+  
   
 
   private URL_API: string = environment.ApiUrl;
@@ -80,5 +82,10 @@ export class HttpProductoService {
   
   eliminarFormaVenta(codigo: string, nombreForma: string) {
     return this.http.delete(`${this.URL_API}/productos/eliminar-forma-venta/${codigo}/${nombreForma}`);
+  }
+
+
+  guardarFormaVenta(guardarFormaVenta: GuardarFormaVenta) {
+    return this.http.post(`${this.URL_API}/productos/guardar-forma-venta`, guardarFormaVenta);
   }
 }

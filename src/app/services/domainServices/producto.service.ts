@@ -9,11 +9,13 @@ import { Page } from "src/app/dto/pageable/Page";
 import { ProductoCompletoDTO } from "src/app/dto/producto/ProductoCompletoDTO";
 import { FormaVenta } from "src/app/dto/formasVenta/FormaVenta";
 import { ActualizarFormaVentaCompletoDTO } from "src/app/dto/producto/ActualizarFormaVentaCompletoDTO";
+import { GuardarFormaVenta } from "src/app/dto/formasVenta/GuardarFormaVenta";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ProductoService {
+    
    
     private httpProductoService: HttpProductoService = inject(HttpProductoService);
     private alert: AlertService = inject(AlertService);
@@ -230,6 +232,17 @@ export class ProductoService {
         this.httpProductoService.eliminarFormaVenta(codigo, nombreForma).subscribe({
             next: () => {
                 this.alert.simpleSuccessAlert('Forma de venta eliminada correctamente');
+            },
+            error: (error) => {
+                this.alert.simpleErrorAlert(error.error.mensaje);
+            }
+        });
+    }
+
+    guardarFormaVenta(guardarFormaVenta: GuardarFormaVenta) {
+        this.httpProductoService.guardarFormaVenta(guardarFormaVenta).subscribe({
+            next: () => {
+                this.alert.simpleSuccessAlert('Forma de venta guardada correctamente');
             },
             error: (error) => {
                 this.alert.simpleErrorAlert(error.error.mensaje);
