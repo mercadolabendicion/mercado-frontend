@@ -38,14 +38,16 @@
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
+      text-align: center;
     }
     table th, table td {
       border: 0px solid #ccc;
       padding: 4px;
-      text-align: left;
+      text-align: center;
     }
     table th {
       background-color: #f4f4f4;
+      text-align: center;
     }
     /* Ancho de las columnas */
     table th:nth-child(1), table td:nth-child(1) {
@@ -126,9 +128,9 @@
 
     <div class="divider"></div>
 
-    <table>
+    <table class="table text-center">
       <thead>
-        <tr><th>Producto</th><th>Cant.</th><th>Vr. Total</th></tr>
+        <tr><th>Producto</th><th>Cant.</th><th>Forma Venta</th><th>Vr. Total</th></tr>
       </thead>
       <tbody>
         {{productos}}

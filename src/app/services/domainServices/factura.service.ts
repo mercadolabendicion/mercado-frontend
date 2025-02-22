@@ -78,7 +78,8 @@ export class FacturaService {
             <tr>
                 <td>${producto.producto}</td>
                 <td>${producto.cantidad}</td>
-                <td>${formatoDinero(producto.precio)}</td>
+                <td>${producto.formaVenta}</td>
+                <td>${formatoDinero(producto.total)}</td>
             </tr>
         `)
             .join('');

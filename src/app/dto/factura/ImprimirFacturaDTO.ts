@@ -22,6 +22,7 @@ export class ImprimirFacturaDTO{
     cufe!: string;
     iva!: number;
     dineroRecibido!: number;
+    formaVenta!: string;
 
     static crearFactura(venta: FullVentaDTO): ImprimirFacturaDTO {
         let factura = new ImprimirFacturaDTO();
@@ -44,7 +45,7 @@ export class ImprimirFacturaDTO{
 
     private static agregarProductos(venta: FullVentaDTO, factura: ImprimirFacturaDTO) {
         factura.productos = venta.detalleVentaList.map(detalle => {
-            let producto = new ProductoFacturaDTO(detalle.producto, detalle.cantidad, detalle.precio);
+            let producto = new ProductoFacturaDTO(detalle.producto, detalle.cantidad, detalle.total, detalle.formaVenta);
             return producto;
         });
     }

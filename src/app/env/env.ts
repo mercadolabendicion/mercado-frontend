@@ -13,7 +13,7 @@ export const environment = {
   imageUrl: '../../assets/404-status-code.png',
 
   //Este es el nombre de la tienda
-  nombreNegocio: 'Droguería La Fachada',
+  nombreNegocio: 'Droguería La Quimbayita',
   direccionNegocio: 'Quimbaya Quindío Cra. 7 N.14-11',
   gerenteNegocio: 'Alcides Duque',
   fechaExpedicion: '2024/12/10',

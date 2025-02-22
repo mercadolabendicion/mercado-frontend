@@ -4,4 +4,5 @@ export class FullDetalleDTO {
     precio!: number;
     total!: number;
     producto!: string;
+    formaVenta!: string;
 }

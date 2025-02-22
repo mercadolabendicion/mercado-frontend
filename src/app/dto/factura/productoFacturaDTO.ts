@@ -1,11 +1,13 @@
 export class ProductoFacturaDTO {
     producto!: string;
     cantidad!: number;
-    precio!: number;
+    total!: number;
+    formaVenta!: string;
 
-    constructor(producto: string, cantidad: number, precio: number) {
+    constructor(producto: string, cantidad: number, total: number, forma: string) {
         this.producto = producto;
         this.cantidad = cantidad;
-        this.precio = precio;
+        this.total = total;
+        this.formaVenta = forma;
     }
 }
