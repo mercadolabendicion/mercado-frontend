@@ -13,12 +13,12 @@ export const environment = {
   imageUrl: '../../assets/404-status-code.png',
 
   //Este es el nombre de la tienda
-  nombreNegocio: 'Droguería La Quimbayita',
-  direccionNegocio: 'Quimbaya Quindío Cra. 7 N.14-11',
-  gerenteNegocio: 'Alcides Duque',
+  nombreNegocio: 'Droguería La Fachada',
+  direccionNegocio: 'Armenia Quindío',
+  gerenteNegocio: 'Alex',
   fechaExpedicion: '2024/12/10',
-  telefonos: '7537193/XXXXXXXX',
+  telefonos: '123 456 7890',
   resolucionDian: '123456789',
   nit: '890.107.487-3',
-  correo: 'remates7a@gmail.com'
+  correo: 'lafachada@gmail.com'
 };
