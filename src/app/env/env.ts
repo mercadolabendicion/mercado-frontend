@@ -13,7 +13,7 @@ export const environment = {
   imageUrl: '../../assets/404-status-code.png',
 
   //Este es el nombre de la tienda
-  nombreNegocio: 'Droguería La Fachada',
+  nombreNegocio: 'Droguería Quintas de La Fachada',
   direccionNegocio: 'Armenia Quindío',
   gerenteNegocio: 'Alex',
   fechaExpedicion: '2024/12/10',
@@ -21,4 +21,4 @@ export const environment = {
   resolucionDian: '123456789',
   nit: '890.107.487-3',
   correo: 'lafachada@gmail.com'
-};
+}
