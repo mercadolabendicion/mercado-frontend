@@ -4,9 +4,9 @@
       <h1 class="nota">Registro de productos</h1>
       <p class="text-muted mb-2">Recuerde ingresar todos los campos</p>
     </div>
-    <p class="datos">Código:</p>
     <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
 
+      <p class="datos">Código:</p>
       <div class="form-group">
         <input type="text" class="form-control" pattern="[a-zA-Z0-9]*" formControlName="codigo" placeholder="Código"
           (change)="validarCodigo( $event )" (keyup)="validarCodigo( $event )">
@@ -26,7 +26,25 @@
         <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
         <span class="text-danger"
           *ngIf="formulario.get('nombre') && formulario.get('nombre')!.errors && formulario.get('nombre')!.touched">
-          Por favor, ingrese solo texto
+          Por favor, ingrese un nombre válido
+        </span>
+      </div>
+
+      <p class="datos">Fecha de vencimiento:</p>
+      <div class="form-group">
+        <input type="date" class="form-control" formControlName="fecha_vencimiento" placeholder="Fecha de Vencimiento">
+        <span class="text-danger"
+          *ngIf="formulario.get('nombre') && formulario.get('nombre')!.errors && formulario.get('nombre')!.touched">
+          Por favor, ingrese una fecha correcta
+        </span>
+      </div>
+
+      <p class="datos">Lote:</p>
+      <div class="form-group">
+        <input type="text" class="form-control" formControlName="lote" placeholder="Lote">
+        <span class="text-danger"
+          *ngIf="formulario.get('nombre') && formulario.get('nombre')!.errors && formulario.get('nombre')!.touched">
+          Por favor, ingrese una lote correcto
         </span>
       </div>
 

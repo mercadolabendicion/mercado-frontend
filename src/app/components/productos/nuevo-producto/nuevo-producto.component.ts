@@ -70,6 +70,8 @@ export class NuevoProductoComponent implements OnInit {
     this.formulario = this.formBuilder.group({
       codigo: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]],
       nombre: ['', [Validators.required]],
+      fecha_vencimiento: [''],
+      lote: [''],
       precio: [''],
       stock: [''],
       impuesto: [''],
@@ -92,10 +94,10 @@ export class NuevoProductoComponent implements OnInit {
       Object.values(this.formulario.controls).forEach(control => { control.markAsTouched(); });
       return;
     }
-    const { codigo, nombre, precioCompra } = this.formulario.value;
+    const { codigo, nombre, precioCompra, fecha_vencimiento, lote } = this.formulario.value;
     const formasVentaEntities = this.formasVenta.controls.map(forma => FormaVenta.toEntity(forma as FormGroup));
     let impuesto = this.tipoImpuesto[this.formulario.get('impuesto')!.value] == undefined ? '' : this.tipoImpuesto[this.formulario.get('impuesto')!.value];
-    let producto = CrearProductoDTO.crearProductoDTO(codigo, nombre, impuesto, precioCompra, formasVentaEntities);
+    let producto = CrearProductoDTO.crearProductoDTO(codigo, nombre, fecha_vencimiento, lote, impuesto, precioCompra, formasVentaEntities);
     this.productoService.guardarProducto(producto).subscribe((data) => {
       if (data) {
         this.formulario.reset();
