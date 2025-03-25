@@ -191,7 +191,14 @@ export class HomeProductoComponent {
           year: 'numeric',
           month: 'long',
           day: 'numeric'
-        })
+        }),
+        fechaVencimiento: producto.fechaVencimiento
+          ? new Date(producto.fechaVencimiento).toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })
+          : ''
       };
     });
     this.modalAbierto = true;
@@ -221,7 +228,7 @@ export class HomeProductoComponent {
   actualizarProducto(): void {
     if (this.actualizarProductoForm.valid) {
       const productoData = this.actualizarProductoForm.value;
-      
+
       // Mapear las formas de venta
       const formasVentaData = productoData.formasVentas.map((forma: any) => ({
         originalNombre: forma.originalNombre,
@@ -230,15 +237,15 @@ export class HomeProductoComponent {
         precioVenta: forma.precioVenta,
         cantidad: forma.cantidad
       }));
-  
-      const productoActualizado: ActualizarProductoDTO  | null = null;/*{
+
+      const productoActualizado: ActualizarProductoDTO | null = null;/*{
         codigo: productoData.codigo,
         nombre: productoData.nombre,
         //impuesto: productoData.impuesto,
         activo: true,
         //formasVenta: formasVentaData
       };*/
-  
+
       /*this.productoService.actualizar(productoActualizado).subscribe({
         next: () => {
           this.cerrarModalEditar();

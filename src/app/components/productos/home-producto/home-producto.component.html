@@ -77,6 +77,18 @@
                 [(ngModel)]="productoSeleccionado.fechaCreacion" readonly />
             </div>
           </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="fechaVencimiento" class="form-label"><strong>Fecha de Vencimiento</strong></label>
+              <input type="text" id="fechaVencimiento" class="form-control"
+                [(ngModel)]="productoSeleccionado.fechaVencimiento" readonly />
+            </div>
+            <div class="col-md-6">
+              <label for="impuesto" class="form-label"><strong>Lote</strong></label>
+              <input type="text" id="impuesto" class="form-control" [(ngModel)]="productoSeleccionado.lote"
+                readonly />
+            </div>
+          </div>
           <h6 class="mt-4">Formas de Venta</h6>
           <div *ngIf="productoSeleccionado?.formaVentas; else sinDatos">
             <div class="table-container2">
