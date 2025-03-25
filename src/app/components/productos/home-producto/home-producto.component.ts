@@ -185,6 +185,15 @@ export class HomeProductoComponent {
     this.menuComponent.cerrarMenu();
     this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
       this.productoSeleccionado = producto;
+  
+      const fechaVencimiento = producto.fechaVencimiento
+        ? new Date(producto.fechaVencimiento)
+        : null;
+  
+      if (fechaVencimiento) {
+        fechaVencimiento.setMinutes(fechaVencimiento.getMinutes() + fechaVencimiento.getTimezoneOffset());
+      }
+  
       this.productoSeleccionado = {
         ...producto,
         fechaCreacion: new Date(producto.fechaCreacion).toLocaleDateString('es-ES', {
@@ -192,18 +201,18 @@ export class HomeProductoComponent {
           month: 'long',
           day: 'numeric'
         }),
-        fechaVencimiento: producto.fechaVencimiento
-          ? new Date(producto.fechaVencimiento).toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })
+        fechaVencimiento: fechaVencimiento
+          ? fechaVencimiento.toLocaleDateString('es-ES', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })
           : ''
       };
     });
     this.modalAbierto = true;
   }
-
+  
   abrirModalEditar(codigo: string): void {
     this.idProductoSeleccionado = codigo;
     this.modalAbiertoEditar = true;

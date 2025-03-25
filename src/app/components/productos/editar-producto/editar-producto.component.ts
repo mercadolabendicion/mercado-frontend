@@ -43,6 +43,8 @@ export class EditarProductoComponent {
       codigo: ['', Validators.required],
       nombre: ['', Validators.required],
       impuesto: ['', Validators.required],
+      fechaVencimiento: [''],
+      lote: [''],
       fechaCreacion: ['', Validators.required],
       nombreNuevaForma: [''],
       precioCompraNuevaForma: [''],
@@ -67,8 +69,12 @@ export class EditarProductoComponent {
           year: 'numeric',
           month: 'long',
           day: 'numeric'
-        })
+        }),
+        fechaVencimiento: producto.fechaVencimiento
+          ? new Date(producto.fechaVencimiento).toISOString().split('T')[0] // Formato YYYY-MM-DD
+          : ''
       };
+      
       this.productoSeleccionado = productoFormateado;
 
       // Actualiza los valores del formulario
@@ -76,6 +82,8 @@ export class EditarProductoComponent {
         codigo: productoFormateado.codigo,
         nombre: productoFormateado.nombre,
         impuesto: productoFormateado.impuesto,
+        fechaVencimiento: productoFormateado.fechaVencimiento,  
+        lote: productoFormateado.lote,
         fechaCreacion: productoFormateado.fechaCreacion,
       });
 
@@ -230,7 +238,9 @@ export class EditarProductoComponent {
       const productoActualizado: ActualizarProductoDTO = ActualizarProductoDTO.actualizarProducto(
         productoData.codigo,
         productoData.nombre,
-        productoData.impuesto
+        productoData.impuesto,
+        productoData.fechaVencimiento,
+        productoData.lote,
       );
       
       if(productoActualizado == null || undefined){
