@@ -41,6 +41,7 @@ export class HomeProductoComponent {
   protected formasVentaEditar: FormaVenta[];
   protected idProductoSeleccionado: string = '';
   private dialog: MatDialog = inject(MatDialog);
+  rangoVisible: number = 5; // Número de paginas que se van a mostrar en el paginador
 
   constructor(private fb: FormBuilder) {
     this.productos = [];
@@ -163,6 +164,18 @@ export class HomeProductoComponent {
       this.paginaActual++;
       this.cargarVentas();
     }
+  }
+
+  get paginasVisibles(): number[] {
+    const mitad = Math.floor(this.rangoVisible / 2);
+    let inicio = Math.max(this.paginaActual - mitad, 0);
+    let fin = Math.min(inicio + this.rangoVisible, this.totalPaginas);
+  
+    if (fin - inicio < this.rangoVisible) {
+      inicio = Math.max(fin - this.rangoVisible, 0);
+    }
+  
+    return Array.from({ length: fin - inicio }, (_, i) => i + inicio);
   }
 
   cargarVentas() {
