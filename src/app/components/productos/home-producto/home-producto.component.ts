@@ -152,6 +152,11 @@ export class HomeProductoComponent {
     this.obtenerProductos(0);
   }
 
+  /**
+   * Este método se encarga de cambiar a la página anterior.
+   * Verifica que la página actual no sea la primera antes de retroceder
+   * y luego recarga los datos correspondientes a la nueva página.
+   */
   paginaAnterior() {
     if (this.paginaActual > 0) {
       this.paginaActual--;
@@ -159,6 +164,11 @@ export class HomeProductoComponent {
     }
   }
 
+  /**
+   * Este método se encarga de avanzar a la siguiente página.
+   * Verifica que la página actual no sea la última antes de avanzar
+   * y luego recarga los datos correspondientes a la nueva página.
+   */
   paginaSiguiente() {
     if (this.paginaActual < this.totalPaginas - 1) {
       this.paginaActual++;
@@ -166,6 +176,13 @@ export class HomeProductoComponent {
     }
   }
 
+  /**
+   * Este método devuelve un arreglo con el rango de páginas que deben mostrarse
+   * en la paginación, basado en la página actual y el rangoVisible definido.
+   * Permite limitar el número de botones visibles en la interfaz.
+   * 
+   * @returns un arreglo de números que representa las páginas visibles
+   */
   get paginasVisibles(): number[] {
     const mitad = Math.floor(this.rangoVisible / 2);
     let inicio = Math.max(this.paginaActual - mitad, 0);
@@ -178,16 +195,28 @@ export class HomeProductoComponent {
     return Array.from({ length: fin - inicio }, (_, i) => i + inicio);
   }
 
+  /**
+   * Este método carga las ventas correspondientes a la página actual,
+   * llamando al método obtenerProductos y pasándole la página como parámetro.
+   */
   cargarVentas() {
     this.obtenerProductos(this.paginaActual);
   }
 
-  // Función para generar el array de páginas según el total de páginas
+  /**
+   * Este método genera un arreglo con todos los números de página disponibles,
+   * basado en el total de páginas. Este arreglo se utiliza para construir la paginación.
+   */
   generarPaginas() {
     this.paginas = Array.from({ length: this.totalPaginas }, (_, index) => index);
   }
 
-  // Función para ir a una página específica
+  /**
+   * Este método cambia a una página específica seleccionada por el usuario
+   * y recarga los datos correspondientes a esa página.
+   * 
+   * @param pagina número de página a la que se desea navegar
+   */
   irPagina(pagina: number) {
     this.paginaActual = pagina;
     this.cargarVentas();
