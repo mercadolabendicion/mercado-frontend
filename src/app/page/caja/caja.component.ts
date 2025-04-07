@@ -1,8 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { MenuComponent } from 'src/app/components/menu/menu.component';
 import { VentaDTO } from 'src/app/dto/venta/VentaDTO';
+import { ReporteDTO } from 'src/app/dto/reporte/ReporteDTO';
 import { CajaService } from 'src/app/services/domainServices/caja.service';
 import { AlertService } from 'src/app/utils/alert.service';
+import Swal from 'sweetalert2';
+import { ReporteService } from 'src/app/services/domainServices/reporte.service';
 
 @Component({
   selector: 'app-caja',
@@ -20,10 +23,11 @@ export class CajaComponent {
   modalTitle: string = '';
   actionButtonText: string = '';
   currentAction: 'ingreso' | 'egreso' = 'ingreso';
-    protected ventas: VentaDTO[];
-
+  protected ventas: VentaDTO[];
+  private reporteService: ReporteService = inject(ReporteService);
   valorFormateado: string = ''; // Para almacenar el valor con formato
   private cajaService: CajaService = inject(CajaService);
+
 
   constructor(private menuComponent: MenuComponent, private alert: AlertService) {
     this.ventas = [];
@@ -43,7 +47,7 @@ export class CajaComponent {
   }
 
   triggerToggleCollapse() {
-    if (!this.menuComponent.estadoMenu){
+    if (!this.menuComponent.estadoMenu) {
       this.menuComponent.toggleCollapse();
     }
   }
@@ -58,7 +62,7 @@ export class CajaComponent {
       console.error('Error durante la inicialización:', error);
     }
   }
-  
+
 
   mostrarModal(action: 'ingreso' | 'egreso') {
     this.limpiarCampos(); // Limpia los campos antes de mostrar el modal
@@ -133,7 +137,7 @@ export class CajaComponent {
     return new Promise((resolve, reject) => {
       let page = 0;
       this.ventas = [];
-  
+
       const obtenerVentasRecursivamente = (paginaActual: number): void => {
         this.cajaService.getVentas(paginaActual).subscribe({
           next: (data) => {
@@ -152,24 +156,23 @@ export class CajaComponent {
           }
         });
       };
-  
+
       // Comienza a obtener ventas desde la primera página
       obtenerVentasRecursivamente(page);
     });
   }
-  
+
 
   sumarVentasDelDia(ventas: VentaDTO[]): number {
 
     const fechaActual = new Date().toISOString().split('T')[0];
-  
+
     const ventasDelDia = ventas.filter(venta => venta.fecha.startsWith(fechaActual));
-  
+
     const totalVentas = ventasDelDia.reduce((suma, venta) => suma + venta.total, 0);
-  
+
     return totalVentas;
   }
-  
 
   limpiarDatos() {
     this.cajaService.preguntarLimpiarCaja().then((result) => {
@@ -190,5 +193,9 @@ export class CajaComponent {
       }
     });
   }
-  
+
+  protected generarReporte() {
+    let reporte = ReporteDTO.crearReporte(this.totalEfectivo, this.totalExterno, this.totalVentas, this.movimientos);
+    this.reporteService.imprimirReporte(reporte);
+  }
 }

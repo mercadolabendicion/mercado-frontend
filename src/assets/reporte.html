@@ -1,0 +1,164 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporte de Caja</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      font-size: 9px; /* Tamaño de fuente reducido */
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+    }
+    .header, .footer {
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .details {
+      margin: 10px 0;
+    }
+    .details p {
+      margin: 5px 0;
+    }
+    .divider {
+      border-top: 1px dashed #aaa; /* Guiones en lugar de puntos */
+      margin: 20px 0; /* Espaciado arriba y abajo */
+      border-width: 2px; /* Grosor de los guiones */
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    table th, table td {
+      border: 0px solid #ccc;
+      padding: 4px;
+      text-align: center;
+    }
+    table th {
+      background-color: #f4f4f4;
+      text-align: center;
+    }
+    /* Ancho de las columnas */
+    table th:nth-child(1), table td:nth-child(1) {
+      width: 70%; /* Columna grande */
+    }
+    table th:nth-child(2), table td:nth-child(2) {
+      width: 10%; /* Columna pequeña */
+      text-align: center;
+    }
+    table th:nth-child(3), table td:nth-child(3) {
+      width: 20%; /* Columna mediana */
+      text-align: right;
+    }
+    .taxes, .total {
+      margin: 10px 0;
+    }
+    .total strong {
+      font-size: 10px;
+    }
+    .qr-code {
+      text-align: center;
+      margin: 10px 0;
+    }
+    .qr-code img {
+      width: 80px; /* Tamaño reducido */
+      height: 80px; /* Tamaño reducido */
+    }
+    @media print {
+      body {
+        margin: 0;
+      }
+      .container {
+        border: none;
+      }
+    }
+
+    .footer {
+        margin-top: 20px;
+        text-align: center;
+    }
+      
+    .footer p {
+        margin: 5px 0;
+        word-break: break-word;
+    }
+      
+    .cufe {
+        text-align: center;
+        margin: 0 auto;
+        max-width: 95%;
+    }
+      
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Encabezado -->
+    <div class="header">
+      <h1>{{nombreNegocio}}</h1>
+      <p>{{direccionNegocio}}</p>
+      <p>Gerente: {{gerenteNegocio}}</p>
+      <p>Fecha de expedición: {{fechaExpedicion}}</p>
+      <p>Teléfonos: {{telefonos}}</p>
+      <p>Resolución DIAN: {{resolucionDIAN}}</p>
+      <p>Fecha generacion del reporte: {{fecha}}</p>
+    </div>
+    <hr>
+    <h1 class="header">REPORTE DE CAJA</h1>
+    <div class="divider"></div>
+
+    <table class="table text-center">
+      <thead>
+        <tr><th>Movimiento</th><th>Tipo</th><th>Valor</th>
+      </thead>
+      <tbody>
+        {{movimientos}}
+      </tbody>
+    </table>
+
+    <!-- Impuestos -->
+    <div class="taxes">
+
+      <div class="divider"></div>
+
+      <p><strong>Detalle del cierre de caja:</strong></p>
+    </div>
+
+     <!-- Tabla de Impuestos -->
+     <table>
+      <tbody>
+        <tr>
+          <td>Dinero en ventas:</td>
+          <td></td>
+          <td> {{ventas}}</td>
+        </tr>
+        <tr>
+            <td>Dinero movido fuera del sistema:</td>
+          <td></td>
+          <td>{{externo}}</td>
+        </tr>
+        <tr>
+          <td><strong>TOTAL EFECTIVO:</strong></td>
+          <td></td>
+          <td>{{efectivo}}</td>
+        </tr>
+        <tr class="divider"></tr>
+      </tbody>
+    </table>
+    <!-- forma de pago -->
+
+    <hr>
+  </div>
+</body>
+</html>
