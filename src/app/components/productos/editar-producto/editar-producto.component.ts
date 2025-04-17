@@ -61,7 +61,9 @@ export class EditarProductoComponent {
    */
   abrirModal(codigo: string): void {
     this.modalAbierto = true;
-    this.menuComponent.cerrarMenu();
+    if (this.menuComponent.estadoMenu) {
+      this.menuComponent.cerrarMenu();
+    }
     this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
       const productoFormateado = {
         ...producto,
@@ -110,17 +112,37 @@ export class EditarProductoComponent {
     });
   }
 
+  /**
+   * Este getter retorna el FormArray asociado al campo 'formasVentas'
+   * dentro del formulario principal del producto. Permite acceder y manipular
+   * dinámicamente las diferentes formas de venta que se pueden registrar para un producto.
+   * 
+   * @returns FormArray que contiene las formas de venta del producto
+   */
   get formasVentas(): FormArray {
     return this.productoForm.get('formasVentas') as FormArray;
   }
 
+  /**
+   * Este método cierra el modal activo utilizando `dialogRef.close()` 
+   * y asegura que el menú lateral esté abierto al salir del modo modal.
+   * Es útil para restaurar la interfaz principal tras cerrar un diálogo.
+   */
   cerrarModal(): void {
+    this.menuComponent.abrirMenu();
     this.dialogRef.close();
   }
 
+  /**
+   * Este método guarda los cambios realizados en el producto. 
+   * Llama a métodos para actualizar el nombre del impuesto, las formas de venta 
+   * y cargar una nueva forma de venta. Si las actualizaciones del impuesto y las formas 
+   * de venta son exitosas, realiza las solicitudes para actualizar el producto y sus formas de venta.
+   * 
+   * Es útil para persistir los cambios en los datos del producto y sus formas de venta, 
+   * asegurando que se actualicen correctamente en el backend.
+   */
   guardarCambios(): void {
-
-    console.log(this.productoForm.value);
     let response1 = this.actualizarNombreImpuesto();
     let response2 = this.actualizarFormasVenta();
     let response3 = this.cargarNuevaFormaVenta();
@@ -128,11 +150,17 @@ export class EditarProductoComponent {
       this.requestActualizarProducto();
       this.requestActualizarFormasVenta();
     }
-    
   }
 
+  /**
+   * Este método se encarga de cargar una nueva forma de venta para el producto actual.
+   * Extrae los datos del formulario del producto, valida que los campos necesarios no estén vacíos
+   * y que los valores numéricos sean válidos. Si los datos son correctos, crea una nueva forma de venta
+   * y la guarda utilizando el servicio correspondiente.
+   * 
+   * @returns `true` si la forma de venta fue cargada exitosamente, `false` si los datos son inválidos
+   */
   cargarNuevaFormaVenta(): boolean {
-
     const productoData = this.productoForm.value;
     const formaVenta = {
       nombre: productoData.nombreNuevaForma,
@@ -140,7 +168,6 @@ export class EditarProductoComponent {
       precioVenta: productoData.precioVentaNuevaForma,
       cantidad: productoData.cantidadNuevaForma
     };
-
     if (!formaVenta.nombre || formaVenta.nombre.trim() === '') {
       return false;
     }
@@ -153,15 +180,22 @@ export class EditarProductoComponent {
     if (formaVenta.cantidad == null) {
       return false;
     }
-
     let guardarFormaVenta = GuardarFormaVenta.crearFormaVenta(productoData.codigo, formaVenta.nombre, formaVenta.precioCompra, formaVenta.precioVenta, formaVenta.cantidad);
     this.productoService.guardarFormaVenta(guardarFormaVenta);
-
     return true;
-
-
   }
 
+  /**
+   * Este método actualiza las formas de venta del producto actual. 
+   * Realiza las siguientes acciones:
+   * 1. Obtiene los datos del formulario y el FormArray con las formas de venta.
+   * 2. Itera sobre cada forma de venta en el FormArray y valida los campos requeridos (nombre, precio, cantidad).
+   * 3. Si los datos son válidos, crea un DTO de actualización para cada forma de venta.
+   * 4. Realiza una validación adicional para asegurar que no existan nombres duplicados entre las formas de venta.
+   * 5. Si todo es válido, guarda la lista de formas de venta actualizadas en una variable.
+   * 
+   * @returns `true` si las formas de venta fueron actualizadas correctamente, `false` si hubo algún error de validación.
+   */
   actualizarFormasVenta(): boolean {
     // Obtenemos el valor completo del formulario.
     const productoData = this.productoForm.value;
@@ -231,10 +265,21 @@ export class EditarProductoComponent {
     return true;
   }  
 
+  /**
+   * Este método actualiza el nombre y el impuesto de un producto. 
+   * Realiza las siguientes acciones:
+   * 1. Obtiene los datos del formulario del producto.
+   * 2. Crea un objeto `ActualizarProductoDTO` con los datos obtenidos.
+   * 3. Realiza una validación de los datos para asegurarse de que:
+   *    - El producto seleccionado existe.
+   *    - El código del producto no ha sido modificado.
+   *    - El nombre y el impuesto no estén vacíos.
+   * 4. Si todas las validaciones son exitosas, guarda el producto actualizado en una variable.
+   * 
+   * @returns `true` si los datos del producto son válidos y han sido actualizados correctamente, `false` si hay algún error de validación.
+   */
   actualizarNombreImpuesto(): boolean {
-
       const productoData = this.productoForm.value;
-
       const productoActualizado: ActualizarProductoDTO = ActualizarProductoDTO.actualizarProducto(
         productoData.codigo,
         productoData.nombre,
@@ -247,28 +292,32 @@ export class EditarProductoComponent {
         this.alert.simpleErrorAlert('No se encontró el producto seleccionado');
         return false;
       }
-
       if(productoActualizado.codigo != productoActualizado.codigo){
         this.alert.simpleErrorAlert('El código del producto no puede ser modificado');
         return false;
       }
-
       if(productoActualizado.nombre == null || productoActualizado.nombre == ''){
         this.alert.simpleErrorAlert('El nombre del producto no puede ser vacío');
         return false;
       }
-
       if(productoActualizado.impuesto == null || productoActualizado.impuesto == ''){
         this.alert.simpleErrorAlert('El impuesto del producto no puede ser vacío');
         return false;
       }
-
       this.productoActualizado = productoActualizado;
-
       return true;
-
   }
 
+  /**
+   * Este método realiza una solicitud para actualizar el producto en el sistema.
+   * Se encarga de enviar los datos del producto actualizado al servicio correspondiente 
+   * para ser guardados en el backend. Al recibir una respuesta exitosa, realiza las siguientes acciones:
+   * 1. Cierra el modal de edición de producto.
+   * 2. Actualiza la lista de productos en el menú.
+   * Si ocurre un error en la solicitud, muestra una alerta con el mensaje de error.
+   * 
+   * @returns `void`. No devuelve nada, pero realiza una acción asíncrona para actualizar los datos.
+   */
   requestActualizarProducto(): void {
     this.productoService.actualizar(this.productoActualizado).subscribe({
       next: () => {
@@ -281,6 +330,18 @@ export class EditarProductoComponent {
     });
   }
 
+  /**
+   * Este método realiza una solicitud para actualizar las formas de venta asociadas a un producto.
+   * Itera sobre la lista de formas de venta actualizadas (`formasVentasActualizadas`), enviando cada una al servicio correspondiente 
+   * para ser actualizada en el backend. Si ocurre un error durante la actualización de alguna forma de venta, 
+   * se muestra una alerta con el mensaje de error. 
+   * 
+   * Al finalizar las actualizaciones, realiza las siguientes acciones:
+   * 1. Actualiza la lista de productos en el menú.
+   * 2. Cierra el modal de edición de producto.
+   * 
+   * @returns `void`. No devuelve nada, pero realiza varias acciones asíncronas para actualizar las formas de venta.
+   */
   requestActualizarFormasVenta(): void {
     this.formasVentasActualizadas.forEach((formaVenta) => {
       this.productoService.actualizarFormaVenta(formaVenta).subscribe({
@@ -294,11 +355,22 @@ export class EditarProductoComponent {
     this.cerrarModal();
   }
 
+  /**
+   * Este método permite eliminar una forma de venta asociada a un producto.
+   * Primero, solicita una confirmación del usuario mediante una alerta de confirmación. 
+   * Si el usuario confirma la eliminación, realiza las siguientes acciones:
+   * 1. Elimina la forma de venta de la lista de formas de venta en el formulario (`FormArray`).
+   * 2. Llama al servicio correspondiente (`productoService.eliminarFormaVenta`) para eliminar la forma de venta del backend.
+   * 3. Muestra una alerta de éxito indicando que la forma de venta ha sido eliminada correctamente.
+   * 
+   * @param fila El índice de la forma de venta en el formulario que se desea eliminar.
+   * @returns `void`. No devuelve nada, pero realiza varias acciones al eliminar la forma de venta seleccionada.
+   */
   eliminarFormaVenta(fila: number) {
     let nombreForma = this.formasVentas.controls[fila].get('nombre')!.value;
     let codigo = this.productoSeleccionado!.codigo;
 
-   this.alert.confirmAlert('Eliminar forma de venta','¿Está seguro que desea eliminar la forma de venta ' 
+  this.alert.confirmAlert('Eliminar forma de venta','¿Está seguro que desea eliminar la forma de venta ' 
     + nombreForma + ' para el producto '+ this.productoSeleccionado?.nombre+'? \t\n'
     + 'Esta acción no se puede deshacer.').then((response) => {
       if(response){
@@ -308,7 +380,14 @@ export class EditarProductoComponent {
       }
     });
   }
-  
+
+  /**
+   * Este método permite mostrar los inputs necesarios para agregar una nueva fila de datos.
+   * Cambia el valor de la variable `mostrarInputs` a `true`, lo que probablemente activa la visualización 
+   * de campos de entrada o formularios en la interfaz de usuario para que el usuario pueda ingresar información.
+   * 
+   * @returns `void`. No devuelve nada, solo cambia el estado de la variable `mostrarInputs`.
+   */
   agregarFila(): void {
     this.mostrarInputs = true;
   }

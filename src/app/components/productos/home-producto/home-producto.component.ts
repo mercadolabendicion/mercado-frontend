@@ -222,20 +222,26 @@ export class HomeProductoComponent {
     this.cargarVentas();
   }
 
-
+  /**
+   * Este método abre un modal con la información detallada de un producto específico,
+   * identificado por su código. Si el menú lateral está abierto, lo cierra antes de continuar.
+   * Luego obtiene los datos completos del producto desde el servicio correspondiente,
+   * formatea las fechas de creación y vencimiento, y finalmente abre el modal.
+   * 
+   * @param codigo código único del producto que se desea visualizar en el modal
+   */
   abrirModal(codigo: string): void {
-    this.menuComponent.cerrarMenu();
+    if (this.menuComponent.estadoMenu) {
+      this.menuComponent.cerrarMenu();
+    }
     this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
       this.productoSeleccionado = producto;
-  
       const fechaVencimiento = producto.fechaVencimiento
         ? new Date(producto.fechaVencimiento)
         : null;
-  
       if (fechaVencimiento) {
         fechaVencimiento.setMinutes(fechaVencimiento.getMinutes() + fechaVencimiento.getTimezoneOffset());
       }
-  
       this.productoSeleccionado = {
         ...producto,
         fechaCreacion: new Date(producto.fechaCreacion).toLocaleDateString('es-ES', {
@@ -255,27 +261,55 @@ export class HomeProductoComponent {
     this.modalAbierto = true;
   }
   
+  /**
+   * Este método abre un modal para editar un producto específico identificado por su código.
+   * Asigna el código al identificador de producto seleccionado y abre el componente de edición
+   * pasándole el código como dato. Luego, cuando el modal se cierra, recarga la lista de productos
+   * desde la primera página para reflejar posibles cambios.
+   * 
+   * @param codigo código único del producto que se desea editar
+   */
   abrirModalEditar(codigo: string): void {
     this.idProductoSeleccionado = codigo;
-    this.modalAbiertoEditar = true;
     const dialogRef = this.dialog.open(EditarProductoComponent, {
       data: codigo,
     });
     //envio el producto al componente de editar
-
     dialogRef.afterClosed().subscribe(result => {
       this.obtenerProductos(0);
     });
   }
-
+  /**
+   * Este getter retorna el FormArray asociado al campo 'formasVentas'
+   * dentro del formulario de actualización de producto. Permite acceder
+   * y manipular dinámicamente las diferentes formas de venta del producto.
+   * 
+   * @returns FormArray que contiene las formas de venta del producto
+   */
   get formasVentasFormArray(): FormArray {
     return this.actualizarProductoForm.get('formasVentas') as FormArray;
   }
 
+  /**
+   * Este método retorna los controles del FormArray 'formasVentas' como un arreglo de FormGroup.
+   * Es útil para iterar sobre las distintas formas de venta y acceder directamente a sus campos
+   * dentro del formulario de actualización de producto.
+   * 
+   * @returns Arreglo de FormGroup que representan cada forma de venta
+   */
   formasVentasFormArrayControls(): FormGroup[] {
     return this.formasVentasFormArray.controls as FormGroup[];
   }
 
+  /**
+   * Este método se encarga de validar el formulario de actualización de producto.
+   * Si es válido, extrae los datos del formulario, incluyendo las formas de venta,
+   * y construye el objeto `ActualizarProductoDTO` con la información necesaria.
+   * Luego, envía los datos actualizados al servicio para guardar los cambios.
+   * Finalmente, cierra el modal de edición y recarga los productos en la página actual.
+   * 
+   * Actualmente parte del código está comentado, posiblemente en desarrollo o pruebas.
+   */
   actualizarProducto(): void {
     if (this.actualizarProductoForm.valid) {
       const productoData = this.actualizarProductoForm.value;
@@ -299,7 +333,7 @@ export class HomeProductoComponent {
 
       /*this.productoService.actualizar(productoActualizado).subscribe({
         next: () => {
-          this.cerrarModalEditar();
+          this.cerrarModalEditar(); 
           this.obtenerProductos(this.paginaActual); // Recargar datos
         },
         error: (err) => {
@@ -311,16 +345,24 @@ export class HomeProductoComponent {
     }
   }
 
-
+  /**
+   * Este método cierra el modal estableciendo su estado como falso.
+   * Luego, si el menú lateral está cerrado, lo vuelve a abrir automáticamente.
+   */
   cerrarModal(): void {
     this.modalAbierto = false;
+    if (!this.menuComponent.estadoMenu) {
+      this.menuComponent.abrirMenu();
+    }
   }
 
-  cerrarModalEditar(): void {
-    this.idProductoSeleccionado = '';
-    this.modalAbiertoEditar = false;
-  }
-
+  /**
+   * Este método se encarga de formatear el valor ingresado por el usuario en un input,
+   * eliminando los caracteres no numéricos y aplicando formato con comas para mayor legibilidad.
+   * Además, actualiza variables relacionadas como el valor del descuento y su representación numérica.
+   * 
+   * @param event evento de entrada generado por el usuario al escribir en el input
+   */
   formatearValor(event: Event): void {
     const input = event.target as HTMLInputElement;
     const valorSinFormato = input.value.replace(/[^\d]/g, ''); // Elimina caracteres no numéricos

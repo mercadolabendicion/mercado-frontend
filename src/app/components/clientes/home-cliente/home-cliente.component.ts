@@ -206,7 +206,9 @@ export class HomeClienteComponent {
 
 
   cerrarMenu() {
-    this.menuComponent.cerrarMenu();
+    if (this.menuComponent.estadoMenu) {
+      this.menuComponent.cerrarMenu();
+    }
   }
 
 }

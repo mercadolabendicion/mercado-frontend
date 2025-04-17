@@ -18,7 +18,7 @@ import { ListaVentasComponent } from '../venta/lista-ventas/listaVentas.componen
 })
 export class MenuComponent {
 
-  public estadoMenu: boolean = false;
+  public estadoMenu: boolean = true;
   public productos!: ProductoDTO[];
   public clientes!: ClienteDTO[];
   public ventas!: VentaDTO[];
@@ -57,10 +57,13 @@ export class MenuComponent {
   }
 
   public cerrarMenu() {
-    
-    if (!this.estadoMenu) {
+    if (this.estadoMenu) {
       this.toggleCollapse();
     }
+  }
+
+  public abrirMenu() {
+      this.toggleCollapse();
   }
 
   /**
