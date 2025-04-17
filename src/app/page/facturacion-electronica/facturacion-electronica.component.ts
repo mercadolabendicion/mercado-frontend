@@ -21,6 +21,8 @@ export class FacturacionElectronicaComponent {
   protected paginaActual: number = 0;
   protected totalPaginas!: number;
   protected paginas: number[] = [];
+  protected modoOculto: boolean = true;
+  rangoVisible: number = 5; // Número de paginas que se van a mostrar en el paginador
 
   constructor() {
     this.ventas = [];
@@ -113,32 +115,74 @@ export class FacturacionElectronicaComponent {
   }
 
 
-  paginaAnterior() {
-    if (this.paginaActual > 0) {  
-      this.paginaActual--;
-      this.cargarVentas();
+    /**
+   * Este método se encarga de cambiar a la página anterior.
+   * Verifica que la página actual no sea la primera antes de retroceder
+   * y luego recarga los datos correspondientes a la nueva página.
+   */
+    paginaAnterior() {
+      if (this.paginaActual > 0) {  
+        this.paginaActual--;
+        this.cargarVentas();
+      }
     }
-  }
-
-  paginaSiguiente() {
-    if (this.paginaActual < this.totalPaginas - 1) {  
-      this.paginaActual++;
-      this.cargarVentas();
-    }
-  }
-
-  cargarVentas() {
-    this.obtenerVentas(this.paginaActual);  
-  }
   
-  // Función para generar el array de páginas según el total de páginas
-  generarPaginas() {
-    this.paginas = Array.from({ length: this.totalPaginas }, (_, index) => index);
-  }
+    /**
+     * Este método se encarga de avanzar a la siguiente página.
+     * Verifica que la página actual no sea la última antes de avanzar
+     * y luego recarga los datos correspondientes a la nueva página.
+     */
+    paginaSiguiente() {
+      if (this.paginaActual < this.totalPaginas - 1) {  
+        this.paginaActual++;
+        this.cargarVentas();
+      }
+    }
+  
+    /**
+     * Este método devuelve un arreglo con el rango de páginas que deben mostrarse
+     * en la paginación, basado en la página actual y el rangoVisible definido.
+     * Permite limitar el número de botones visibles en la interfaz.
+     * 
+     * @returns un arreglo de números que representa las páginas visibles
+     */
+    get paginasVisibles(): number[] {
+      const mitad = Math.floor(this.rangoVisible / 2);
+      let inicio = Math.max(this.paginaActual - mitad, 0);
+      let fin = Math.min(inicio + this.rangoVisible, this.totalPaginas);
+    
+      if (fin - inicio < this.rangoVisible) {
+        inicio = Math.max(fin - this.rangoVisible, 0);
+      }
+    
+      return Array.from({ length: fin - inicio }, (_, i) => i + inicio);
+    }
+  
+    /**
+     * Este método carga las ventas correspondientes a la página actual,
+     * llamando al método obtenerProductos y pasándole la página como parámetro.
+     */
+    cargarVentas() {
+      this.obtenerVentas(this.paginaActual);  
+    }
+  
+    /**
+     * Este método genera un arreglo con todos los números de página disponibles,
+     * basado en el total de páginas. Este arreglo se utiliza para construir la paginación.
+     */
+    generarPaginas() {
+      this.paginas = Array.from({ length: this.totalPaginas }, (_, index) => index);
+    }
+  
+    /**
+     * Este método cambia a una página específica seleccionada por el usuario
+     * y recarga los datos correspondientes a esa página.
+     * 
+     * @param pagina número de página a la que se desea navegar
+     */
+    irPagina(pagina: number) {
+      this.paginaActual = pagina;
+      this.cargarVentas();
+    }
 
-  // Función para ir a una página específica
-  irPagina(pagina: number) {
-    this.paginaActual = pagina;
-    this.cargarVentas();
-  }
 }
