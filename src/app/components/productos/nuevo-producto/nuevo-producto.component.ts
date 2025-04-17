@@ -70,8 +70,8 @@ export class NuevoProductoComponent implements OnInit {
     this.formulario = this.formBuilder.group({
       codigo: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]],
       nombre: ['', [Validators.required]],
-      fecha_vencimiento: [''],
-      lote: [''],
+      fecha_vencimiento: ['', [Validators.required]],
+      lote: ['', [Validators.required]],
       precio: [''],
       stock: [''],
       impuesto: [''],

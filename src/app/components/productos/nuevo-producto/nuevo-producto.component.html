@@ -1,4 +1,4 @@
-<div class="container contenedorGeneral mt-4">
+<div class="container contenedorGeneral mt-4 mb-5">
   <div class="formulario">
     <div class="encabezado">
       <h1 class="nota">Registro de productos</h1>
@@ -34,7 +34,7 @@
       <div class="form-group">
         <input type="date" class="form-control" formControlName="fecha_vencimiento" placeholder="Fecha de Vencimiento">
         <span class="text-danger"
-          *ngIf="formulario.get('nombre') && formulario.get('nombre')!.errors && formulario.get('nombre')!.touched">
+          *ngIf="formulario.get('fecha_vencimiento') && formulario.get('fecha_vencimiento')!.errors && formulario.get('fecha_vencimiento')!.touched">
           Por favor, ingrese una fecha correcta
         </span>
       </div>
@@ -43,7 +43,7 @@
       <div class="form-group">
         <input type="text" class="form-control" formControlName="lote" placeholder="Lote">
         <span class="text-danger"
-          *ngIf="formulario.get('nombre') && formulario.get('nombre')!.errors && formulario.get('nombre')!.touched">
+          *ngIf="formulario.get('lote') && formulario.get('lote')!.errors && formulario.get('lote')!.touched">
           Por favor, ingrese una lote correcto
         </span>
       </div>
