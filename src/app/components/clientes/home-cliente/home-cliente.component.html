@@ -57,7 +57,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="editarClienteModalLabel">Editar Cliente</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body"> 
         <app-editar-cliente [personaEditar]="personaEditar" (modoOculto)="editarModoOcuto()"></app-editar-cliente>
