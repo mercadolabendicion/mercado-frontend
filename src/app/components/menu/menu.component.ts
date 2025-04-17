@@ -41,8 +41,8 @@ export class MenuComponent {
    * para cerrar la sesion
    */
   ngOnInit(): void {
-    this.productoService.getTodosProductos();
-    this.clienteService.getTodosClientes();
+    //this.productoService.getTodosProductos();
+    //this.clienteService.getTodosClientes();
     this.llenarLocalStorage();
     this.router.navigate(['/app/principal']);
   }
@@ -82,7 +82,7 @@ export class MenuComponent {
   public listarProductos(): void {
     let page = 0;
     this.productos = [];
-
+    localStorage.removeItem('productos');
     const obtenerProductosRecursivamente = (paginaActual: number): void => {
       this.productoService.getProductos(paginaActual).subscribe({
         next: (data) => {
@@ -114,7 +114,6 @@ export class MenuComponent {
   public listarClientes(): void {
     let page = 0;
     this.clientes = [];
-
     const obtenerClientesRecursivamente = (paginaActual: number): void => {
       this.clienteService.getClientes(paginaActual).subscribe({
         next: (data) => {
@@ -145,7 +144,7 @@ export class MenuComponent {
   public listarVentas(): void {
     let page = 0;
     this.ventas = [];
-
+    localStorage.removeItem('ventas');
     const obtenerVentasRecursivamente = (paginaActual: number): void => {
       this.ventaService.obtenerVentas(paginaActual).subscribe({
         next: (data) => {

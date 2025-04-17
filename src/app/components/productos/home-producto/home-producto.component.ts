@@ -112,13 +112,12 @@ export class HomeProductoComponent {
    */
   buscar(evento: Event): void {
     const input = (evento.target as HTMLInputElement).value.toLowerCase();
-
     this.filtroProductos = this.productosTodos.filter((producto: ProductoDTO) =>
       this.coincideConBusqueda(producto, input)
     ).sort((a: any, b: any) => a.cantidad - b.cantidad);
-
     this.updateProductoCount();
   }
+
   /**
    * Este método se encarga de verificar si un producto coincide con la búsqueda
    * @param producto  producto a verificar
