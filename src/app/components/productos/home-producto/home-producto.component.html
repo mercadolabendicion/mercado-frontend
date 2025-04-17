@@ -23,21 +23,31 @@
         <table class="table table-bordered table-hover">
           <thead>
             <tr>
-              <th>Código</th>
-              <th>Nombre</th>
-              <th class="eliminar">Acciones</th>
+              <th class="codigo">Código</th>
+              <th class="nombre">Nombre</th>
+              <th class="acciones">Acciones</th>
             </tr>
           </thead>
 
           <tbody>
             <!-- <tr *ngFor="let persona of personas"> -->
             <tr *ngFor="let producto of filtroProductos; let i=index">
-              <td>{{ producto.codigo }}</td>
-              <td>{{ producto.nombre }}</td>
-              <td class="eliminar">
-                <button class="editar " (click)="abrirModal(producto.codigo)"> 👁️ </button>
-                <button class="editar red-x mx-2" (click)="eliminarProductoCodigo(producto.codigo)"> ❌ </button>
-                <button class="editar " (click)="abrirModalEditar(producto.codigo)"> ✏️ </button>
+              <td class="codigo">
+                <div class="codigo-scroll">
+                  {{ producto.codigo }}
+                </div>
+              </td>              
+              <td class="nombre">
+                <div class="nombre-scroll">
+                  {{ producto.nombre }}
+                </div>
+              </td>
+              <td class="acciones">
+                <div class="acciones-contenedor">
+                  <button class="editar " (click)="abrirModal(producto.codigo)"> 👁️ </button>
+                  <button class="editar red-x mx-2" (click)="eliminarProductoCodigo(producto.codigo)"> ❌ </button>
+                  <button class="editar " (click)="abrirModalEditar(producto.codigo)"> ✏️ </button>
+                </div>
               </td>
             </tr>
           </tbody>

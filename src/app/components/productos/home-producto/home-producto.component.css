@@ -23,12 +23,13 @@
   /*border: 1px solid rgb(182, 182, 182) ;*/
   border-radius: 10px;
 }
+
 table {
   background-color: rgb(67, 164, 255);
   width: 100%; 
   /*border-collapse: collapse;*/
   border-radius: 10px;
-  table-layout: auto;
+  table-layout: fixed;
 }
 
 th, td {
@@ -45,6 +46,31 @@ th {
   height: 100%;
 }
 
+th.codigo, td.codigo {
+  width: 20%;
+  max-width: 20%;
+}
+
+.codigo-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
+}
+
+th.nombre, td.nombre {
+  width: 60%;
+  max-width: 60%;
+}
+
+.nombre-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
+}
 
 tr:nth-child(odd) {
   background-color: #f2f8ff; 
@@ -54,13 +80,19 @@ tr:nth-child(even) {
   background-color: #ffffff; 
 }
 
-td.eliminar, th.eliminar{
+td.acciones, th.acciones {
+  padding: 0; /* Evita espacio innecesario */
+}
+
+.acciones-contenedor {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-top: 5px;
   height: 100%;
+  width: 100%;
+  gap: 0.5rem; /* Espacio entre botones */
 }
-
 
 
 td button.editar, td button.check{
