@@ -166,8 +166,9 @@
         <!-- Página anterior -->
         <li class="page-item" [class.disabled]="paginaActual === 0">
           <button class="page-link" (click)="paginaAnterior()" tabindex="-1" aria-disabled="true">
-            Anterior
-          </button>
+            <span class="d-none d-sm-inline">Anterior</span> <!-- Visible solo en pantallas >=576px -->
+            <span class="d-inline d-sm-none">‹</span>     <!-- Visible solo en pantallas <576px -->
+          </button>          
         </li>
         <!-- Primera página -->
         <li class="page-item" [class.disabled]="paginaActual === 0">
@@ -185,7 +186,10 @@
         </li>
         <!-- Página siguiente -->
         <li class="page-item" [class.disabled]="paginaActual === totalPaginas - 1">
-          <button class="page-link" (click)="paginaSiguiente()">Siguiente</button>
+          <button class="page-link" (click)="paginaSiguiente()">
+            <span class="d-none d-sm-inline">Siguiente</span> <!-- Visible en pantallas ≥ 576px -->
+            <span class="d-inline d-sm-none">›</span>      <!-- Visible en pantallas < 576px -->
+          </button>          
         </li>
       </ul>
     </nav>

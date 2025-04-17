@@ -51,8 +51,9 @@ export class HomeProductoComponent {
 
 
   ngOnInit() {
-    this.obtenerProductos(0);
     this.obtenerProductosTodos();
+    this.ajustarRangoVisible(); 
+    this.obtenerProductos(0);
     this.updateProductoCount();
     this.actualizarProductoForm = this.fb.group({
       codigo: ['', Validators.required],
@@ -61,8 +62,27 @@ export class HomeProductoComponent {
       fechaCreacion: ['', Validators.required],
       formasVentas: this.fb.array([])
     });
-    this.menuComponent.listarProductos();
   }
+
+  /**
+   * Este método ajusta dinámicamente el número de páginas visibles en la paginación
+   * (`rangoVisible`) según el ancho de la pantalla. Utiliza los puntos de corte de Bootstrap:
+   * 
+   * - Para pantallas pequeñas (<576px), muestra 3 páginas.
+   * - Para pantallas medianas (>=576px y <768px), muestra 5 páginas.
+   * - Para pantallas grandes (>=768px), muestra 7 páginas.
+   */
+  ajustarRangoVisible(): void {
+    const anchoPantalla = window.innerWidth;
+    if (anchoPantalla < 576) { // Bootstrap 'sm' breakpoint
+      this.rangoVisible = 3;
+    } else if (anchoPantalla >= 768) {
+      this.rangoVisible = 7;
+    } else {
+      this.rangoVisible = 5; // Para pantallas medianas
+    }
+  }
+
 
   /**
    * Este metodo se encarga de guardar en la variable productosTodos
@@ -112,6 +132,7 @@ export class HomeProductoComponent {
    */
   buscar(evento: Event): void {
     const input = (evento.target as HTMLInputElement).value.toLowerCase();
+    this.obtenerProductosTodos(); // Asegúrate de que productosTodos esté actualizado
     this.filtroProductos = this.productosTodos.filter((producto: ProductoDTO) =>
       this.coincideConBusqueda(producto, input)
     ).sort((a: any, b: any) => a.cantidad - b.cantidad);

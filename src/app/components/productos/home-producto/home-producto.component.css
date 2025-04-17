@@ -82,6 +82,8 @@ tr:nth-child(even) {
 
 td.acciones, th.acciones {
   padding: 0; /* Evita espacio innecesario */
+  width: 30%;
+  max-width: 30%;
 }
 
 .acciones-contenedor {
@@ -94,11 +96,16 @@ td.acciones, th.acciones {
   gap: 0.5rem; /* Espacio entre botones */
 }
 
+@media screen and (max-width: 576px) {
+  .acciones-contenedor {
+    gap: 0.2rem; /* Espacio entre botones */
+  }  
+  
+}
 
 td button.editar, td button.check{
   background: none;
   border: none;
-  
 }
 
 

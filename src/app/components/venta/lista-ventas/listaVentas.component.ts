@@ -39,10 +39,30 @@ export class ListaVentasComponent {
   }
 
   ngOnInit() {
+    this.ajustarRangoVisible(); 
     this.obtenerVentasTodas();
     this.obtenerVentas(0);
     this.buildForm();
   }
+
+    /**
+   * Este método ajusta dinámicamente el número de páginas visibles en la paginación
+   * (`rangoVisible`) según el ancho de la pantalla. Utiliza los puntos de corte de Bootstrap:
+   * 
+   * - Para pantallas pequeñas (<576px), muestra 3 páginas.
+   * - Para pantallas medianas (>=576px y <768px), muestra 5 páginas.
+   * - Para pantallas grandes (>=768px), muestra 7 páginas.
+   */
+    ajustarRangoVisible(): void {
+      const anchoPantalla = window.innerWidth;
+      if (anchoPantalla < 576) { // Bootstrap 'sm' breakpoint
+        this.rangoVisible = 3;
+      } else if (anchoPantalla >= 768) {
+        this.rangoVisible = 7;
+      } else {
+        this.rangoVisible = 5; // Para pantallas medianas
+      }
+    }
 
   /**
    * Método para construir el formulario
