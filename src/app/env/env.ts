@@ -13,12 +13,12 @@ export const environment = {
   imageUrl: '../../assets/404-status-code.png',
 
   //Este es el nombre de la tienda
-  nombreNegocio: 'Droguería Quintas de La Fachada',
-  direccionNegocio: 'Armenia Quindío',
-  gerenteNegocio: 'Alex',
-  fechaExpedicion: '2024/12/10',
-  telefonos: '123 456 7890',
-  resolucionDian: '123456789',
-  nit: '890.107.487-3',
-  correo: 'lafachada@gmail.com'
+  nombreNegocio: 'DROGUERIA QUIMBAYITA',
+  direccionNegocio: 'CR 7 14 24, Quimbaya Quindío',
+  gerenteNegocio: 'LEIDY JOHANA URREGO TUBERQUIA',
+  fechaExpedicion: '2023/04/25',
+  telefonos: '3137844742',
+  resolucionDian: '141119394617',
+  nit: '1097034601-7',
+  correo: 'johanaurrego1@outlook.com'
 }
