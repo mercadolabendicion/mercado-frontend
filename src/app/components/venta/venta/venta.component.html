@@ -15,7 +15,7 @@
         <div class="col-lg-3 col-md-6 col-12 position-relative">
           <p for="cliente">Cédula del cliente:</p>
           <input class="form-control" type="text" formControlName="cliente" id="cedulaCliente"
-            (input)="filtrarClientes()" placeholder="123456789">
+            (input)="filtrarClientes()" placeholder="Ej. 123456789">
 
           <!-- Lista flotante -->
           <div class="popup position-absolute w-100" *ngIf="clientesFiltrados.length > 0">
@@ -37,7 +37,7 @@
         <!-- Nombre -->
         <div class="col-lg-5 col-md-6 col-12">
           <p for="nombre">Nombre:</p>
-          <input class="form-control disabled-input" type="text" formControlName="nombre" placeholder="Juan perez"
+          <input class="form-control disabled-input" type="text" formControlName="nombre" placeholder="Ej. Juan perez"
             [value]="clienteSeleccionado?.nombre">
           <span
             *ngIf="formulario.get('nombre')?.invalid && (formulario.get('nombre')?.dirty || formulario.get('nombre')?.touched)">
@@ -48,7 +48,7 @@
         <!-- Dirección -->
         <div class="col-lg-4 col-md-6 col-12">
           <p for="direccion" class="form-label">Dirección</p>
-          <input class="form-control disabled-input" type="text" formControlName="direccion" placeholder="Armenia"
+          <input class="form-control disabled-input" type="text" formControlName="direccion" placeholder="Ej. Armenia"
             [value]="clienteSeleccionado?.direccion">
           <span
             *ngIf="formulario.get('direccion')?.invalid && (formulario.get('direccion')?.dirty || formulario.get('direccion')?.touched)">
@@ -77,7 +77,7 @@
           <div class="col-lg-5 col-md-6 col-12 position-relative">
             <p for="codigoProducto" class="form-label">Codigo producto</p>
             <input class="form-control" type="text" formControlName="codigoProducto" id="codigoProducto"
-              placeholder="1A2B3C4B" (input)="filtrarProductos()" (keyup)="patchearProducto()" 
+              placeholder="Ej. 1A2B3C4B" (input)="filtrarProductos()" (keyup)="patchearProducto()" 
               (paste)="patchearProducto()">
 
             <div class="popup position-absolute w-100" *ngIf="productosFiltrados.length > 0">
@@ -98,7 +98,7 @@
           <div class="col-lg-7 col-md-6 col-12">
             <p for="nombreProducto" class="form-label">Nombre producto</p>
             <input type="text" id="nombreProducto" class="form-control disabled-input option-venta" formControlName="nombreProducto"
-              placeholder="Acetaminofen" [value]="productoSeleccionado?.nombre">
+              placeholder="Ej. Arroz" [value]="productoSeleccionado?.nombre">
             <span
               *ngIf="productosForm.get('nombreProducto')!.invalid && (productosForm.get('nombreProducto')!.dirty || productosForm.get('nombreProducto')!.touched)">
               Por favor, ingrese un valor válido.
