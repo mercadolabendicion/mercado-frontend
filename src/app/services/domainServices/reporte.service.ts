@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { ImprimirReporteDTO } from "src/app/dto/reporte/imprimirReporteDTO";
+import { ImprimirReporteDTO } from "src/app/dto/reporte/ImprimirReporteDTO";
 import { ReporteDTO } from "src/app/dto/reporte/ReporteDTO";
 import { environment } from "src/app/env/env";
 

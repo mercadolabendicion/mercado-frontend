@@ -1,5 +1,4 @@
-import { ReporteDTO } from "./ReporteDTO";
-
+import { ReporteDTO } from "src/app/dto/reporte/ReporteDTO";
 
 export class ImprimirReporteDTO{
 

@@ -2,7 +2,7 @@ export const environment = {
 
 
   // Esta es la URL de la API que se va a consumir en el proyecto
-  ApiUrl: 'https://backend-quimbayita.onrender.com',
+  ApiUrl: 'https://facturacion-kvec.onrender.com',
   //obtengo el valor de la variable de entorno
   //ApiUrl: 'http://localhost:8086',
 
@@ -13,12 +13,12 @@ export const environment = {
   imageUrl: '../../assets/404-status-code.png',
 
   //Este es el nombre de la tienda
-  nombreNegocio: 'DROGUERIA QUIMBAYITA',
-  direccionNegocio: 'CR 7 14 24, Quimbaya Quindío',
-  gerenteNegocio: 'LEIDY JOHANA URREGO TUBERQUIA',
-  fechaExpedicion: '2023/04/25',
-  telefonos: '3137844742',
-  resolucionDian: '141119394617',
-  nit: '1097034601-7',
-  correo: 'johanaurrego1@outlook.com'
+  nombreNegocio: 'Minimercado La Gran Bendición',
+  direccionNegocio: 'Tebaida, Quindío',
+  gerenteNegocio: 'Jorgue Urrego',
+  fechaExpedicion: '2023/08/03',
+  telefonos: '3123456789',
+  resolucionDian: '123456789',
+  nit: '123456789-7',
+  correo: 'jorgueurrego@gmail.com'
 }

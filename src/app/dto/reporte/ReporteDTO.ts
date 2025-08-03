@@ -1,3 +1,4 @@
+
 export class ReporteDTO{
     fecha!: string;
     efectivo!: number;
