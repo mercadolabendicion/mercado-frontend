@@ -2,7 +2,7 @@ export const environment = {
 
 
   // Esta es la URL de la API que se va a consumir en el proyecto
-  ApiUrl: 'https://facturacion-kvec.onrender.com',
+  ApiUrl: 'https://backend-la-gran-bendicion.onrender.com',
   //obtengo el valor de la variable de entorno
   //ApiUrl: 'http://localhost:8086',
 
