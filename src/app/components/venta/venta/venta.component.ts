@@ -92,25 +92,25 @@ export class VentaComponent implements DoCheck {
       this.valorFormateado = valorNumerico.toLocaleString('en-US'); // Formato con comas
       this.valorDescuento = this.valorFormateado;
       input.value = this.valorFormateado;
-      if(this.valorDescuento != ''){
+      if (this.valorDescuento != '') {
         this.descuento = valorNumerico;
       }
-    } 
+    }
   }
 
-  public reducirTotal(){
+  public reducirTotal() {
     this.total = this.totalReal
-    if(this.total - this.descuento < 0){
+    if (this.total - this.descuento < 0) {
       this.ventaService.mostrarErrorTotalNegativo();
-    }else{
+    } else {
       this.aplicarDescuento = false;
       this.total = this.total - this.descuento;
       this.descuentoAplicado = true;
     }
-    
+
   }
 
-  public cancelarDescuento(){
+  public cancelarDescuento() {
     this.total = this.totalReal;
     this.descuentoAplicado = false;
   }
@@ -204,6 +204,8 @@ export class VentaComponent implements DoCheck {
             obtenerClientesRecursivamente(paginaActual + 1); // Llama a la siguiente página
           } else {
             console.log('Todos los clientes han sido cargados:', this.clientes.length);
+            // Cuando ya terminaron de cargarse todos, asignar cliente por defecto (Consumidor Final)
+            this.setClientePorDefecto('222222222222');
           }
         },
         error: (err) => {
@@ -214,6 +216,21 @@ export class VentaComponent implements DoCheck {
 
     // Comienza a obtener productos desde la primera página
     obtenerClientesRecursivamente(page);
+  }
+
+  /**
+ * Asigna un cliente por defecto al cargar la pantalla.
+ */
+  private setClientePorDefecto(cedula: string): void {
+    const clientePorDefecto = this.clientes.find(c => c.cedula === cedula);
+    if (clientePorDefecto) {
+      this.formulario.patchValue({
+        cliente: clientePorDefecto.cedula
+      });
+      this.asignarCliente(clientePorDefecto);
+    } else {
+      console.warn('No se encontró el cliente por defecto con cédula', cedula);
+    }
   }
 
   /**
@@ -245,7 +262,7 @@ export class VentaComponent implements DoCheck {
     this.calcularValores();
     try {
       const ventaCreada = await this.ventaService.crearVenta(venta, this.total);
-  
+
       // Solo se ejecutan estas líneas si la promesa retorna true
       if (ventaCreada) {
         this.finalizarVenta();
@@ -257,7 +274,7 @@ export class VentaComponent implements DoCheck {
       console.error("Error al procesar la venta:", error);
     }
   }
-  
+
 
   /**
    * Este metodo limpia los campos del formulario y genera un nuevo id de factura
@@ -334,7 +351,7 @@ export class VentaComponent implements DoCheck {
 
     try {
       const productoEliminado = await this.productoService.verificarProductoEliminado(codigo);
-      let formaVenta = this.formaVenta[this.productosForm.get('formaVenta')!.value] == undefined ? '':this.formaVenta[this.productosForm.get('formaVenta')!.value];
+      let formaVenta = this.formaVenta[this.productosForm.get('formaVenta')!.value] == undefined ? '' : this.formaVenta[this.productosForm.get('formaVenta')!.value];
       const cantidadValida = await this.productoService.verificarProductoCantidad(cantidad, codigo, formaVenta);
 
       if (productoEliminado || !cantidadValida) {
@@ -619,7 +636,7 @@ export class VentaComponent implements DoCheck {
   cambiarPrecio() {
     if (this.productoSeleccionado) {
       let precio = this.formasVentaProductoSeleccionado[this.productosForm.get('formaVenta')!.value].precioVenta;
-      this.productosForm.get('precio')?.setValue("$"+precio.toLocaleString('en-US'));
+      this.productosForm.get('precio')?.setValue("$" + precio.toLocaleString('en-US'));
       this.cantidadDisponible = this.formasVentaProductoSeleccionado[this.productosForm.get('formaVenta')!.value].cantidad;
     }
 
@@ -630,10 +647,10 @@ export class VentaComponent implements DoCheck {
     let codigoProd = this.productosForm.get('codigoProducto')?.value;
     let producto = this.productos.find(prod => prod.codigo == codigoProd);
 
-    if(producto){
+    if (producto) {
       this.productoSeleccionado = producto;
       this.seleccionarProductoDeLista(producto);
-    }else{
+    } else {
       this.productoSeleccionado = null;
       this.productosForm.patchValue({
         nombreProducto: '',
