@@ -8,7 +8,9 @@
       <!-- Sección: Información legal (DIAN) -->
       <div class="seccion mb-4">
         <h2 class="mb-1">Información legal (DIAN)</h2>
-        <p class="text-muted mb-2">En esta sección podrá modificar información legal del negocio con relación a la DIAN, esta información es necesaria tanto para la factura física como para la facturación electrónica. Antes de hacer algún cambio consulte con su contador.</p>
+        <p class="text-muted mb-2">En esta sección podrá modificar información legal del negocio con relación a la DIAN,
+          esta información es necesaria tanto para la factura física como para la facturación electrónica. Antes de
+          hacer algún cambio consulte con su contador.</p>
         <div class="row mt-4">
           <div class="col-md-6">
             <!-- Razón Social -->
@@ -17,8 +19,10 @@
                 Razón Social:
                 <span class="text-muted ms-2">Nombre oficial o titular del negocio.</span>
               </label>
-              <input type="text" formControlName="razonSocial" class="form-control" [placeholder]="placeholders['razonSocial']">
-              <small *ngIf="formulario.get('razonSocial')?.invalid && formulario.get('razonSocial')!.touched" class="text-danger">
+              <input type="text" formControlName="razonSocial" class="form-control"
+                [placeholder]="placeholders['razonSocial']">
+              <small *ngIf="formulario.get('razonSocial')?.invalid && formulario.get('razonSocial')!.touched"
+                class="text-danger">
                 Por favor, ingrese un nombre válido.
               </small>
             </div>
@@ -42,8 +46,10 @@
                 Resolución DIAN:
                 <span class="text-muted ms-2">Número de la resolución emitida por la DIAN.</span>
               </label>
-              <input type="text" formControlName="resolucionDIAN" class="form-control" [placeholder]="placeholders['resolucionDIAN']">
-              <small *ngIf="formulario.get('resolucionDIAN')?.invalid && formulario.get('resolucionDIAN')!.touched" class="text-danger">
+              <input type="text" formControlName="resolucionDIAN" class="form-control"
+                [placeholder]="placeholders['resolucionDIAN']">
+              <small *ngIf="formulario.get('resolucionDIAN')?.invalid && formulario.get('resolucionDIAN')!.touched"
+                class="text-danger">
                 Por favor, ingrese un número válido.
               </small>
             </div>
@@ -54,8 +60,11 @@
               <label class="datos d-flex align-items-center">
                 Fecha de Expedición de la resolución:
               </label>
-              <input type="date" formControlName="fechaExpedicionDIAN" class="form-control" [placeholder]="placeholders['fechaExpedicionDIAN']">
-              <small *ngIf="formulario.get('fechaExpedicionDIAN')?.invalid && formulario.get('fechaExpedicionDIAN')!.touched" class="text-danger">
+              <input type="date" formControlName="fechaExpedicionDIAN" class="form-control"
+                [placeholder]="placeholders['fechaExpedicionDIAN']">
+              <small
+                *ngIf="formulario.get('fechaExpedicionDIAN')?.invalid && formulario.get('fechaExpedicionDIAN')!.touched"
+                class="text-danger">
                 Por favor, seleccione una fecha válida.
               </small>
             </div>
@@ -66,7 +75,8 @@
       <!-- Sección: Información del negocio -->
       <div class="seccion mb-4">
         <h2 class="mb-1">Información del Negocio</h2>
-        <p class="text-muted mb-2">En esta sección podrá modificar la información física del negocio la cual será util y necesaria para generar la factura física.</p>
+        <p class="text-muted mb-2">En esta sección podrá modificar la información física del negocio la cual será util y
+          necesaria para generar la factura física.</p>
         <div class="row mt-4">
           <div class="col-md-6">
             <!-- Dirección -->
@@ -74,8 +84,10 @@
               <label class="datos d-flex align-items-center">
                 Dirección del Negocio:
               </label>
-              <input type="text" formControlName="direccion" class="form-control" [placeholder]="placeholders['direccion']">
-              <small *ngIf="formulario.get('direccion')?.invalid && formulario.get('direccion')!.touched" class="text-danger">
+              <input type="text" formControlName="direccion" class="form-control"
+                [placeholder]="placeholders['direccion']">
+              <small *ngIf="formulario.get('direccion')?.invalid && formulario.get('direccion')!.touched"
+                class="text-danger">
                 Por favor, ingrese una dirección válida.
               </small>
             </div>
@@ -86,8 +98,10 @@
               <label class="datos d-flex align-items-center">
                 Teléfono:
               </label>
-              <input type="tel" formControlName="telefono" class="form-control" [placeholder]="placeholders['telefono']">
-              <small *ngIf="formulario.get('telefono')?.invalid && formulario.get('telefono')!.touched" class="text-danger">
+              <input type="tel" formControlName="telefono" class="form-control"
+                [placeholder]="placeholders['telefono']">
+              <small *ngIf="formulario.get('telefono')?.invalid && formulario.get('telefono')!.touched"
+                class="text-danger">
                 Por favor, ingrese un número de teléfono válido.
               </small>
             </div>
@@ -99,8 +113,11 @@
                 Correo Electrónico:
                 <span class="text-muted ms-2">Necesario para la recepción de facturas.</span>
               </label>
-              <input type="email" formControlName="correoElectronico" class="form-control" [placeholder]="placeholders['correoElectronico']">
-              <small *ngIf="formulario.get('correoElectronico')?.invalid && formulario.get('correoElectronico')!.touched" class="text-danger">
+              <input type="email" formControlName="correoElectronico" class="form-control"
+                [placeholder]="placeholders['correoElectronico']">
+              <small
+                *ngIf="formulario.get('correoElectronico')?.invalid && formulario.get('correoElectronico')!.touched"
+                class="text-danger">
                 Por favor, ingrese un correo válido.
               </small>
             </div>
@@ -111,7 +128,8 @@
               <label class="datos d-flex align-items-center">
                 Porcentaje de IVA:
               </label>
-              <input type="number" formControlName="iva" class="form-control" [placeholder]="placeholders['iva']" min="0" max="100">
+              <input type="number" formControlName="iva" class="form-control" [placeholder]="placeholders['iva']"
+                min="0" max="100">
               <small *ngIf="formulario.get('iva')?.invalid && formulario.get('iva')!.touched" class="text-danger">
                 Por favor, ingrese un porcentaje válido.
               </small>
@@ -120,9 +138,24 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-success w-100" >
+      <button type="submit" class="btn btn-success w-100 mb-5">
         Guardar Preferencias
       </button>
     </form>
+
+    <hr class="opacity-100">
+
+    <!-- Sección: Valor del negocio -->
+    <div class="row seccion mt-4 mb-5">
+      <div class="col-12 col-sm-9">
+        <h2 class="mb-1">Valor del negocio</h2>
+        <p class="text-muted mb-2">En esta opción podrá consultar el valor del negocio, encontrará dos valores:</p>
+        <li><strong>Valor en precios de compra: </strong> Se calcula a partir de todos los precios de compra de cada producto, le permite ver que valor en mercancía comprada tiene el negocio.</li>
+        <li><strong>Valor en precios de venta: </strong> Se calcula a partir de todos los precios de venta de cada producto, le permite ver que valor tendrá el negocio después de vender todos sus productos.</li>
+      </div>
+      <div class="col-12 col-sm-3">
+        <button id="nuevo" class="btn btn-primary bg-white text-black border border-2"><img width="25" height="25" src="https://img.icons8.com/fluency/25/search.png" alt="search"/> Consultar</button>
+      </div>
+    </div>
   </div>
 </div>
