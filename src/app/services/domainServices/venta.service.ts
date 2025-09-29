@@ -180,6 +180,19 @@ export class VentaService {
   public obtenerVentas(page:number): Observable<Page<VentaDTO>> {
     return this.httpVentaService.obtenerVentas(page);
   }
+
+  /**
+  * Este método se encarga de obtener las ventas de la base de datos
+  */
+  public obtenerVentasTodas(): void {
+    this.httpVentaService.obtenerVentasTodas().subscribe({
+      next: (resp) => {
+        localStorage.setItem('ventas', JSON.stringify(resp));
+        console.log('Ventas totales cargadas:', resp.length);
+      },
+    });
+  }
+
   /**
    * Este metodo se encarga de obtener el siguiente id de venta
    * @returns un observable de tipo number

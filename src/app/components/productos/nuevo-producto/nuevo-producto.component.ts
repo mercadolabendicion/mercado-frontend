@@ -101,9 +101,9 @@ export class NuevoProductoComponent implements OnInit {
     this.productoService.guardarProducto(producto).subscribe((data) => {
       if (data) {
         this.formulario.reset();
+        this.menuComponent.listarProductos();
       }
     });
-    this.menuComponent.listarProductos();
   }
 
   /**

@@ -33,27 +33,14 @@ export class ClienteService {
 
   /**
   * Este método se encarga de obtener los clientes de la base de datos
-  * @returns un observable de tipo ClienteDTO
   */
-  public getTodosClientes(): Observable<ClienteDTO[]> {
-    this.clienteService.verificarCambios().subscribe({
+  public getTodosClientes(): void {
+    this.clienteService.getTodosLosClientes().subscribe({
       next: (resp) => {
-        if (resp) {
-          this.clienteService.getTodosLosClientes().subscribe({
-            next: (resp) => {
-              this.guardarLocal(resp);
-            },
-          });
-        } else {
-          this.obtenerClienteLocal
-        }
+        localStorage.setItem('clientes', JSON.stringify(resp));
+        console.log('Clientes totales cargados:', resp.length);
       },
     });
-    return of(this.obtenerClienteLocal())
-  }
-
-  guardarLocal(resp: ClienteDTO[]) {
-    localStorage.setItem('clientes', JSON.stringify(resp));
   }
 
   /**

@@ -22,13 +22,12 @@ export class EditarClienteComponent {
   private fb: FormBuilder = inject(FormBuilder);
   private httpClienteService: HttpClientesService = inject(HttpClientesService);
   private alert: AlertService = inject(AlertService);
-    private menuComponent: MenuComponent = inject(MenuComponent);
- 
+  private menuComponent: MenuComponent = inject(MenuComponent);
+
   /**
    * Metodo que crea el formulario reactivo del frontend
    * @param fb 
    */
-
   public ngOnInit(): void {
     this.formBuild();
   }

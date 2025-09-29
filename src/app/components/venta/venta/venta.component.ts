@@ -158,64 +158,41 @@ export class VentaComponent implements DoCheck {
   }
 
   /**
-   * Este método se encarga de listar todos los productos disponibles en la base de datos,
-   * haciendo solicitudes hasta que no se reciban más productos.
+   * Este método se encarga de listar todos los productos disponibles desde localStorage,
+   * donde los datos son actualizados por el endpoint getTodosProductos.
    */
   protected listarProductos(): void {
-    let page = 0;
-    this.productos = [];
-
-    const obtenerProductosRecursivamente = (paginaActual: number): void => {
-      this.productoService.getProductos(paginaActual).subscribe({
-        next: (data) => {
-          // Si hay productos en la página actual, se agregan a la lista de productos
-          if (data.content.length > 0) {
-            this.productos = [...this.productos, ...data.content];
-            obtenerProductosRecursivamente(paginaActual + 1); // Llama a la siguiente página
-          } else {
-            console.log('Todos los productos han sido cargados:', this.productos.length);
+      this.menuComponent.listarProductos();
+      this.productos = [];
+      const productosGuardados = localStorage.getItem('productos');
+      if (productosGuardados) {
+          try {
+              this.productos = JSON.parse(productosGuardados) as ProductoDTO[];
+          } catch (err) {
+              console.error('Error al parsear productos desde localStorage:', err);
           }
-        },
-        error: (err) => {
-          console.error('Error al listar productos:', err);
-        }
-      });
-    };
-
-    // Comienza a obtener productos desde la primera página
-    obtenerProductosRecursivamente(page);
+      } else {
+          console.warn('No se encontraron productos en localStorage.');
+      }
   }
 
-
   /**
-   * Este método se encarga de listar todos los clientes disponibles en la base de datos,
-   * haciendo solicitudes hasta que no se reciban más productos.
+   * Este método se encarga de listar todos los clientes disponibles desde localStorage,
+   * donde los datos son actualizados por el endpoint getTodosClientes.
    */
   protected listarClientes(): void {
-    let page = 0;
-    this.clientes = [];
-
-    const obtenerClientesRecursivamente = (paginaActual: number): void => {
-      this.clienteService.getClientes(paginaActual).subscribe({
-        next: (data) => {
-          // Si hay productos en la página actual, se agregan a la lista de productos
-          if (data.content.length > 0) {
-            this.clientes = [...this.clientes, ...data.content];
-            obtenerClientesRecursivamente(paginaActual + 1); // Llama a la siguiente página
-          } else {
-            console.log('Todos los clientes han sido cargados:', this.clientes.length);
-            // Cuando ya terminaron de cargarse todos, asignar cliente por defecto (Consumidor Final)
-            this.setClientePorDefecto('222222222222');
+      this.menuComponent.listarClientes();
+      this.clientes = [];
+      const clientesGuardados = localStorage.getItem('clientes');
+      if (clientesGuardados) {
+          try {
+              this.clientes = JSON.parse(clientesGuardados) as ClienteDTO[];
+          } catch (err) {
+              console.error('Error al parsear clientes desde localStorage:', err);
           }
-        },
-        error: (err) => {
-          console.error('Error al listar clientes:', err);
-        }
-      });
-    };
-
-    // Comienza a obtener productos desde la primera página
-    obtenerClientesRecursivamente(page);
+      } else {
+          console.warn('No se encontraron clientes en localStorage.');
+      }
   }
 
   /**

@@ -2,14 +2,11 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'src/app/env/env';
 import { ProductoDTO } from 'src/app/dto/producto/ProductoDTO';
-import { CajaComponent } from 'src/app/page/caja/caja.component';
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { ClienteDTO } from 'src/app/dto/cliente/ClienteDTO';
 import { VentaDTO } from 'src/app/dto/venta/VentaDTO';
 import { VentaService } from 'src/app/services/domainServices/venta.service';
-import { VentaComponent } from '../venta/venta/venta.component';
-import { ListaVentasComponent } from '../venta/lista-ventas/listaVentas.component';
 
 @Component({
   selector: 'app-menu',
@@ -36,14 +33,15 @@ export class MenuComponent {
     sidebar.classList.toggle("collapsed");
     this.estadoMenu = !this.estadoMenu
   }
+
   /**
    * Metodo que se encarga de navegar a la pagina principal
    * para cerrar la sesion
    */
   ngOnInit(): void {
-    //this.productoService.getTodosProductos();
-    //this.clienteService.getTodosClientes();
-    this.llenarLocalStorage();
+    this.productoService.getTodosProductos();
+    this.clienteService.getTodosClientes();
+    this.ventaService.obtenerVentasTodas();
     this.router.navigate(['/app/principal']);
   }
 
@@ -66,105 +64,16 @@ export class MenuComponent {
       this.toggleCollapse();
   }
 
-  /**
-   * Este metodo llena las listas en localStore
-   */
-  public llenarLocalStorage(): void {
-    this.listarProductos();
-    this.listarClientes();
-    this.listarVentas();
+  public listarClientes() {
+    this.clienteService.getTodosClientes();
   }
 
-  /**
-   * Este método se encarga de listar todos los productos disponibles en la base de datos,
-   * haciendo solicitudes hasta que no se reciban más productos y carga todo en el localstorage
-   */
-  public listarProductos(): void {
-    let page = 0;
-    this.productos = [];
-    localStorage.removeItem('productos');
-    const obtenerProductosRecursivamente = (paginaActual: number): void => {
-      this.productoService.getProductos(paginaActual).subscribe({
-        next: (data) => {
-          // Si hay productos en la página actual, se agregan a la lista de productos
-          if (data.content.length > 0) {
-            this.productos = [...this.productos, ...data.content];
-            obtenerProductosRecursivamente(paginaActual + 1); // Llama a la siguiente página
-          } else {
-            console.log('Todos los productos han sido cargados:', this.productos.length);
-          // Almacena los productos en localStorage después de haber cargado todos los productos
-          localStorage.setItem('productos', JSON.stringify(this.productos)); 
-          }
-        },
-        error: (err) => {
-          console.error('Error al listar productos:', err);
-        }
-      });
-    };
-
-    // Comienza a obtener productos desde la primera página
-    obtenerProductosRecursivamente(page);
+  public listarProductos() {
+    this.productoService.getTodosProductos();
   }
 
-
-  /**
-   * Este método se encarga de listar todos los clientes disponibles en la base de datos,
-   * haciendo solicitudes hasta que no se reciban más clientes y carga todo en el localstorage.
-   */
-  public listarClientes(): void {
-    let page = 0;
-    this.clientes = [];
-    const obtenerClientesRecursivamente = (paginaActual: number): void => {
-      this.clienteService.getClientes(paginaActual).subscribe({
-        next: (data) => {
-          // Si hay clientes en la página actual, se agregan a la lista de clientes
-          if (data.content.length > 0) {
-            this.clientes = [...this.clientes, ...data.content];
-            obtenerClientesRecursivamente(paginaActual + 1); // Llama a la siguiente página
-          } else {
-            console.log('Todos los clientes han sido cargados:', this.clientes.length);
-          // Almacena los clientes en localStorage después de haber cargado todos los clientes
-          localStorage.setItem('clientes', JSON.stringify(this.clientes)); 
-          }
-        },
-        error: (err) => {
-          console.error('Error al listar clientes:', err);
-        }
-      });
-    };
-
-    // Comienza a obtener productos desde la primera página
-    obtenerClientesRecursivamente(page);
+  public listarVentas() {
+    this.ventaService.obtenerVentasTodas();
   }
 
-  /**
-   * Este metodo se encarga de listar todos las ventas disponibles en la base de datos,
-   * haciendo solicitudes hasta que no se reciban más ventas y carga todo en el localstorage.
-   */
-  public listarVentas(): void {
-    let page = 0;
-    this.ventas = [];
-    localStorage.removeItem('ventas');
-    const obtenerVentasRecursivamente = (paginaActual: number): void => {
-      this.ventaService.obtenerVentas(paginaActual).subscribe({
-        next: (data) => {
-          // Si hay ventas en la página actual, se agregan a la lista de ventas
-          if (data.content.length > 0) {
-            this.ventas = [...this.ventas, ...data.content];
-            obtenerVentasRecursivamente(paginaActual + 1); // Llama a la siguiente página
-          } else {
-            console.log('Todas las ventas han sido cargadas:', this.ventas.length);
-          // Almacena los ventas en localStorage después de haber cargado todos los ventas
-          localStorage.setItem('ventas', JSON.stringify(this.ventas)); 
-          }
-        },
-        error: (err) => {
-          console.error('Error al listar ventas:', err);
-        }
-      });
-    };
-
-    // Comienza a obtener ventas desde la primera página
-    obtenerVentasRecursivamente(page);
-  }
 }

@@ -15,8 +15,8 @@ import { GuardarFormaVenta } from "src/app/dto/formasVenta/GuardarFormaVenta";
     providedIn: 'root'
 })
 export class ProductoService {
-    
-   
+
+
     private httpProductoService: HttpProductoService = inject(HttpProductoService);
     private alert: AlertService = inject(AlertService);
 
@@ -30,27 +30,14 @@ export class ProductoService {
 
     /**
     * Este método se encarga de obtener los productos de la base de datos
-    * @returns un observable de tipo ProductoDTO
     */
-    public getTodosProductos(): Observable<ProductoDTO[]> {
-        this.httpProductoService.verificarCambios().subscribe({
+    public getTodosProductos() {
+        this.httpProductoService.getTodosLosProductos().subscribe({
             next: (resp) => {
-                if (resp) {
-                    this.httpProductoService.getTodosLosProductos().subscribe({
-                        next: (resp) => {
-                            this.guardarLocal(resp);
-                        },
-                    });
-                } else {
-                    this.obtenerProductoLocal
-                }
+                localStorage.setItem('productos', JSON.stringify(resp));
+                console.log('Productos totales cargados:', resp.length);
             },
         });
-        return of(this.obtenerProductoLocal())
-    }
-
-    guardarLocal(resp: ProductoDTO[]) {
-        localStorage.setItem('productos', JSON.stringify(resp));
     }
 
     /**
@@ -156,15 +143,15 @@ export class ProductoService {
      */
     public actualizar(productoActualizar: ActualizarProductoDTO): Observable<void> {
         return new Observable((observer) => {
-        this.httpProductoService.actualizar(productoActualizar).subscribe({
-            next: () => {
-                this.alert.simpleSuccessAlert('Producto actualizado correctamente');
-            },
-            error: (error) => {
-                this.alert.simpleErrorAlert(error.error.mensaje);
-            }
+            this.httpProductoService.actualizar(productoActualizar).subscribe({
+                next: () => {
+                    this.alert.simpleSuccessAlert('Producto actualizado correctamente');
+                },
+                error: (error) => {
+                    this.alert.simpleErrorAlert(error.error.mensaje);
+                }
+            });
         });
-    });
     }
 
     /**
@@ -224,7 +211,7 @@ export class ProductoService {
         return this.httpProductoService.obtenerFormasVentaByCodigo(codigo);
     }
 
-    actualizarFormaVenta(formaVenta: ActualizarFormaVentaCompletoDTO):Observable<void> {
+    actualizarFormaVenta(formaVenta: ActualizarFormaVentaCompletoDTO): Observable<void> {
         return this.httpProductoService.actualizarFormaVenta(formaVenta);
     }
 

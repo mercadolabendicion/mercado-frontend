@@ -21,6 +21,10 @@ export class HttpVentaService {
   public obtenerVentas(page: number): Observable<Page<VentaDTO>> {
     return this.http.get<Page<VentaDTO>>(`${this.URL_API}/venta/obtener-ventas-completadas?page=${page}`); 
   }
+
+  public obtenerVentasTodas(): Observable<VentaDTO[]> {
+    return this.http.get<VentaDTO[]>(`${this.URL_API}/venta/obtener-ventas`); 
+  }
   
   public generaIdVenta(): Observable<number>{
     return this.http.get<number>(`${this.URL_API}/venta/siguiente-id`);
