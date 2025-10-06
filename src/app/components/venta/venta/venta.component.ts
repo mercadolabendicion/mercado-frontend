@@ -68,6 +68,15 @@ export class VentaComponent implements DoCheck {
     this.listarProductos();
     this.listarClientes();
     this.valorDescuento = null;
+    this.ventaService.obtenerCliente('222222222222').subscribe(
+      response => {
+        this.formulario.patchValue({
+          cliente: response?.cedula,
+          nombre: response?.nombre,
+          direccion: response?.direccion
+        });
+      }
+    )
   }
 
   /**
@@ -434,7 +443,6 @@ export class VentaComponent implements DoCheck {
  * @returns void
  */
   asignarCliente(cliente: ClienteDTO): void {
-
     if (!cliente) {
       this.formulario.get('cedulaCliente')?.setErrors({ clienteNoEncontrado: true });
       this.clienteSeleccionado = null
