@@ -70,8 +70,8 @@ export class NuevoProductoComponent implements OnInit {
     this.formulario = this.formBuilder.group({
       codigo: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]],
       nombre: ['', [Validators.required]],
-      fecha_vencimiento: ['', [Validators.required]],
-      lote: ['', [Validators.required]],
+      fecha_vencimiento: [''],
+      lote: [''],
       precio: [''],
       stock: [''],
       impuesto: [''],
@@ -89,12 +89,12 @@ export class NuevoProductoComponent implements OnInit {
    * @returns void
    */
   onSubmit(): void {
-
     if (!this.formulario.valid) {
       Object.values(this.formulario.controls).forEach(control => { control.markAsTouched(); });
       return;
     }
     const { codigo, nombre, precioCompra, fecha_vencimiento, lote } = this.formulario.value;
+    console.log(this.formulario.value);
     const formasVentaEntities = this.formasVenta.controls.map(forma => FormaVenta.toEntity(forma as FormGroup));
     let impuesto = this.tipoImpuesto[this.formulario.get('impuesto')!.value] == undefined ? '' : this.tipoImpuesto[this.formulario.get('impuesto')!.value];
     let producto = CrearProductoDTO.crearProductoDTO(codigo, nombre, fecha_vencimiento, lote, impuesto, precioCompra, formasVentaEntities);
@@ -213,7 +213,5 @@ export class NuevoProductoComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const valor = parseFloat(input.value);
     if (isNaN(valor) || valor < 0) input.value = '';
-
   }
-
 }

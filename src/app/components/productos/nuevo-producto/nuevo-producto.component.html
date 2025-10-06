@@ -33,19 +33,11 @@
       <p class="datos">Fecha de vencimiento:</p>
       <div class="form-group">
         <input type="date" class="form-control" formControlName="fecha_vencimiento" placeholder="Fecha de Vencimiento">
-        <span class="text-danger"
-          *ngIf="formulario.get('fecha_vencimiento') && formulario.get('fecha_vencimiento')!.errors && formulario.get('fecha_vencimiento')!.touched">
-          Por favor, ingrese una fecha correcta
-        </span>
       </div>
 
       <p class="datos">Lote:</p>
       <div class="form-group">
         <input type="text" class="form-control" formControlName="lote" placeholder="Lote">
-        <span class="text-danger"
-          *ngIf="formulario.get('lote') && formulario.get('lote')!.errors && formulario.get('lote')!.touched">
-          Por favor, ingrese una lote correcto
-        </span>
       </div>
 
     </form>
@@ -119,8 +111,6 @@
             {{impuesto}}
           </option>
         </select>
-        
-        
       </div>
 
       <button type="submit" class="btn btn-primary mt-3">

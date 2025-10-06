@@ -5,8 +5,8 @@ export class CrearProductoDTO {
     
     codigo!: string;
     nombre!: string;
-    fechaVencimiento!: string;
-    lote!: string;
+    fechaVencimiento?: string | null;
+    lote?: string | null;
     impuesto!: string;
     precioCompra!: number;
     formasVenta!: FormaVenta[];
@@ -17,8 +17,19 @@ export class CrearProductoDTO {
       let producto = new CrearProductoDTO();
       producto.codigo = codigo;
       producto.nombre = nombre;
-      producto.fechaVencimiento = new Date(fecha_vencimiento).toISOString();
-      producto.lote = lote;
+
+      if (fecha_vencimiento && fecha_vencimiento.trim() !== '') {
+        const fechaDate = new Date(fecha_vencimiento);
+        if (!isNaN(fechaDate.getTime())) { // Verifica que sea una fecha válida
+          producto.fechaVencimiento = fechaDate.toISOString();
+        } else {
+          producto.fechaVencimiento = null;
+        }
+      } else {
+        producto.fechaVencimiento = null;
+      }
+      
+      producto.lote = (lote && lote.trim() !== '') ? lote : null;
       producto.impuesto = impuesto;
       producto.precioCompra = precioCompra;
       producto.formasVenta = formasVenta;
