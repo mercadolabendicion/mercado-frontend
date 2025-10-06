@@ -15,7 +15,6 @@ import { CrearEFacturaDTO } from 'src/app/dto/efactura/CrearEFacturaDTO';
 })
 export class ListaVentasComponent {
 
-  protected ventas: VentaDTO[];
   protected ventasTodas!: VentaDTO[];
   protected ventasFiltradas: VentaDTO[];
   public sumaTotal: number = 0;
@@ -33,15 +32,13 @@ export class ListaVentasComponent {
   rangoVisible: number = 5; // Número de paginas que se van a mostrar en el paginador
 
   constructor() {
-    this.ventas = [];
     this.ventasFiltradas = [];
     this.ventaSeleccionada = null;
   }
 
   ngOnInit() {
-    this.ajustarRangoVisible(); 
-    this.obtenerVentasTodas();
     this.obtenerVentas(0);
+    this.ajustarRangoVisible();
     this.buildForm();
   }
 
@@ -74,16 +71,6 @@ export class ListaVentasComponent {
   }
 
     /**
-   * Este metodo se encarga de guardar en la variable clientesTodos
-   * todos los clientes que se encuentran en LocalStorage con la variable clientes
-   */
-  obtenerVentasTodas() {
-    this.ventasTodas = JSON.parse(localStorage.getItem('ventas') || '[]');
-    this.ventasFiltradas = this.ventasTodas;
-    this.ventas = this.ventasTodas;
-  }
-
-    /**
      * Busca una venta por su cliente
      * @param cliente 
      */
@@ -107,7 +94,7 @@ export class ListaVentasComponent {
         venta.id.toString().includes(busqueda) ||
         venta.cliente.toLowerCase().includes(busqueda) ||
         venta.total.toString().includes(busqueda)
-      );
+      );  
     }
 
   /**
@@ -117,8 +104,8 @@ export class ListaVentasComponent {
   public obtenerVentas(page: number) {
     this.ventaService.obtenerVentas(page).subscribe(data => {
       this.ventasFiltradas = data.content;
+      this.ventasTodas = data.content;
       this.totalPaginas = data.totalPages;
-      this.ventas = data.content;
       this.generarPaginas();
     })
   }
@@ -176,9 +163,14 @@ export class ListaVentasComponent {
    * Método para filtrar las ventas por fecha
    */
   public filtrarFecha() {
-    let fecha = this.formVenta.get('fecha')?.value;
-    this.ventasFiltradas = this.ventasTodas.filter((venta: VentaDTO) =>
-      venta.fecha.includes(fecha)
+    let fecha = this.formVenta.get('fecha')?.value || ''; // Default a string vacío si es null/undefined
+    
+    if (!fecha) {
+      this.ventasFiltradas = [...this.ventasTodas]; // O this.ventasTodas.slice() para copiar
+      return;
+    }
+    
+    this.ventasFiltradas = this.ventasTodas.filter((venta: VentaDTO) =>(venta.fecha?.includes(fecha) ?? false)
     );
   }
 

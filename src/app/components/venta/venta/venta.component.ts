@@ -78,7 +78,7 @@ export class VentaComponent implements DoCheck {
       }
     )
   }
-
+  
   /**
    * Método que se ejecuta al hacer clic en el botón "Aplicar".
    * Verifica si el descuento está activado y si el valor ingresado es válido.
