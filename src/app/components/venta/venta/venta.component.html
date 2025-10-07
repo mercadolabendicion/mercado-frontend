@@ -6,80 +6,14 @@
       </h1>
     </div>
 
-    <label class="mt-5">Cliente </label>
-    <hr class="opacity-100">
-    <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
-
-      <div class="row gy-3 align-items-center">
-        <!-- Cédula del cliente -->
-        <div class="col-lg-3 col-md-6 col-12 position-relative">
-          <p for="cliente">Cédula del cliente:</p>
-          <input class="form-control" type="text" formControlName="cliente" id="cedulaCliente"
-            (input)="filtrarClientes()" placeholder="Ej. 123456789">
-
-          <!-- Lista flotante -->
-          <div class="popup position-absolute w-100" *ngIf="clientesFiltrados.length > 0">
-            <ul class="list-group">
-              <li class="list-group-item" *ngFor="let cliente of clientesFiltrados"
-                (click)="seleccionarClienteDeLista(cliente)">
-                {{ cliente.cedula }} - {{ cliente.nombre }}
-              </li>
-            </ul>
-          </div>
-
-          <span
-            *ngIf="formulario.get('cliente')?.invalid && (formulario.get('cliente')?.dirty || formulario.get('cliente')?.touched)">
-            Por favor, ingrese un valor válido.
-          </span>
-        </div>
-
-
-        <!-- Nombre -->
-        <div class="col-lg-5 col-md-6 col-12">
-          <p for="nombre">Nombre:</p>
-          <input class="form-control disabled-input" type="text" formControlName="nombre" placeholder="Ej. Juan perez"
-            [value]="clienteSeleccionado?.nombre">
-          <span
-            *ngIf="formulario.get('nombre')?.invalid && (formulario.get('nombre')?.dirty || formulario.get('nombre')?.touched)">
-            Por favor, ingrese un valor válido.
-          </span>
-        </div>
-
-        <!-- Dirección -->
-        <div class="col-lg-4 col-md-6 col-12">
-          <p for="direccion" class="form-label">Dirección</p>
-          <input class="form-control disabled-input" type="text" formControlName="direccion" placeholder="Ej. Armenia"
-            [value]="clienteSeleccionado?.direccion">
-          <span
-            *ngIf="formulario.get('direccion')?.invalid && (formulario.get('direccion')?.dirty || formulario.get('direccion')?.touched)">
-            Por favor, ingrese un valor válido.
-          </span>
-        </div>
-      </div>
-
-      <div class="col-lg-12">
-        <div class="col-lg text-right">
-          <p type="button" (click)="cerrarMenu()" class="mt-1 mb-5" id="gris" data-bs-toggle="modal"
-            data-bs-target="#agregarUsuarioModal">¿No encuentras el cliente? Puedes crearlo <u><b>Aquí</b></u> </p>
-        </div>
-      </div>
-
-
-    </form>
-
     <div class="productos mt-5">
-      <label>Producto a agregar</label>
-      <hr class="opacity-100">
       <div [formGroup]="productosForm">
-        <div class="row gy-3">
-
-          <!-- Id producto -->
-          <div class="col-lg-5 col-md-6 col-12 position-relative">
-            <p for="codigoProducto" class="form-label">Codigo producto</p>
+        <div class="row">
+          <div class="col-12 position-relative">
+            <p for="codigoProducto" class="form-label">Producto a agregar</p>
             <input class="form-control" type="text" formControlName="codigoProducto" id="codigoProducto"
-              placeholder="Ej. 1A2B3C4B" (input)="filtrarProductos()" (keyup)="patchearProducto()" 
+              placeholder="Ej. 1A2B3C4B" (input)="filtrarProductos()" (keyup)="patchearProducto()"
               (paste)="patchearProducto()" appAutofocus>
-
             <div class="popup position-absolute w-100" *ngIf="productosFiltrados.length > 0">
               <ul class="list-group">
                 <li class="list-group-item" *ngFor="let producto of productosFiltrados"
@@ -88,212 +22,200 @@
                 </li>
               </ul>
             </div>
-            <span
-              *ngIf="productosForm.get('codigoProducto')!.invalid && (productosForm.get('codigoProducto')!.dirty || productosForm.get('codigoProducto')!.touched)">
-              Por favor, ingrese un valor válido.
-            </span>
           </div>
 
-          <!-- Nombre producto -->
-          <div class="col-lg-7 col-md-6 col-12">
-            <p for="nombreProducto" class="form-label">Nombre producto</p>
-            <input type="text" id="nombreProducto" class="form-control disabled-input option-venta" formControlName="nombreProducto"
-              placeholder="Ej. Arroz" [value]="productoSeleccionado?.nombre">
-            <span
-              *ngIf="productosForm.get('nombreProducto')!.invalid && (productosForm.get('nombreProducto')!.dirty || productosForm.get('nombreProducto')!.touched)">
-              Por favor, ingrese un valor válido.
-            </span>
-          </div>
-
-          <!-- Combo de formas de venta -->
-          <div class="col-lg-5 col-md-6 col-12">
-            <p for="formaVenta" class="form-label">Forma de venta</p>
-
-            <select class="form-select option-venta" formControlName="formaVenta" (change)="cambiarPrecio()" >
-              <option value=""  disabled selected>Seleccione una forma de venta</option>
-              <option *ngFor="let formaDeVenta of formaVenta; let i = index" [value]="i"  >
-                {{formaDeVenta}}
-              </option>
-            </select>
-            <span
-              *ngIf="productosForm.get('precio')!.invalid && (productosForm.get('precio')!.dirty || productosForm.get('precio')!.touched)">
-              Por favor, ingrese un valor válido.
-            </span>
-          </div>
-
-          <!-- Precio producto -->
-          <div class="col-lg-5 col-md-6 col-12">
-            <p for="precioProducto" class="form-label">Precio</p>
-            <input type="text" class="form-control disabled-input" formControlName="precio"
-                   placeholder="$ --------">
-            <span *ngIf="productosForm.get('precio')!.invalid && 
-                         (productosForm.get('precio')!.dirty || productosForm.get('precio')!.touched)">
-              Por favor, ingrese un valor válido.
-            </span>
-          </div>
-
-
-          <!-- Cantidad -->
           <div class="col-lg-2 col-md-6 col-12">
-            <p for="cantidadProducto" class="form-label">Cantidad</p>
-            <input type="number" id="cantidadProducto" class="form-control" formControlName="cantidadProducto"
-              placeholder="Cantidad del producto" min="1" max="{{cantidadDisponible}}">
-              <p>Disponible: {{cantidadDisponible}}</p>
-            <span
-              *ngIf="productosForm.get('cantidadProducto')?.hasError('cantidadInvalida') && productosForm.get('cantidadProducto')!.invalid && (productosForm.get('cantidadProducto')!.dirty || productosForm.get('cantidadProducto')!.touched)">
-              Por favor, ingrese un valor válido.
-            </span>
-            <span *ngIf="!hayStock" class="text-danger">*Valor mayor al stock disponible</span>
+            <p>Disponible: {{cantidadDisponible}}</p>
           </div>
-
-          <!-- Botón Agregar -->
-          <!-- <div class="col-12">
-            <button class="btn btn-primary w-100 BotonGeneral" id="azul" (click)="agregarProducto()">Agregar
-              producto</button>
-          </div> -->
         </div>
       </div>
     </div>
 
     <div class="container">
-      <div class="table-container">
-        <div class="separador">
-          <div class="table-responsive tabla">
-            <table class="table table-bordered table-hover ">
-              <thead>
-                <tr>
-                  <th>Cod Producto</th>
-                  <th>Nombre Producto</th>
-                  <th>Precio</th>
-                  <th>Cantidad</th>
-                  <th>Forma de venta</th>
-                  <th class="eliminar">Acciones</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr *ngFor="let producto of listProductos; let i = index; trackBy: trackByCodigo">
-                  <td class="codigo">{{ producto.codigo }}</td>
-                  <td class="nombre">{{ producto.nombre }}</td>
-                  <td>${{ producto.precio | number:'1.0-0' }}</td>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <button class="btn btn-sm btn-outline-secondary me-1" (click)="cambiarCantidad(i, producto.cantidad - 1)" [disabled]="producto.cantidad <= 1">-</button>
-                <input type="number"
-                      class="form-control form-control-sm text-center"
-                      style="width: 60px; display: inline-block;"
-                      [value]="producto.cantidad"
-                      (input)="cambiarCantidad(i, obtenerValorInputNumber($event))"
-                      min="1"
-                      [max]="getCantidadDisponible(producto)">
-                      <button class="btn btn-sm btn-outline-secondary ms-1" (click)="cambiarCantidad(i, producto.cantidad + 1)" [disabled]="producto.cantidad >= getCantidadDisponible(producto)">+</button>
-                    </div>
-                    <div *ngIf="producto.cantidad > getCantidadDisponible(producto)" class="text-danger small">
-                      *Valor mayor al stock disponible
-                    </div>
-                  </td>
-                  <td>
-                    <div *ngIf="editandoFormaVentaIndex !== i; else editCombo">
-                      <span (click)="activarEdicionFormaVenta(i)" style="cursor:pointer;">
-                        {{ producto.formaVenta }}
-                        <i class="bi bi-pencil ms-1"></i>
-                      </span>
-                    </div>
-                    <ng-template #editCombo>
-                      <select class="form-select form-select-sm"
-                              [ngModel]="producto.formaVenta"
-                              (ngModelChange)="cambiarFormaVenta(i, $event)">
-                        <option *ngFor="let forma of getFormasVentaProducto(producto)" [value]="forma.nombre">
-                          {{ forma.nombre }}
-                        </option>
-                      </select>
-                      <button class="btn btn-link btn-sm" (click)="desactivarEdicionFormaVenta()">✔</button>
-                    </ng-template>
-                  </td>
-                  <td id="eliminar" class="eliminar">
-                    <button class="btn-primary BotonGeneral" (click)="eliminarPorId(producto)">X</button>
-                  </td>
-                </tr>
-                <tr class="sin-datos-tabla" *ngIf="listProductos.length === 0">
-                  <td colspan="6">
-                    <div class="sin-datos-mensaje">No se han agregado productos</div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="container mt-4">
       <div class="row">
-        <!-- Columna del checkbox -->
-        <div class="col-md-6 d-flex">
-          <div class="row">
-            <div class="col-md-4">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="applyDiscountCheckbox" [(ngModel)]="aplicarDescuento"/>
-                <label class="form-check-label ms-2" for="applyDiscountCheckbox">
-                  Aplicar descuento
-                </label>
+        <!-- Columna 1: Artículos escaneados -->
+        <div class="col-lg-7 col-12 mb-4">
+          <h5>Artículos escaneados</h5>
+          <div class="table-container">
+            <div class="separador">
+              <div class="table-responsive tabla">
+                <table class="table table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th>Cod Producto</th>
+                      <th>Nombre Producto</th>
+                      <th>Precio</th>
+                      <th>Cantidad</th>
+                      <th>Forma de venta</th>
+                      <th class="eliminar">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let producto of listProductos; let i = index; trackBy: trackByCodigo">
+                      <td class="codigo">{{ producto.codigo }}</td>
+                      <td class="nombre">{{ producto.nombre }}</td>
+                      <td>${{ producto.precio | number:'1.0-0' }}</td>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <button class="btn btn-sm btn-outline-secondary me-1"
+                            (click)="cambiarCantidad(i, producto.cantidad - 1)"
+                            [disabled]="producto.cantidad <= 1">-</button>
+                          <input type="number" class="form-control form-control-sm text-center"
+                            style="width: 60px; display: inline-block;" [value]="producto.cantidad"
+                            (input)="cambiarCantidad(i, obtenerValorInputNumber($event))" min="1"
+                            [max]="getCantidadDisponible(producto)">
+                          <button class="btn btn-sm btn-outline-secondary ms-1"
+                            (click)="cambiarCantidad(i, producto.cantidad + 1)"
+                            [disabled]="producto.cantidad >= getCantidadDisponible(producto)">+</button>
+                        </div>
+                        <div *ngIf="producto.cantidad > getCantidadDisponible(producto)" class="text-danger small">
+                          *Valor mayor al stock disponible
+                        </div>
+                      </td>
+                      <td>
+                        <div *ngIf="editandoFormaVentaIndex !== i; else editCombo">
+                          <span (click)="activarEdicionFormaVenta(i)" style="cursor:pointer;">
+                            {{ producto.formaVenta }}
+                            <i class="bi bi-pencil ms-1"></i>
+                          </span>
+                        </div>
+                        <ng-template #editCombo>
+                          <select class="form-select form-select-sm" [ngModel]="producto.formaVenta"
+                            (ngModelChange)="cambiarFormaVenta(i, $event)">
+                            <option *ngFor="let forma of getFormasVentaProducto(producto)" [value]="forma.nombre">
+                              {{ forma.nombre }}
+                            </option>
+                          </select>
+                          <button class="btn btn-link btn-sm" (click)="desactivarEdicionFormaVenta()">✔</button>
+                        </ng-template>
+                      </td>
+                      <td id="eliminar" class="eliminar">
+                        <button class="btn-primary BotonGeneral" (click)="eliminarPorId(producto)">X</button>
+                      </td>
+                    </tr>
+                    <tr class="sin-datos-tabla" *ngIf="listProductos.length === 0">
+                      <td colspan="6">
+                        <div class="sin-datos-mensaje">No se han agregado productos</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-
-            <!-- Columna del cuadro de texto -->
-            <div class="col-md-8 mt-3 mt-md-0" *ngIf="aplicarDescuento">
-              <input type="text" class="form-control" id="discountValue"  [value]="valorFormateado" (input)="formatearValor($event)"  [(ngModel)]="valorDescuento"
-                placeholder="Ingrese el valor del descuento" />
-            </div>
-            @if(aplicarDescuento){
-              <button class="btn btn-primary w-100 BotonGeneral" id="azul" (click)="reducirTotal()">Aplicar descuento</button>
-            }
-            @if(descuentoAplicado){
-              <button class="btn btn-danger w-100 BotonCancelar" (click)="cancelarDescuento()">Cancelar descuento</button>
-            }
           </div>
         </div>
 
-          <div class="col-md-6 alinear-derecha">
-            <div class="valores-a-pagar">
-              <!-- <p><span>Subtotal: </span> {{subtotal | currency }}  </p> -->
-              <!-- <p><span>IVA ({{porcentajeIva}}%):</span> ${{igv | number: '1.0-0' }}</p> -->
-              <div *ngIf="aplicarDescuento">
-                <p><span>Descuento:</span> ${{valorDescuento}}</p>
+        <!-- Columna 2: Cliente, descuento y totales -->
+        <div class="col-lg-5 col-12">
+          <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+            <label class="mt-2">Resumen de la venta</label>
+            <hr class="opacity-100">
+            <div class="row gy-3 align-items-center">
+              <!-- Cédula del cliente -->
+              <div class="col-12 position-relative mb-2">
+                <p for="cliente">Cédula del cliente:</p>
+                <input class="form-control" type="text" formControlName="cliente" id="cedulaCliente"
+                  (input)="filtrarClientes()" placeholder="Ej. 123456789">
+                <!-- Lista flotante -->
+                <div class="popup position-absolute w-100" *ngIf="clientesFiltrados.length > 0">
+                  <ul class="list-group">
+                    <li class="list-group-item" *ngFor="let cliente of clientesFiltrados"
+                      (click)="seleccionarClienteDeLista(cliente)">
+                      {{ cliente.cedula }} - {{ cliente.nombre }}
+                    </li>
+                  </ul>
+                </div>
+                <span *ngIf="formulario.get('cliente')?.invalid && (formulario.get('cliente')?.dirty || formulario.get('cliente')?.touched)">
+                  Por favor, ingrese un valor válido.
+                </span>
               </div>
-              <p><span>Total a pagar:</span> ${{total | number: '1.0-0' }}</p>
+              <!-- Nombre -->
+              <div class="col-12 mb-2">
+                <p for="nombre">Nombre:</p>
+                <input class="form-control disabled-input" type="text" formControlName="nombre" placeholder="Ej. Juan perez"
+                  [value]="clienteSeleccionado?.nombre">
+                <span *ngIf="formulario.get('nombre')?.invalid && (formulario.get('nombre')?.dirty || formulario.get('nombre')?.touched)">
+                  Por favor, ingrese un valor válido.
+                </span>
+              </div>
+              <!-- Dirección -->
+              <div class="col-12 mb-2">
+                <p for="direccion" class="form-label">Dirección</p>
+                <input class="form-control disabled-input" type="text" formControlName="direccion" placeholder="Ej. Armenia"
+                  [value]="clienteSeleccionado?.direccion">
+                <span *ngIf="formulario.get('direccion')?.invalid && (formulario.get('direccion')?.dirty || formulario.get('direccion')?.touched)">
+                  Por favor, ingrese un valor válido.
+                </span>
+              </div>
+            </div>
+            <div class="text-end">
+              <p type="button" (click)="cerrarMenu()" class="mt-1 mb-3" id="gris" data-bs-toggle="modal"
+                data-bs-target="#agregarUsuarioModal">
+                ¿No encuentras el cliente? Puedes crearlo <u><b>Aquí</b></u>
+              </p>
+            </div>
+          </form>
+
+          <div class="container mt-3">
+            <div class="row">
+              <!-- Columna del checkbox y descuento -->
+              <div class="col-12">
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="applyDiscountCheckbox"
+                    [(ngModel)]="aplicarDescuento" name="aplicarDescuento"/>
+                  <label class="form-check-label ms-2" for="applyDiscountCheckbox">
+                    Aplicar descuento
+                  </label>
+                </div>
+                <div class="mb-2" *ngIf="aplicarDescuento">
+                  <input type="text" class="form-control" id="discountValue" [value]="valorFormateado"
+                    (input)="formatearValor($event)" [(ngModel)]="valorDescuento"
+                    placeholder="Ingrese el valor del descuento" name="valorDescuento"/>
+                </div>
+                <div *ngIf="aplicarDescuento">
+                  <button class="btn btn-primary w-100 BotonGeneral mb-2" id="azul" (click)="reducirTotal()">Aplicar descuento</button>
+                </div>
+                <div *ngIf="descuentoAplicado">
+                  <button class="btn btn-danger w-100 BotonCancelar mb-2" (click)="cancelarDescuento()">Cancelar descuento</button>
+                </div>
+              </div>
+              <!-- Totales -->
+              <div class="col-12 alinear-derecha">
+                <div class="valores-a-pagar">
+                  <div *ngIf="aplicarDescuento">
+                    <p><span>Descuento:</span> ${{valorDescuento}}</p>
+                  </div>
+                  <p><span>Total a pagar:</span> ${{total | number: '1.0-0' }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="text-end mt-3">
+              <button type="submit" class="btn-primary BotonGeneral" id="verde" (click)="onSubmit()">Vender</button>
             </div>
           </div>
-
         </div>
-      </div>
-
-
-      <div class="col-lg text-right">
-        <button type="submit" class="btn-primary BotonGeneral" id="verde" (click)="onSubmit()">Vender</button>
-      </div>
-
-      <div class="nuevo-usuario" [ngClass]="{ 'oculto': modoOculto }">
-        <span class="cerrar" (click)="cambiarModoOculto()">❌</span>
-        <app-nuevo></app-nuevo>
       </div>
     </div>
 
-
-
-    <div class="modal fade" id="agregarUsuarioModal" tabindex="-1" aria-labelledby="agregarUsuarioModalLabel"
-      aria-hidden="true" #modal (shown.bs.modal)="cerrarMenu()">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="agregarUsuarioModalLabel">Agregar Nuevo Cliente</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body StyleModal">
-            <app-nuevo></app-nuevo>
-          </div>
-        </div>
-      </div>
+    <div class="nuevo-usuario" [ngClass]="{ 'oculto': modoOculto }">
+      <span class="cerrar" (click)="cambiarModoOculto()">❌</span>
+      <app-nuevo></app-nuevo>
     </div>
-
   </div>
+
+  <div class="modal fade" id="agregarUsuarioModal" tabindex="-1" aria-labelledby="agregarUsuarioModalLabel"
+    aria-hidden="true" #modal (shown.bs.modal)="cerrarMenu()">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="agregarUsuarioModalLabel">Agregar Nuevo Cliente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body StyleModal">
+          <app-nuevo></app-nuevo>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
