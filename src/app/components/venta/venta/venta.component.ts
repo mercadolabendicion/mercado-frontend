@@ -68,17 +68,9 @@ export class VentaComponent implements DoCheck {
     this.listarProductos();
     this.listarClientes();
     this.valorDescuento = null;
-    this.ventaService.obtenerCliente('222222222222').subscribe(
-      response => {
-        this.formulario.patchValue({
-          cliente: response?.cedula,
-          nombre: response?.nombre,
-          direccion: response?.direccion
-        });
-      }
-    )
+    this.setClientePorDefecto('222222222222');
   }
-  
+
   /**
    * Método que se ejecuta al hacer clic en el botón "Aplicar".
    * Verifica si el descuento está activado y si el valor ingresado es válido.
@@ -123,6 +115,7 @@ export class VentaComponent implements DoCheck {
     this.total = this.totalReal;
     this.descuentoAplicado = false;
   }
+
   /**
    * Este metodo se encarga de construir los formularios de la vista
    */
@@ -138,9 +131,9 @@ export class VentaComponent implements DoCheck {
     this.productosForm = this.formBuilder.group({
       codigoProducto: ['', [Validators.required]],
       nombreProducto: ['', [Validators.required]],
-      precio: ['', [Validators.required]],
-      formaVenta: ['', [Validators.required]],
-      cantidadProducto: [1, [Validators.required, cantidadMayorQueCero()]],
+      precio: [''],
+      formaVenta: [''],
+      cantidadProducto: [1],
     });
   }
 
@@ -153,6 +146,7 @@ export class VentaComponent implements DoCheck {
     if (!this.validarProductosVenta(venta)) return;
     this.procesarVenta(venta);
   }
+
   /**
    * Este metodo se encarga de validar si los campos del formulario están completos
    * @returns 
@@ -171,18 +165,18 @@ export class VentaComponent implements DoCheck {
    * donde los datos son actualizados por el endpoint getTodosProductos.
    */
   protected listarProductos(): void {
-      this.menuComponent.listarProductos();
-      this.productos = [];
-      const productosGuardados = localStorage.getItem('productos');
-      if (productosGuardados) {
-          try {
-              this.productos = JSON.parse(productosGuardados) as ProductoDTO[];
-          } catch (err) {
-              console.error('Error al parsear productos desde localStorage:', err);
-          }
-      } else {
-          console.warn('No se encontraron productos en localStorage.');
+    this.menuComponent.listarProductos();
+    this.productos = [];
+    const productosGuardados = localStorage.getItem('productos');
+    if (productosGuardados) {
+      try {
+        this.productos = JSON.parse(productosGuardados) as ProductoDTO[];
+      } catch (err) {
+        console.error('Error al parsear productos desde localStorage:', err);
       }
+    } else {
+      console.warn('No se encontraron productos en localStorage.');
+    }
   }
 
   /**
@@ -190,18 +184,18 @@ export class VentaComponent implements DoCheck {
    * donde los datos son actualizados por el endpoint getTodosClientes.
    */
   protected listarClientes(): void {
-      this.menuComponent.listarClientes();
-      this.clientes = [];
-      const clientesGuardados = localStorage.getItem('clientes');
-      if (clientesGuardados) {
-          try {
-              this.clientes = JSON.parse(clientesGuardados) as ClienteDTO[];
-          } catch (err) {
-              console.error('Error al parsear clientes desde localStorage:', err);
-          }
-      } else {
-          console.warn('No se encontraron clientes en localStorage.');
+    this.menuComponent.listarClientes();
+    this.clientes = [];
+    const clientesGuardados = localStorage.getItem('clientes');
+    if (clientesGuardados) {
+      try {
+        this.clientes = JSON.parse(clientesGuardados) as ClienteDTO[];
+      } catch (err) {
+        console.error('Error al parsear clientes desde localStorage:', err);
       }
+    } else {
+      console.warn('No se encontraron clientes en localStorage.');
+    }
   }
 
   /**
@@ -261,7 +255,6 @@ export class VentaComponent implements DoCheck {
     }
   }
 
-
   /**
    * Este metodo limpia los campos del formulario y genera un nuevo id de factura
    */
@@ -294,6 +287,7 @@ export class VentaComponent implements DoCheck {
       }
     )
   }
+
   /**
    * Este metodo se encarga de seleccionar un cliente de la lista de clientes de la base de datos
    */
@@ -321,50 +315,54 @@ export class VentaComponent implements DoCheck {
   protected cambiarModoOculto(): void {
     this.modoOculto = !this.modoOculto;
   }
+
   /**
    * Este metodo se encarga de agregar un producto a la lista de productos de la factura
    * y calcular el subtotal, igv y total de la factura
    * @returns 
    */
   public async agregarProducto(): Promise<void> {
+    console.log(this.formasVentaProductoSeleccionado);
     if (!this.productosForm.valid) {
-      Object.values(this.productosForm.controls).forEach(control => control.markAsTouched());
-      return;
+        Object.values(this.productosForm.controls).forEach(control => control.markAsTouched());
+        return;
     }
-
+    // Extrae el índice de forma segura (default a 0 si null/undefined)
+    const indice = this.productosForm.get('formaVenta')?.value ?? 0;
     const cantidad = +this.productosForm.get('cantidadProducto')?.value;
     const codigo = this.productosForm.get('codigoProducto')?.value;
 
     try {
-      const productoEliminado = await this.productoService.verificarProductoEliminado(codigo);
-      let formaVenta = this.formaVenta[this.productosForm.get('formaVenta')!.value] == undefined ? '' : this.formaVenta[this.productosForm.get('formaVenta')!.value];
-      const cantidadValida = await this.productoService.verificarProductoCantidad(cantidad, codigo, formaVenta);
+        const productoEliminado = await this.productoService.verificarProductoEliminado(codigo);
+        const formaVenta = this.formasVentaProductoSeleccionado[indice]?.nombre ?? this.formasVentaProductoSeleccionado[0]?.nombre ?? '';
+        console.log('Forma de venta seleccionada: ' + formaVenta);
 
-      if (productoEliminado || !cantidadValida) {
-        this.hayStock = false;
-        return;
-      }
+        const cantidadValida = await this.productoService.verificarProductoCantidad(cantidad, codigo, formaVenta);
 
-      const precio = this.productosForm.get('precio')?.value;
-      const precioEntero = parseInt(precio.replace(/[\$,]/g, ''), 10);
-      const nombre = this.productosForm.get('nombreProducto')?.value;
-      const productoExistente = this.listProductos.find(prod => prod.codigo === codigo && prod.formaVenta === formaVenta);
-      if (productoExistente) {
-        productoExistente.cantidad += cantidad;
-        console.log(productoExistente);
-      } else {
-        const producto = CarritoProductoDTO.crearProducto(codigo, nombre, precioEntero, cantidad, formaVenta);
-        this.listProductos.push(producto);
-      }
+        if (productoEliminado || !cantidadValida) {
+            this.hayStock = false;
+            return;
+        }
 
-      this.resetForms();
-      this.subtotal = this.listProductos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0);
-      this.calcularValores();
+        const precio = this.productosForm.get('precio')?.value;
+        const precioEntero = parseInt(precio.replace(/[\$,]/g, ''), 10);
+        const nombre = this.productosForm.get('nombreProducto')?.value;
+        const productoExistente = this.listProductos.find(prod => prod.codigo === codigo && prod.formaVenta === formaVenta);
+        if (productoExistente) {
+            productoExistente.cantidad += cantidad;
+            console.log(productoExistente);
+        } else {
+            const producto = CarritoProductoDTO.crearProducto(codigo, nombre, precioEntero, cantidad, formaVenta);
+            this.listProductos.push(producto);
+        }
+
+        this.resetForms();
+        this.subtotal = this.listProductos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0);
+        this.calcularValores();
     } catch (error) {
-      console.error(error);
+        console.error(error);
     }
-  }
-
+}
 
   /**
    * Este metodo se encarga de resetear los campos del formulario de productos
@@ -404,18 +402,17 @@ export class VentaComponent implements DoCheck {
    * Asigna los atributos del producto seleccionado a los campos del formulario
    * @returns void
    */
-  protected seleccionarProducto(): void {
-    const idProducto = this.productosForm.get('producto')?.value;
-    if (!idProducto || idProducto.trim() === '') {
-      this.productosForm.reset();
-      this.productoSeleccionado = null;
-      return;
-    }
-    this.productoService.obtenerProductoPorCodigo(idProducto).subscribe(
-      producto => this.asignarProducto(producto)
-    );
-
-  }
+  // protected seleccionarProducto(): void {
+  //   const idProducto = this.productosForm.get('producto')?.value;
+  //   if (!idProducto || idProducto.trim() === '') {
+  //     this.productosForm.reset();
+  //     this.productoSeleccionado = null;
+  //     return;
+  //   }
+  //   this.productoService.obtenerProductoPorCodigo(idProducto).subscribe(
+  //     producto => this.asignarProducto(producto)
+  //   );
+  // }
 
   /**
    * Este metodo se encarga de asignar un producto a la variable productoSeleccionado
@@ -423,18 +420,28 @@ export class VentaComponent implements DoCheck {
    * @returns void
    */
   asignarProducto(producto: ProductoDTO): void {
-
     if (!producto) {
       this.productosForm.get('codigoProducto')?.setErrors({ productoNoEncontrado: true });
-      this.productoSeleccionado = null
+      this.productoSeleccionado = null;
       return;
     }
-    //this.stockProducto = producto.cantidad;
     this.productoSeleccionado = producto;
     this.productosForm.patchValue({
       nombreProducto: producto.nombre,
-      //precioProducto: producto.precioCompra
     });
+    this.productoService.obtenerFormasVentaByCodigo(producto.codigo).subscribe(
+      response => {
+        this.formaVenta = [];
+        this.formasVentaProductoSeleccionado = response;
+        response.forEach((element) => {
+          this.formaVenta.push(element.nombre);
+        });
+        // Solo aquí, cuando ya tienes las formas de venta, agregas el producto
+        this.productosForm.get('formaVenta')?.setValue(0); // Selecciona la primera forma por defecto
+        this.cambiarPrecio(); // Opcional: actualiza el precio y cantidad disponible
+        this.agregarProducto();
+      }
+    );
   }
 
   /**
@@ -523,7 +530,6 @@ export class VentaComponent implements DoCheck {
     });
   }
 
-
   /**
    * Este método se encarga de cerrar el menu y asi
    * evita que se genere un bug con la ventana emergente
@@ -563,7 +569,6 @@ export class VentaComponent implements DoCheck {
 
   }
 
-
   /**
    * Oculta las sugerencias al perder el foco del campo.
    */
@@ -580,15 +585,6 @@ export class VentaComponent implements DoCheck {
     this.productosForm.patchValue({
       codigoProducto: producto.codigo,
     });
-    this.productoService.obtenerFormasVentaByCodigo(producto.codigo).subscribe(
-      response => {
-        this.formaVenta = [];
-        this.formasVentaProductoSeleccionado = response;
-        response.forEach((element) => {
-          this.formaVenta.push(element.nombre);
-        });
-      }
-    )
     this.ocultarSugerencias();
     this.asignarProducto(producto);
   }
@@ -624,8 +620,6 @@ export class VentaComponent implements DoCheck {
       this.productosForm.get('precio')?.setValue("$" + precio.toLocaleString('en-US'));
       this.cantidadDisponible = this.formasVentaProductoSeleccionado[this.productosForm.get('formaVenta')!.value].cantidad;
     }
-
-
   }
 
   patchearProducto() {

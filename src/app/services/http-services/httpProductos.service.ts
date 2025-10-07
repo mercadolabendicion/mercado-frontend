@@ -45,8 +45,9 @@ export class HttpProductoService {
     return this.http.get<boolean>(`${this.URL_API}/productos/verificar-cod-producto/${codigo}`);
   }
 
-  public verificarCantidad(cantidad: number, codigo: string, formaVenta:string):Observable<boolean> {
-    return this.http.get<boolean>(`${this.URL_API}/productos/verificar-cantidad/${cantidad}/${codigo}/${formaVenta}`);
+  public verificarCantidad(cantidad: number, codigo: string, formaVenta: string): Observable<boolean> {
+    const formaVentaEncoded = encodeURIComponent(formaVenta);
+    return this.http.get<boolean>(`${this.URL_API}/productos/verificar-cantidad/${cantidad}/${codigo}/${formaVentaEncoded}`);
   }
 
   public verificarCambios():Observable<boolean> {
