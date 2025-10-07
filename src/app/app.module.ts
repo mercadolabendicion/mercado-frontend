@@ -26,6 +26,7 @@ import { ConfiguracionComponent } from './page/configuracion/configuracion.compo
 import { FacturacionElectronicaComponent } from './page/facturacion-electronica/facturacion-electronica.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { AutofocusDirective } from './directives/autofocus.directive';
 import { DecimalPipe } from '@angular/common';
 
 
@@ -50,7 +51,8 @@ import { DecimalPipe } from '@angular/common';
     VentaComponent,
     ConfiguracionComponent,
     ListaVentasComponent,
-    FacturacionElectronicaComponent
+    FacturacionElectronicaComponent,
+    AutofocusDirective
   ],
   imports: [
     BrowserModule,

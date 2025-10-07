@@ -78,7 +78,7 @@
             <p for="codigoProducto" class="form-label">Codigo producto</p>
             <input class="form-control" type="text" formControlName="codigoProducto" id="codigoProducto"
               placeholder="Ej. 1A2B3C4B" (input)="filtrarProductos()" (keyup)="patchearProducto()" 
-              (paste)="patchearProducto()">
+              (paste)="patchearProducto()" appAutofocus>
 
             <div class="popup position-absolute w-100" *ngIf="productosFiltrados.length > 0">
               <ul class="list-group">
