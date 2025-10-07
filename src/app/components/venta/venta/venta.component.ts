@@ -10,6 +10,7 @@ import { MenuComponent } from '../../menu/menu.component';
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
 import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 import { CarritoProductoDTO } from 'src/app/dto/producto/CarritoProductoDTO';
+import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 
 @Component({
   selector: 'app-venta',
@@ -49,6 +50,12 @@ export class VentaComponent implements DoCheck {
   protected descuentoAplicado: boolean = false;
   valorFormateado: string = ''; // Para almacenar el valor con formato de dinero 
   protected cantidadDisponible!: number;
+
+  // Lista auxiliar para productos completos (con formas de venta)
+  productosCompletos: ProductoCompletoDTO[] = [];
+
+  // Para saber qué fila está editando la forma de venta
+  editandoFormaVentaIndex: number | null = null;
 
   constructor() {
     this.clientes = [];
@@ -359,6 +366,13 @@ export class VentaComponent implements DoCheck {
         this.resetForms();
         this.subtotal = this.listProductos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0);
         this.calcularValores();
+
+        // Cuando agregues un producto, asegúrate de cargar ProductoCompletoDTO si no está
+        if (!this.productosCompletos.find(p => p.codigo === codigo)) {
+          this.productoService.obtenerProductoCompleto(codigo).subscribe(prodCompleto => {
+            this.productosCompletos.push(prodCompleto);
+          });
+        }
     } catch (error) {
         console.error(error);
     }
@@ -639,4 +653,65 @@ export class VentaComponent implements DoCheck {
     }
   }
 
+  // TrackBy para *ngFor
+  trackByCodigo(index: number, item: CarritoProductoDTO) {
+    return item.codigo + '-' + item.formaVenta;
+  }
+
+  // Obtener ProductoCompletoDTO por código
+  getProductoCompleto(codigo: string): ProductoCompletoDTO | undefined {
+    return this.productosCompletos.find(p => p.codigo === codigo);
+  }
+
+  // Obtener formas de venta para un producto en la tabla
+  getFormasVentaProducto(producto: CarritoProductoDTO): FormaVenta[] {
+    return this.getProductoCompleto(producto.codigo)?.formaVentas || [];
+  }
+
+  // Obtener cantidad disponible para la forma de venta actual
+  getCantidadDisponible(producto: CarritoProductoDTO): number {
+    const formas = this.getFormasVentaProducto(producto);
+    const forma = formas.find(f => f.nombre === producto.formaVenta);
+    return forma ? forma.cantidad : 99999;
+  }
+
+  // Cambiar cantidad (botón o input)
+  cambiarCantidad(index: number, nuevaCantidad: number) {
+    const producto = this.listProductos[index];
+    const maxDisponible = this.getCantidadDisponible(producto);
+    if (nuevaCantidad < 1) nuevaCantidad = 1;
+    if (nuevaCantidad > maxDisponible) nuevaCantidad = maxDisponible;
+    producto.cantidad = nuevaCantidad;
+    this.calcularValores();
+  }
+
+  // Editar forma de venta
+  activarEdicionFormaVenta(index: number) {
+    this.editandoFormaVentaIndex = index;
+  }
+  desactivarEdicionFormaVenta() {
+    this.editandoFormaVentaIndex = null;
+  }
+
+  // Cambiar forma de venta y actualizar precio/cantidad
+  cambiarFormaVenta(index: number, nuevaFormaVenta: string) {
+    const producto = this.listProductos[index];
+    const formas = this.getFormasVentaProducto(producto);
+    const forma = formas.find(f => f.nombre === nuevaFormaVenta);
+    if (forma) {
+      producto.formaVenta = forma.nombre;
+      producto.precio = forma.precioVenta;
+      // Ajustar cantidad si supera el stock de la nueva forma de venta
+      if (producto.cantidad > forma.cantidad) {
+        producto.cantidad = forma.cantidad;
+      }
+      this.calcularValores();
+    }
+    this.desactivarEdicionFormaVenta();
+  }
+
+  obtenerValorInputNumber(event: Event): number {
+  const input = event.target as HTMLInputElement;
+  return input && input.value ? Number(input.value) : 1;
+}
 }

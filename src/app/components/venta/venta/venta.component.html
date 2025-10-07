@@ -172,33 +172,53 @@
               </thead>
 
               <tbody>
-                @for(producto of listProductos;track producto.codigo){
-                <tr>
-                  <td class="codigo">
-                    <div class="codigo-scroll">
-                      {{ producto.codigo }}
+                <tr *ngFor="let producto of listProductos; let i = index; trackBy: trackByCodigo">
+                  <td class="codigo">{{ producto.codigo }}</td>
+                  <td class="nombre">{{ producto.nombre }}</td>
+                  <td>${{ producto.precio | number:'1.0-0' }}</td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <button class="btn btn-sm btn-outline-secondary me-1" (click)="cambiarCantidad(i, producto.cantidad - 1)" [disabled]="producto.cantidad <= 1">-</button>
+                <input type="number"
+                      class="form-control form-control-sm text-center"
+                      style="width: 60px; display: inline-block;"
+                      [value]="producto.cantidad"
+                      (input)="cambiarCantidad(i, obtenerValorInputNumber($event))"
+                      min="1"
+                      [max]="getCantidadDisponible(producto)">
+                      <button class="btn btn-sm btn-outline-secondary ms-1" (click)="cambiarCantidad(i, producto.cantidad + 1)" [disabled]="producto.cantidad >= getCantidadDisponible(producto)">+</button>
                     </div>
-                  </td>              
-                  <td class="nombre">
-                    <div class="nombre-scroll">
-                      {{ producto.nombre }}
+                    <div *ngIf="producto.cantidad > getCantidadDisponible(producto)" class="text-danger small">
+                      *Valor mayor al stock disponible
                     </div>
                   </td>
-                  <td>${{producto.precio| number:'1.0-0' }}</td>
-                  <td>{{ producto.cantidad }}</td>
-                  <td>{{producto.formaVenta}}</td>
+                  <td>
+                    <div *ngIf="editandoFormaVentaIndex !== i; else editCombo">
+                      <span (click)="activarEdicionFormaVenta(i)" style="cursor:pointer;">
+                        {{ producto.formaVenta }}
+                        <i class="bi bi-pencil ms-1"></i>
+                      </span>
+                    </div>
+                    <ng-template #editCombo>
+                      <select class="form-select form-select-sm"
+                              [ngModel]="producto.formaVenta"
+                              (ngModelChange)="cambiarFormaVenta(i, $event)">
+                        <option *ngFor="let forma of getFormasVentaProducto(producto)" [value]="forma.nombre">
+                          {{ forma.nombre }}
+                        </option>
+                      </select>
+                      <button class="btn btn-link btn-sm" (click)="desactivarEdicionFormaVenta()">✔</button>
+                    </ng-template>
+                  </td>
                   <td id="eliminar" class="eliminar">
                     <button class="btn-primary BotonGeneral" (click)="eliminarPorId(producto)">X</button>
                   </td>
                 </tr>
-                }
-                @if(listProductos.length === 0){
-                <tr class="sin-datos-tabla">
-                  <td colspan="5">
+                <tr class="sin-datos-tabla" *ngIf="listProductos.length === 0">
+                  <td colspan="6">
                     <div class="sin-datos-mensaje">No se han agregado productos</div>
                   </td>
                 </tr>
-                }
               </tbody>
             </table>
           </div>
