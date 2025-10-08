@@ -1,6 +1,6 @@
 /* Estilo del formulario */
 .formulario {
-  background: #fff;
+  background: #ffffff;
   border-radius: 8px;
   margin: 20px 5%;
 }
@@ -220,7 +220,7 @@ button:disabled {
 }
 
 .sin-datos-tabla {
-  height: 500px;
+  height: 400px;
   text-align: center;
   vertical-align: middle;
   font-weight: bold;
@@ -327,10 +327,12 @@ p.impuesto-usado {
   color: white;
 }
 
-.card{
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 10px;
+.card {
+  border-radius: 16px;
+  padding: 24px 24px 16px 24px;
+  margin-bottom: 24px;
+  border: 2px solid #e0e0e0;
+  transition: box-shadow 0.2s;
 }
 
 .alinear-derecha {
@@ -342,7 +344,7 @@ p.impuesto-usado {
 }
 
 .tabla{
-  max-height: 600px;
+  max-height: 500px;
   overflow-y: scroll;
 }
 
