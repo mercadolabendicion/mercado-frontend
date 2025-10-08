@@ -6,16 +6,11 @@
   box-sizing: border-box;
 }
 
-/* .container {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  height: 100vh;
-}
-*/
 .container .content {
   background-color: rgb(235, 235, 235);
-  
+  width: 100%;
 }
+
 .rutas{
   background-color: #fff;
   /*height: calc(100vh - 40px);*/

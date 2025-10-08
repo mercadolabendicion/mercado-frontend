@@ -1,16 +1,8 @@
-/* Estilo general */
-body {
-  background-color: #f4f4f9;
-  color: #333;
-  margin: 0;
-  padding: 0;
-}
-
 /* Estilo del formulario */
 .formulario {
   background: #fff;
   border-radius: 8px;
-  margin: 20px 20px;
+  margin: 20px 5%;
 }
 
 label {
@@ -26,7 +18,7 @@ input[list] {
   width: 100%;
   height: 35px;
   padding: 10px;
-  margin: 5px 0 20px 0;
+  margin: 0;
   border: 1px solid #ccc;
   border-radius: 10px;
   box-sizing: border-box;
@@ -132,93 +124,103 @@ button:disabled {
   margin-bottom: 10%;
 }
 
-/* Estilo de la tabla */
+/* Tabla de productos escaneados */
 .table-container {
-  width: 100%; 
-  height: 100%;
-  background-color: rgb(67, 164, 255);
-  border-radius: 10px;
-}
-.table-container .separador{
-  margin-top: 20px;
-}
-.separador div{
   width: 100%;
-  display: flex;
-  /*justify-content: center;*/
-  /*border: 1px solid rgb(182, 182, 182) ;*/
-  border-radius: 10px;
-}
-table {
-  background-color: #ffffff;
-  width: 100%; 
-  /*border-collapse: collapse;*/
-  border-radius: 10px;
+  background-color: rgb(67, 164, 255);
+  border-radius: 12px;
+  margin-bottom: 24px;
 }
 
-th, td {
-  border: none; 
-  padding: 8px; 
-  text-align: left; 
+.table-separator {
+  margin-top: 10px;
 }
 
-th {
+.venta-table {
   background-color: #fff;
-  color: rgb(97, 97, 97); 
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-th.codigo, td.codigo {
-  width: 20%;
-  max-width: 20%;
-}
-
-.codigo-scroll {
-  overflow-x: auto;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-  max-width: 120px;
-}
-
-th.nombre, td.nombre {
-  width: 60%;
-  max-width: 60%;
-}
-
-.nombre-scroll {
-  overflow-x: auto;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-  max-width: 100%;
-}
-
-tr:nth-child(odd) {
-  background-color: #ffffff; 
-}
-
-tr:nth-child(even) {
-  background-color: #ffffff; 
-}
-
-.eliminar button {
-  background-color: transparent;
-  color: #c82333;
-}
-
-td.eliminar, th.eliminar{
+.venta-table th,
+.venta-table td {
+  vertical-align: middle !important;
   text-align: center;
-  display: flex;
-  justify-content: center;
+  border: none;
+  padding: 12px 8px;
 }
 
-.eliminar button:hover {
-  background-color: #c82333;
+.venta-table th {
+  background-color: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.venta-nombre {
+  width: 40%;
+  text-align: left !important;
+  align-items: left;
+  min-width: 160px;
+  vertical-align: middle !important;
+  padding-left: 12px;
+}
+
+.venta-codigo {
+  display: block;
+  font-size: 0.9em;
+  color: #888;
+  text-align: left;
+  margin-top: 2px;
+  margin-left: 2px;
+}
+
+.venta-forma-venta-edit {
+  cursor: pointer;
+  color: #007bff;
+  font-weight: 100;
+  transition: color 0.2s;
+}
+
+.venta-forma-venta-edit:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.venta-cantidad-input {
+  width: 60px;
+  min-width: 60px;
+}
+
+.venta-btn-eliminar {
+  border-radius: 8px;
+  background: #f44336;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  transition: background 0.2s;
+}
+
+.venta-btn-eliminar:hover {
+  background: #c82333;
   color: #fff;
 }
 
+.venta-sin-datos {
+  background: #f9f9f9;
+  height: 80px;
+}
+
+.venta-sin-datos-mensaje {
+  color: #888;
+  font-size: 1.1em;
+  font-weight: 500;
+  text-align: center;
+  padding: 24px 0;
+}
+
 .sin-datos-tabla {
-  height: 250px;
+  height: 500px;
   text-align: center;
   vertical-align: middle;
   font-weight: bold;
@@ -238,6 +240,38 @@ td.eliminar, th.eliminar{
   font-weight: bold;
   color: #666;
   font-size: 1.2rem;
+}
+
+/* Alineación vertical y horizontal para toda la fila */
+.venta-table tr,
+.venta-table td,
+.venta-table th {
+  vertical-align: middle !important;
+}
+
+/* Limpieza de bordes y colores */
+.venta-table tr:nth-child(even) {
+  background-color: #fff;
+}
+.venta-table tr:nth-child(odd) {
+  background-color: #f8f9fa;
+}
+
+/* Botones de cantidad */
+.btn-outline-secondary {
+  border-radius: 6px;
+}
+
+/* Ajuste para responsive */
+@media (max-width: 991px) {
+  .venta-nombre {
+    min-width: 120px;
+    font-size: 0.95em;
+  }
+  .venta-cantidad-input {
+    width: 45px;
+    min-width: 45px;
+  }
 }
 
 /* Estilo de las notificaciones y mensajes */
@@ -308,11 +342,9 @@ p.impuesto-usado {
 }
 
 .tabla{
-  max-height: 400px;
+  max-height: 600px;
   overflow-y: scroll;
 }
-
-
 
 .popup {
   position: absolute;
@@ -344,4 +376,31 @@ p.impuesto-usado {
 .option-venta span{
   font-size: 1.2em;
   align-items: center;
+}
+
+/* Mejorar visualización del combo */
+.venta-table select.form-select,
+.venta-table .form-select-sm {
+  min-width: 120px;
+  max-width: 180px;
+  font-size: 1em;
+  padding: 4px 8px;
+  line-height: 1.2;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+
+/* Opcional: mejora el menú desplegable */
+.venta-table select.form-select option {
+  font-size: 1em;
+  padding: 4px 8px;
+}
+
+/* Para que el botón de check no quede pegado */
+.venta-table .btn-link.btn-sm {
+  margin-left: 4px;
+  vertical-align: middle;
 }

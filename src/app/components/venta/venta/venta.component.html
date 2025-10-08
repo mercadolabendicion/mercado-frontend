@@ -1,5 +1,5 @@
 <div class="formulario">
-  <div class="container">
+  <div class="contenedor">
     <div class="col-12">
       <h1 class="rojo">
         Hacer una venta
@@ -31,66 +31,74 @@
       </div>
     </div>
 
-    <div class="container">
+    <div class="contenedor">
       <div class="row">
         <!-- Columna 1: Artículos escaneados -->
-        <div class="col-lg-7 col-12 mb-4">
-          <h5>Artículos escaneados</h5>
+        <div class="col-lg-8 col-12 mb-4">
+          <h5 class="mb-4">Artículos escaneados</h5>
           <div class="table-container">
-            <div class="separador">
-              <div class="table-responsive tabla">
-                <table class="table table-bordered table-hover">
+            <div class="table-separator">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover venta-table">
                   <thead>
                     <tr>
-                      <th>Cod Producto</th>
-                      <th>Nombre Producto</th>
-                      <th>Precio</th>
-                      <th>Cantidad</th>
-                      <th>Forma de venta</th>
-                      <th class="eliminar">Acciones</th>
+                      <th class="align-middle">Producto</th>
+                      <th class="align-middle text-center">Forma de venta</th>
+                      <th class="align-middle text-center">Cantidad</th>
+                      <th class="align-middle text-center">Precio</th>
+                      <th class="align-middle text-center">Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let producto of listProductos; let i = index; trackBy: trackByCodigo">
-                      <td class="codigo">{{ producto.codigo }}</td>
-                      <td class="nombre">{{ producto.nombre }}</td>
-                      <td>${{ producto.precio | number:'1.0-0' }}</td>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <button class="btn btn-sm btn-outline-secondary me-1"
-                            (click)="cambiarCantidad(i, producto.cantidad - 1)"
-                            [disabled]="producto.cantidad <= 1">-</button>
-                          <input type="number" class="form-control form-control-sm text-center"
-                            style="width: 60px; display: inline-block;" [value]="producto.cantidad"
-                            (input)="cambiarCantidad(i, obtenerValorInputNumber($event))" min="1"
-                            [max]="getCantidadDisponible(producto)">
-                          <button class="btn btn-sm btn-outline-secondary ms-1"
-                            (click)="cambiarCantidad(i, producto.cantidad + 1)"
-                            [disabled]="producto.cantidad >= getCantidadDisponible(producto)">+</button>
-                        </div>
-                        <div *ngIf="producto.cantidad > getCantidadDisponible(producto)" class="text-danger small">
-                          *Valor mayor al stock disponible
-                        </div>
+                    <tr *ngFor="let producto of listProductos; let i = index; trackBy: trackByCodigo"
+                      class="align-middle">
+                      <td class="venta-nombre align-middle">
+                        <strong>{{ producto.nombre }}</strong><br>
+                        <span class="venta-codigo">{{ producto.codigo }}</span>
                       </td>
-                      <td>
-                        <div *ngIf="editandoFormaVentaIndex !== i; else editCombo">
-                          <span (click)="activarEdicionFormaVenta(i)" style="cursor:pointer;">
+                      <td class="align-middle">
+                        <div class="venta-forma-venta" *ngIf="editandoFormaVentaIndex !== i; else editCombo">
+                          <span (click)="activarEdicionFormaVenta(i)" class="venta-forma-venta-edit">
                             {{ producto.formaVenta }}
                             <i class="bi bi-pencil ms-1"></i>
                           </span>
                         </div>
                         <ng-template #editCombo>
-                          <select class="form-select form-select-sm" [ngModel]="producto.formaVenta"
+                          <select class="form-select form-select-sm w-100" [ngModel]="producto.formaVenta"
                             (ngModelChange)="cambiarFormaVenta(i, $event)">
                             <option *ngFor="let forma of getFormasVentaProducto(producto)" [value]="forma.nombre">
                               {{ forma.nombre }}
                             </option>
                           </select>
-                          <button class="btn btn-link btn-sm" (click)="desactivarEdicionFormaVenta()">✔</button>
+                          <button class="btn btn-link btn-sm" (click)="desactivarEdicionFormaVenta()"><i
+                              class="fa-solid fa-check"></i></button>
                         </ng-template>
                       </td>
-                      <td id="eliminar" class="eliminar">
-                        <button class="btn-primary BotonGeneral" (click)="eliminarPorId(producto)">X</button>
+                      <td class="align-middle">
+                        <div class="d-flex align-items-center justify-content-center">
+                          <button class="btn btn-sm btn-outline-secondary me-1"
+                            (click)="cambiarCantidad(i, producto.cantidad - 1)" [disabled]="producto.cantidad <= 1">
+                            <i class="fa-solid fa-minus"></i>
+                          </button>
+                          <input type="number" class="form-control form-control-sm text-center venta-cantidad-input"
+                            [value]="producto.cantidad" (input)="cambiarCantidad(i, obtenerValorInputNumber($event))"
+                            min="1" [max]="getCantidadDisponible(producto)">
+                          <button class="btn btn-sm btn-outline-secondary ms-1"
+                            (click)="cambiarCantidad(i, producto.cantidad + 1)"
+                            [disabled]="producto.cantidad >= getCantidadDisponible(producto)">
+                            <i class="fa-solid fa-plus"></i>
+                          </button>
+                        </div>
+                        <div *ngIf="producto.cantidad > getCantidadDisponible(producto)"
+                          class="text-danger small text-center mt-1">
+                          *Valor mayor al stock disponible
+                        </div>
+                      </td>
+                      <td class="align-middle text-center">${{ producto.precio | number:'1.0-0' }}</td>
+                      <td class="align-middle text-center">
+                        <button class="btn btn-danger venta-btn-eliminar" (click)="eliminarPorId(producto)">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
                       </td>
                     </tr>
                     <tr class="sin-datos-tabla" *ngIf="listProductos.length === 0">
@@ -106,12 +114,14 @@
         </div>
 
         <!-- Columna 2: Cliente, descuento y totales -->
-        <div class="col-lg-5 col-12">
+        <div class="col-lg-4 col-12">
           <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
-            <label class="mt-2">Resumen de la venta</label>
-            <hr class="opacity-100">
+            <h5 class="mb-4">Resumen de la venta</h5>
             <div class="row gy-3 align-items-center">
               <!-- Cédula del cliente -->
+              <div class="row">
+
+              </div>
               <div class="col-12 position-relative mb-2">
                 <p for="cliente">Cédula del cliente:</p>
                 <input class="form-control" type="text" formControlName="cliente" id="cedulaCliente"
@@ -125,74 +135,72 @@
                     </li>
                   </ul>
                 </div>
-                <span *ngIf="formulario.get('cliente')?.invalid && (formulario.get('cliente')?.dirty || formulario.get('cliente')?.touched)">
+                <span
+                  *ngIf="formulario.get('cliente')?.invalid && (formulario.get('cliente')?.dirty || formulario.get('cliente')?.touched)">
                   Por favor, ingrese un valor válido.
                 </span>
               </div>
-              <!-- Nombre -->
-              <div class="col-12 mb-2">
-                <p for="nombre">Nombre:</p>
-                <input class="form-control disabled-input" type="text" formControlName="nombre" placeholder="Ej. Juan perez"
-                  [value]="clienteSeleccionado?.nombre">
-                <span *ngIf="formulario.get('nombre')?.invalid && (formulario.get('nombre')?.dirty || formulario.get('nombre')?.touched)">
-                  Por favor, ingrese un valor válido.
-                </span>
+              <!-- Nombre y dirección del cliente en la misma fila, como texto -->
+              <div class="row mb-2">
+                <div class="col-12 d-flex justify-content-between align-items-center">
+                  <span class="fw-semibold fs-6 text-black">Nombre:</span>
+                  <span class="fs-6 text-black">{{ clienteSeleccionado?.nombre || '-' }}</span>
+                </div>
               </div>
-              <!-- Dirección -->
-              <div class="col-12 mb-2">
-                <p for="direccion" class="form-label">Dirección</p>
-                <input class="form-control disabled-input" type="text" formControlName="direccion" placeholder="Ej. Armenia"
-                  [value]="clienteSeleccionado?.direccion">
-                <span *ngIf="formulario.get('direccion')?.invalid && (formulario.get('direccion')?.dirty || formulario.get('direccion')?.touched)">
-                  Por favor, ingrese un valor válido.
-                </span>
+              <div class="row mb-2">
+                <div class="col-12 d-flex justify-content-between align-items-center">
+                  <span class="fw-semibold fs-6 text-black">Dirección:</span>
+                  <span class="fs-6 text-black">{{ clienteSeleccionado?.direccion || '-' }}</span>
+                </div>
               </div>
             </div>
-            <div class="text-end">
-              <p type="button" (click)="cerrarMenu()" class="mt-1 mb-3" id="gris" data-bs-toggle="modal"
+              <p type="button" (click)="cerrarMenu()" class="mt-1 mb-5" id="gris" data-bs-toggle="modal"
                 data-bs-target="#agregarUsuarioModal">
                 ¿No encuentras el cliente? Puedes crearlo <u><b>Aquí</b></u>
               </p>
-            </div>
           </form>
-
-          <div class="container mt-3">
+            <hr class="opacity-60">
             <div class="row">
-              <!-- Columna del checkbox y descuento -->
-              <div class="col-12">
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="checkbox" id="applyDiscountCheckbox"
-                    [(ngModel)]="aplicarDescuento" name="aplicarDescuento"/>
-                  <label class="form-check-label ms-2" for="applyDiscountCheckbox">
-                    Aplicar descuento
-                  </label>
-                </div>
-                <div class="mb-2" *ngIf="aplicarDescuento">
-                  <input type="text" class="form-control" id="discountValue" [value]="valorFormateado"
-                    (input)="formatearValor($event)" [(ngModel)]="valorDescuento"
-                    placeholder="Ingrese el valor del descuento" name="valorDescuento"/>
-                </div>
-                <div *ngIf="aplicarDescuento">
-                  <button class="btn btn-primary w-100 BotonGeneral mb-2" id="azul" (click)="reducirTotal()">Aplicar descuento</button>
-                </div>
-                <div *ngIf="descuentoAplicado">
-                  <button class="btn btn-danger w-100 BotonCancelar mb-2" (click)="cancelarDescuento()">Cancelar descuento</button>
-                </div>
-              </div>
               <!-- Totales -->
-              <div class="col-12 alinear-derecha">
+              <div class="col-12">
                 <div class="valores-a-pagar">
-                  <div *ngIf="aplicarDescuento">
-                    <p><span>Descuento:</span> ${{valorDescuento}}</p>
+                  <div class="d-flex justify-content-between">
+                    <span class="fw-semibold fs-6 text-black">Descuento:</span>
+                    <span class="fs-6 text-black">${{valorDescuento}}</span>
                   </div>
-                  <p><span>Total a pagar:</span> ${{total | number: '1.0-0' }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold fs-6 text-black">Total a pagar:</span>
+                    <span class="fs-2 text-black">${{total | number: '1.0-0' }}</span>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="text-end mt-3">
               <button type="submit" class="btn-primary BotonGeneral" id="verde" (click)="onSubmit()">Vender</button>
             </div>
-          </div>
+            <!-- Columna del checkbox y descuento -->
+            <div class="col-12 mt-2">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="applyDiscountCheckbox"
+                  [(ngModel)]="aplicarDescuento" name="aplicarDescuento" />
+                <label class="form-check-label ms-2" for="applyDiscountCheckbox">
+                  Aplicar descuento
+                </label>
+              </div>
+              <div class="mb-2" *ngIf="aplicarDescuento">
+                <input type="text" class="form-control" id="discountValue" [value]="valorFormateado"
+                  (input)="formatearValor($event)" [(ngModel)]="valorDescuento"
+                  placeholder="Ingrese el valor del descuento" name="valorDescuento" />
+              </div>
+              <div *ngIf="aplicarDescuento">
+                <button class="btn btn-primary w-100 BotonGeneral mb-2" id="azul" (click)="reducirTotal()">Aplicar
+                  descuento</button>
+              </div>
+              <div *ngIf="descuentoAplicado">
+                <button class="btn btn-danger w-100 BotonCancelar mb-2" (click)="cancelarDescuento()">Cancelar
+                  descuento</button>
+              </div>
+            </div>
         </div>
       </div>
     </div>

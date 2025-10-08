@@ -1,4 +1,4 @@
-import { Component, Directive, DoCheck, inject } from '@angular/core';
+import { Component, DoCheck, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { cantidadMayorQueCero } from 'src/app/validators/validatorFn';
 import { CrearVentaDTO } from 'src/app/dto/venta/CrearVentaDTO';
