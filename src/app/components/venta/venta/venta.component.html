@@ -1,14 +1,13 @@
 <div class="formulario">
   <div class="col-12">
     <h1>Hacer una venta</h1>
-
-    <div class="card productos mt-5">
+    <div class="productos my-3">
       <div [formGroup]="productosForm">
         <div class="row">
           <div class="col-12 position-relative">
-            <input class="form-control" type="text" formControlName="codigoProducto" id="codigoProducto"
-              placeholder="Busque aquí el producto, escribiendo el nombre o escaneando el codigo de barras" (input)="filtrarProductos()" (keyup)="patchearProducto()"
-              (paste)="patchearProducto()" appAutofocus>
+            <input #inputProducto class="form-control" type="text" formControlName="codigoProducto" id="codigoProducto"
+              placeholder="Busque aquí el producto, escribiendo el nombre o escaneando el codigo de barras"
+              (input)="filtrarProductos()" (keyup)="patchearProducto()" (paste)="patchearProducto()" appAutofocus>
             <div class="popup position-absolute w-100" *ngIf="productosFiltrados.length > 0">
               <ul class="list-group">
                 <li class="list-group-item" *ngFor="let producto of productosFiltrados"

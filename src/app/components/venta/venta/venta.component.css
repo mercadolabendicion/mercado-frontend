@@ -331,8 +331,6 @@ p.impuesto-usado {
   border-radius: 16px;
   padding: 24px 24px 16px 24px;
   margin-bottom: 24px;
-  border: 2px solid #e0e0e0;
-  transition: box-shadow 0.2s;
 }
 
 .alinear-derecha {

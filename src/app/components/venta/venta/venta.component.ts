@@ -1,4 +1,4 @@
-import { Component, DoCheck, inject } from '@angular/core';
+import { Component, DoCheck, ViewChild, ElementRef, HostListener, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { cantidadMayorQueCero } from 'src/app/validators/validatorFn';
 import { CrearVentaDTO } from 'src/app/dto/venta/CrearVentaDTO';
@@ -18,6 +18,30 @@ import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
   styleUrls: ['./venta.component.css']
 })
 export class VentaComponent implements DoCheck {
+  @ViewChild('inputProducto') inputProductoRef!: ElementRef<HTMLInputElement>;
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    // Si el click fue en el input de producto, no hacer nada
+    if (this.inputProductoRef && this.inputProductoRef.nativeElement.contains(target)) return;
+
+    // Si el click fue en un input, select, textarea, button, label, popup, o en los dropdowns de sugerencias, no hacer nada
+    const ignoreTags = ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'LABEL'];
+    if (
+      ignoreTags.includes(target.tagName) ||
+      target.closest('.popup') || // Sugerencias de productos/clientes
+      target.closest('.modal')    // Modales
+    ) {
+      return;
+    }
+
+    // Si el foco ya está en el input, no hacer nada
+    if (document.activeElement === this.inputProductoRef.nativeElement) return;
+
+    // Si no, enfoca el input de producto
+    this.focusInputProducto();
+  }
 
   protected clientes: ClienteDTO[];
   protected productos: ProductoDTO[];
@@ -88,6 +112,7 @@ export class VentaComponent implements DoCheck {
     } else {
       alert('Ingrese un valor válido para el descuento.');
     }
+    this.focusInputProducto();
   }
 
   formatearValor(event: Event): void {
@@ -121,6 +146,7 @@ export class VentaComponent implements DoCheck {
   public cancelarDescuento() {
     this.total = this.totalReal;
     this.descuentoAplicado = false;
+    this.focusInputProducto();
   }
 
   /**
@@ -152,6 +178,7 @@ export class VentaComponent implements DoCheck {
     const venta = this.crearVentaDTO();
     if (!this.validarProductosVenta(venta)) return;
     this.procesarVenta(venta);
+    this.focusInputProducto();
   }
 
   /**
@@ -331,8 +358,8 @@ export class VentaComponent implements DoCheck {
   public async agregarProducto(): Promise<void> {
     console.log(this.formasVentaProductoSeleccionado);
     if (!this.productosForm.valid) {
-        Object.values(this.productosForm.controls).forEach(control => control.markAsTouched());
-        return;
+      Object.values(this.productosForm.controls).forEach(control => control.markAsTouched());
+      return;
     }
     // Extrae el índice de forma segura (default a 0 si null/undefined)
     const indice = this.productosForm.get('formaVenta')?.value ?? 0;
@@ -340,43 +367,43 @@ export class VentaComponent implements DoCheck {
     const codigo = this.productosForm.get('codigoProducto')?.value;
 
     try {
-        const productoEliminado = await this.productoService.verificarProductoEliminado(codigo);
-        const formaVenta = this.formasVentaProductoSeleccionado[indice]?.nombre ?? this.formasVentaProductoSeleccionado[0]?.nombre ?? '';
-        console.log('Forma de venta seleccionada: ' + formaVenta);
+      const productoEliminado = await this.productoService.verificarProductoEliminado(codigo);
+      const formaVenta = this.formasVentaProductoSeleccionado[indice]?.nombre ?? this.formasVentaProductoSeleccionado[0]?.nombre ?? '';
+      console.log('Forma de venta seleccionada: ' + formaVenta);
 
-        const cantidadValida = await this.productoService.verificarProductoCantidad(cantidad, codigo, formaVenta);
+      const cantidadValida = await this.productoService.verificarProductoCantidad(cantidad, codigo, formaVenta);
 
-        if (productoEliminado || !cantidadValida) {
-            this.hayStock = false;
-            return;
-        }
+      if (productoEliminado || !cantidadValida) {
+        this.hayStock = false;
+        return;
+      }
 
-        const precio = this.productosForm.get('precio')?.value;
-        const precioEntero = parseInt(precio.replace(/[\$,]/g, ''), 10);
-        const nombre = this.productosForm.get('nombreProducto')?.value;
-        const productoExistente = this.listProductos.find(prod => prod.codigo === codigo && prod.formaVenta === formaVenta);
-        if (productoExistente) {
-            productoExistente.cantidad += cantidad;
-            console.log(productoExistente);
-        } else {
-            const producto = CarritoProductoDTO.crearProducto(codigo, nombre, precioEntero, cantidad, formaVenta);
-            this.listProductos.push(producto);
-        }
+      const precio = this.productosForm.get('precio')?.value;
+      const precioEntero = parseInt(precio.replace(/[\$,]/g, ''), 10);
+      const nombre = this.productosForm.get('nombreProducto')?.value;
+      const productoExistente = this.listProductos.find(prod => prod.codigo === codigo && prod.formaVenta === formaVenta);
+      if (productoExistente) {
+        productoExistente.cantidad += cantidad;
+        console.log(productoExistente);
+      } else {
+        const producto = CarritoProductoDTO.crearProducto(codigo, nombre, precioEntero, cantidad, formaVenta);
+        this.listProductos.push(producto);
+      }
 
-        this.resetForms();
-        this.subtotal = this.listProductos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0);
-        this.calcularValores();
-
-        // Cuando agregues un producto, asegúrate de cargar ProductoCompletoDTO si no está
-        if (!this.productosCompletos.find(p => p.codigo === codigo)) {
-          this.productoService.obtenerProductoCompleto(codigo).subscribe(prodCompleto => {
-            this.productosCompletos.push(prodCompleto);
-          });
-        }
+      this.resetForms();
+      this.subtotal = this.listProductos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0);
+      this.calcularValores();
+      this.focusInputProducto();
+      // Cuando agregues un producto, asegúrate de cargar ProductoCompletoDTO si no está
+      if (!this.productosCompletos.find(p => p.codigo === codigo)) {
+        this.productoService.obtenerProductoCompleto(codigo).subscribe(prodCompleto => {
+          this.productosCompletos.push(prodCompleto);
+        });
+      }
     } catch (error) {
-        console.error(error);
+      console.error(error);
     }
-}
+  }
 
   /**
    * Este metodo se encarga de resetear los campos del formulario de productos
@@ -408,6 +435,7 @@ export class VentaComponent implements DoCheck {
       this.listProductos.splice(indice, 1);
       this.calcularValores();
     }
+    this.focusInputProducto();
   }
 
   /**
@@ -474,6 +502,7 @@ export class VentaComponent implements DoCheck {
       nombre: cliente.nombre,
       direccion: cliente.direccion
     });
+    this.focusInputProducto();
   }
 
   /**
@@ -683,6 +712,7 @@ export class VentaComponent implements DoCheck {
     if (nuevaCantidad > maxDisponible) nuevaCantidad = maxDisponible;
     producto.cantidad = nuevaCantidad;
     this.calcularValores();
+    this.focusInputProducto();
   }
 
   // Editar forma de venta
@@ -708,10 +738,18 @@ export class VentaComponent implements DoCheck {
       this.calcularValores();
     }
     this.desactivarEdicionFormaVenta();
+    this.focusInputProducto();
   }
 
   obtenerValorInputNumber(event: Event): number {
-  const input = event.target as HTMLInputElement;
-  return input && input.value ? Number(input.value) : 1;
-}
+    const input = event.target as HTMLInputElement;
+    return input && input.value ? Number(input.value) : 1;
+  }
+
+  private focusInputProducto() {
+    setTimeout(() => {
+      this.inputProductoRef?.nativeElement.focus();
+      this.inputProductoRef?.nativeElement.select();
+    }, 0);
+  }
 }
