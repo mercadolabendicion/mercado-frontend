@@ -1,132 +1,204 @@
-<div class="contenedor">
-  <div class="row">
-    <div class="col-6">
-      <h1>Gestion de Caja</h1>
-    </div>
-    <div class="col-6">
-      <div class="row">
-      <div class="col-12 col-md-6 col-lg-6 align-right">
-          <p>Ventas:</p>
-        </div>
-        <div class="col-12 col-md-6 col-lg-6">
-          <h3>{{ totalVentas | currency : "USD" : "symbol" : "1.0-0" }}</h3>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-12 col-md-6 col-lg-6 align-right">
-          <p>Externo:</p>
-        </div>
-        <div class="col-12 col-md-6 col-lg-6">
-          <h3>{{ totalExterno | currency : "USD" : "symbol" : "1.0-0" }}</h3>
-        </div>
-      </div>
+<div class="cash-container">
+  <!-- Header -->
+  <div class="cash-header">
+    <div>
+      <h1 class="cash-title">Gestión de Caja</h1>
+      <p class="cash-subtitle">Administra tus ingresos y egresos en tiempo real</p>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-6">
-      <div class="row">
-        <div class="col-12 col-md-6 col-lg-6">
-          <button id="ingreso" class="btn btn-primary" (click)="triggerToggleCollapse()"
-            (click)="mostrarModal('ingreso')">
-            Ingreso
-          </button>
-        </div>
-        <div class="col-12 col-md-6 col-lg-6">
-          <button id="egreso" class="btn btn-primary" (click)="triggerToggleCollapse()"
-            (click)="mostrarModal('egreso')">
-            Egreso
-          </button>
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <!-- Ingresos Card -->
+    <div class="summary-card">
+      <div class="card-header">
+        <span class="card-label">Ingresos</span>
+        <div class="icon-circle icon-green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 19V5M5 12l7-7 7 7"/>
+          </svg>
         </div>
       </div>
+      <div class="card-amount">{{ ingresos | currency : "USD" : "symbol" : "1.0-0" }}</div>
+      <div class="card-description">Total de ingresos del día</div>
     </div>
-    <div class="col-6">
-      <div class="row">
-        <div class="col-12 col-md-6 col-lg-6 align-right">
-          <p>Efectivo:</p>
-        </div>
-        <div class="col-12 col-md-6 col-lg-6">
-          <h3>{{ totalEfectivo | currency : "USD" : "symbol" : "1.0-0" }}</h3>
+
+    <!-- Egresos Card -->
+    <div class="summary-card">
+      <div class="card-header">
+        <span class="card-label">Egresos</span>
+        <div class="icon-circle icon-red">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12l7 7 7-7"/>
+          </svg>
         </div>
       </div>
+      <div class="card-amount">{{ egresos | currency : "USD" : "symbol" : "1.0-0" }}</div>
+      <div class="card-description">Total de egresos del día</div>
+    </div>
+
+    <!-- Saldo Actual Card -->
+    <div class="summary-card summary-card-highlight">
+      <div class="card-header">
+        <span class="card-label">Saldo Actual</span>
+        <div class="icon-circle icon-blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="2"/>
+            <path d="M2 10h20"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-amount card-amount-large">{{ saldo | currency : "USD" : "symbol" : "1.0-0" }}</div>
+      <div class="card-description">Balance disponible en caja</div>
     </div>
   </div>
 
-
-  <div class="table-container">
-    <div class="separador">
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-          <thead>
-            <tr>
-              <th>Motivo</th>
-              <th>Valor</th>
-              <th>Tipo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let movimiento of movimientos" [ngClass]="{
-                'bg-success text-white': movimiento.tipo === 'Ingreso',
-                'bg-danger text-white': movimiento.tipo === 'Egreso'
-              }">
-              <td>{{ movimiento.motivo }}</td>
-              <td>
-                $ {{ movimiento.valor | currency : "  " : "symbol" : "1.0-0" }}
-              </td>
-              <td>{{ movimiento.tipo }}</td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Transactions History -->
+  <div class="transactions-section">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Historial de Transacciones</h2>
+        <p class="section-subtitle">Registro detallado de movimientos de caja</p>
       </div>
+      <span class="records-badge">{{ registrosCaja.length }} registros</span>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th>Fecha y hora</th>
+            <th>Total egresos</th>
+            <th>Total ingresos</th>
+            <th>Saldo anterior</th>
+            <th>Saldo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let registro of registrosCaja">
+            <td>{{ registro.fechaHora }}</td>
+            <td>
+              <span class="amount-cell amount-expense">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12l7 7 7-7"/>
+                </svg>
+                {{ registro.totalEgresos | currency : "USD" : "symbol" : "1.0-0" }}
+              </span>
+            </td>
+            <td>
+              <span class="amount-cell amount-income">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 19V5M5 12l7-7 7 7"/>
+                </svg>
+                {{ registro.totalIngresos | currency : "USD" : "symbol" : "1.0-0" }}
+              </span>
+            </td>
+            <td>{{ registro.saldoAnterior | currency : "USD" : "symbol" : "1.0-0" }}</td>
+            <td class="amount-bold">{{ registro.nuevoSaldo | currency : "USD" : "symbol" : "1.0-0" }}</td>
+          </tr>
+          <tr *ngIf="registrosCaja.length === 0">
+            <td colspan="5" class="empty-state">No hay registros de caja</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-  <div class="row">
-    <div class="col-4">
-      <button id="limpiar" class="btn btn-danger" (click)="limpiarDatos()">
-        Limpiar
+
+  <!-- Action Buttons -->
+  <div class="actions-footer">
+    <button class="btn-secondary" id="consultarValor">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <path d="M9 10a3 3 0 016 0v5"/>
+        <path d="M9 16h6"/>
+      </svg>
+      Consultar valor del negocio
+    </button>
+    <button class="btn-primary" id="cerrarCaja" (click)="triggerToggleCollapse()" (click)="mostrarModalCerrarCaja()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+      Cerrar caja
+    </button>
+  </div>
+</div>
+
+<!-- Modal Cerrar Caja -->
+<div class="modal" id="cerrarCajaModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Cerrar Caja</h5>
+      <span class="close" (click)="ocultarModal('cerrarCajaModal')">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="form-group">
+          <label for="fechaHora">Fecha y hora:</label>
+          <input type="text" class="form-control" id="fechaHora" [(ngModel)]="fechaHoraModal" name="fechaHora" />
+        </div>
+
+        <div class="form-group">
+          <label for="totalEgresos">Total egresos:</label>
+          <input type="number" class="form-control" id="totalEgresos" [(ngModel)]="totalEgresosModal"
+            name="totalEgresos" (ngModelChange)="onCampoModalChange()" />
+        </div>
+
+        <div class="form-group">
+          <label for="totalIngresos">Total ingresos:</label>
+          <input type="number" class="form-control" id="totalIngresos" [(ngModel)]="totalIngresosModal"
+            name="totalIngresos" (ngModelChange)="onCampoModalChange()" />
+        </div>
+
+        <div class="form-group">
+          <label for="saldoAnterior">Saldo anterior:</label>
+          <input type="number" class="form-control" id="saldoAnterior" [(ngModel)]="saldoAnteriorModal"
+            name="saldoAnterior" (ngModelChange)="onCampoModalChange()" />
+        </div>
+
+        <div class="form-group">
+          <label for="nuevoSaldo">Nuevo saldo:</label>
+          <input type="number" class="form-control" id="nuevoSaldo" [(ngModel)]="nuevoSaldoModal" name="nuevoSaldo"
+            readonly />
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="ocultarModal('cerrarCajaModal')">
+        Cancelar
       </button>
-    </div>
-    <div class="col-4"></div>
-    <div class="col-4">
-      <button id="reporte" class="btn btn-primary" (click)="generarReporte()">
-        Reporte
+      <button type="button" class="btn btn-primary" (click)="cerrarCaja()">
+        Cerrar Caja
       </button>
     </div>
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal" id="ingresoModal">
+<!-- Modal Egreso -->
+<div class="modal" id="egresoModal">
   <div class="modal-content">
     <div class="modal-header">
-      <h5 class="modal-title">{{ modalTitle }}</h5>
-      <span class="close" (click)="ocultarModal()">&times;</span>
+      <h5 class="modal-title">Registrar Egreso</h5>
+      <span class="close" (click)="ocultarModal('egresoModal')">&times;</span>
     </div>
     <div class="modal-body">
       <form>
         <div class="form-group">
-          <label for="valor">Valor:</label>
-          <input
-            type="text"
-            class="form-control"
-            id="valor"
-            [value]="valorFormateado"
-            (input)="formatearValor($event)"
-          />
+          <label for="valorEgreso">Valor:</label>
+          <input type="text" class="form-control" id="valorEgreso" (input)="formatearValor($event)" />
         </div>
-        
+
         <div class="form-group">
-          <label for="motivo">Motivo:</label>
-          <textarea class="form-control" id="motivo"></textarea>
+          <label for="motivoEgreso">Motivo:</label>
+          <textarea class="form-control" id="motivoEgreso"></textarea>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" id="limpiar" class="btn btn-secondary" (click)="ocultarModal()">
+      <button type="button" class="btn btn-secondary" (click)="ocultarModal('egresoModal')">
         Cerrar
       </button>
-      <button type="button" class="btn btn-primary" (click)="procesarTransaccion()">
-        {{ actionButtonText }}
+      <button type="button" class="btn btn-primary" (click)="registrarEgreso()">
+        Registrar Egreso
       </button>
     </div>
   </div>

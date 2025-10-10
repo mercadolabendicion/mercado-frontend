@@ -11,6 +11,7 @@ import { AuthGuard } from '../guards/guard.guard';
 import { ListaVentasComponent } from '../components/venta/lista-ventas/listaVentas.component';
 import { VentaComponent } from '../components/venta/venta/venta.component';
 import { FacturacionElectronicaComponent } from './facturacion-electronica/facturacion-electronica.component';
+import { MovimientosComponent } from './movimientos/movimientos.component';
 
 const routes: Routes = [
 
@@ -53,6 +54,11 @@ const routes: Routes = [
       path: 'caja',
       canActivate: [AuthGuard],
       component: CajaComponent
+    },
+    {
+      path: 'movimientos',
+      canActivate: [AuthGuard],
+      component: MovimientosComponent
     },
     {
       path: 'configuracion',

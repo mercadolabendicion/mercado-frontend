@@ -3,47 +3,41 @@ import { MenuComponent } from 'src/app/components/menu/menu.component';
 import { VentaDTO } from 'src/app/dto/venta/VentaDTO';
 import { ReporteDTO } from 'src/app/dto/reporte/ReporteDTO';
 import { CajaService } from 'src/app/services/domainServices/caja.service';
-import { AlertService } from 'src/app/utils/alert.service';
 import Swal from 'sweetalert2';
 import { ReporteService } from 'src/app/services/domainServices/reporte.service';
+
+interface RegistroCaja {
+  fechaHora: string;
+  totalEgresos: number;
+  totalIngresos: number;
+  saldoAnterior: number;
+  nuevoSaldo: number;
+}
 
 @Component({
   selector: 'app-caja',
   templateUrl: './caja.component.html',
   styleUrls: ['./caja.component.css']
 })
-
 export class CajaComponent {
-  totalVentas: number = 0;
-  totalExterno: number = 0;
-  totalEfectivo: number = 0;
   ingresos: number = 0;
   egresos: number = 0;
-  movimientos: Array<{ motivo: string, valor: number, tipo: string }> = [];
-  modalTitle: string = '';
-  actionButtonText: string = '';
-  currentAction: 'ingreso' | 'egreso' = 'ingreso';
+  saldo: number = 0;
+  registrosCaja: RegistroCaja[] = [];
+  
+  // Campos del modal
+  fechaHoraModal: string = '';
+  totalEgresosModal: number = 0;
+  totalIngresosModal: number = 0;
+  saldoAnteriorModal: number = 0;
+  nuevoSaldoModal: number = 0;
+
   protected ventas: VentaDTO[];
   private reporteService: ReporteService = inject(ReporteService);
-  valorFormateado: string = ''; // Para almacenar el valor con formato
   private cajaService: CajaService = inject(CajaService);
 
-
-  constructor(private menuComponent: MenuComponent, private alert: AlertService) {
+  constructor(private menuComponent: MenuComponent) {
     this.ventas = [];
-  }
-
-  formatearValor(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const valorSinFormato = input.value.replace(/[^\d]/g, ''); // Elimina caracteres no numéricos
-    const valorNumerico = parseInt(valorSinFormato, 10);
-
-    if (!isNaN(valorNumerico)) {
-      this.valorFormateado = valorNumerico.toLocaleString('en-US'); // Formato con comas
-      input.value = this.valorFormateado;
-    } else {
-      this.valorFormateado = '';
-    }
   }
 
   triggerToggleCollapse() {
@@ -54,154 +48,194 @@ export class CajaComponent {
 
   async ngOnInit() {
     this.cargarDatos();
-    try {
-      await this.obtenerVentas();
-      this.totalVentas = this.sumarVentasDelDia(this.ventas);
-      this.actualizarTotalEfectivo();
-    } catch (error) {
-      console.error('Error durante la inicialización:', error);
-    }
   }
 
-
-  mostrarModal(action: 'ingreso' | 'egreso') {
+  mostrarModalCerrarCaja() {
     if (this.menuComponent.estadoMenu) {
       this.menuComponent.cerrarMenu();
     }
-    this.limpiarCampos(); // Limpia los campos antes de mostrar el modal
-    this.currentAction = action;
-    this.modalTitle = action === 'ingreso' ? 'Ingreso de Valor' : 'Egreso de Valor';
-    this.actionButtonText = action === 'ingreso' ? 'Registrar Ingreso' : 'Registrar Egreso';
-    const modal = document.getElementById('ingresoModal');
+    
+    // Cargar datos actuales
+    this.fechaHoraModal = this.obtenerFechaHoraActual();
+    this.totalEgresosModal = this.egresos;
+    this.totalIngresosModal = this.ingresos;
+    this.saldoAnteriorModal = this.saldo;
+    this.nuevoSaldoModal = this.calcularNuevoSaldo();
+    
+    const modal = document.getElementById('cerrarCajaModal');
     if (modal) {
       modal.style.display = 'block';
     }
   }
 
-  limpiarCampos() {
-    this.valorFormateado = ''; // Resetea el valor formateado
-    const motivoInput = <HTMLTextAreaElement>document.getElementById('motivo');
-    if (motivoInput) {
-      motivoInput.value = ''; // Resetea el valor del textarea
+  mostrarModalEgreso() {
+    if (this.menuComponent.estadoMenu) {
+      this.menuComponent.cerrarMenu();
+    }
+    const modal = document.getElementById('egresoModal');
+    if (modal) {
+      modal.style.display = 'block';
     }
   }
 
-  ocultarModal() {
-    const modal = document.getElementById('ingresoModal');
+  ocultarModal(modalId: string) {
+    const modal = document.getElementById(modalId);
     if (modal) {
       modal.style.display = 'none';
     }
   }
 
-  procesarTransaccion() {
-    const valorNumerico = parseFloat(this.valorFormateado.replace(/,/g, '')); // Convierte a número real
-    const motivoInput = (<HTMLTextAreaElement>document.getElementById('motivo')).value;
-
-    if (!isNaN(valorNumerico)) {
-      if (this.currentAction === 'ingreso') {
-        this.ingresos += valorNumerico;
-        this.movimientos.push({ motivo: motivoInput, valor: valorNumerico, tipo: 'Ingreso' });
-      } else {
-        this.egresos += valorNumerico;
-        this.movimientos.push({ motivo: motivoInput, valor: valorNumerico, tipo: 'Egreso' });
-      }
-      this.actualizarTotalEfectivo();
-      this.guardarDatos();
-      this.ocultarModal(); // Oculta el modal después de guardar
-    } else {
-      alert('Por favor, ingrese un valor válido.');
-    }
+  obtenerFechaHoraActual(): string {
+    const ahora = new Date();
+    const dia = String(ahora.getDate()).padStart(2, '0');
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const anio = ahora.getFullYear();
+    const horas = String(ahora.getHours()).padStart(2, '0');
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    
+    return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
   }
 
-  actualizarTotalEfectivo() {
-    this.totalEfectivo = this.totalVentas + this.ingresos - this.egresos;
-    this.totalExterno = this.ingresos - this.egresos;
+  calcularNuevoSaldo(): number {
+    return this.saldoAnteriorModal + this.totalIngresosModal - this.totalEgresosModal;
   }
 
-  guardarDatos() {
-    localStorage.setItem('totalVentas', this.totalVentas.toString());
-    localStorage.setItem('totalExterno', this.totalExterno.toString());
-    localStorage.setItem('totalEfectivo', this.totalEfectivo.toString());
-    localStorage.setItem('ingresos', this.ingresos.toString());
-    localStorage.setItem('egresos', this.egresos.toString());
-    localStorage.setItem('movimientos', JSON.stringify(this.movimientos));
+  onCampoModalChange() {
+    // Recalcular el nuevo saldo cuando cambien los campos
+    this.nuevoSaldoModal = this.saldoAnteriorModal + this.totalIngresosModal - this.totalEgresosModal;
   }
 
-  cargarDatos() {
-    this.totalVentas = parseFloat(localStorage.getItem('totalVentas') || '0');
-    this.totalExterno = parseFloat(localStorage.getItem('totalExterno') || '0');
-    this.totalEfectivo = parseFloat(localStorage.getItem('totalEfectivo') || '0');
-    this.ingresos = parseFloat(localStorage.getItem('ingresos') || '0');
-    this.egresos = parseFloat(localStorage.getItem('egresos') || '0');
-    this.movimientos = JSON.parse(localStorage.getItem('movimientos') || '[]');
-  }
+  cerrarCaja() {
+    const nuevoRegistro: RegistroCaja = {
+      fechaHora: this.fechaHoraModal,
+      totalEgresos: this.totalEgresosModal,
+      totalIngresos: this.totalIngresosModal,
+      saldoAnterior: this.saldoAnteriorModal,
+      nuevoSaldo: this.nuevoSaldoModal
+    };
 
-  obtenerVentas(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      let page = 0;
-      this.ventas = [];
-
-      const obtenerVentasRecursivamente = (paginaActual: number): void => {
-        this.cajaService.getVentas(paginaActual).subscribe({
-          next: (data) => {
-            if (data.content.length > 0) {
-              // Agrega las ventas a la lista
-              this.ventas = [...this.ventas, ...data.content];
-              obtenerVentasRecursivamente(paginaActual + 1); // Llama a la siguiente página
-            } else {
-              console.log('Todas las ventas han sido cargadas:', this.ventas.length);
-              resolve(); // Resuelve la promesa cuando termina de cargar
-            }
-          },
-          error: (err) => {
-            console.error('Error al listar ventas:', err);
-            reject(err); // Rechaza la promesa si ocurre un error
-          }
-        });
-      };
-
-      // Comienza a obtener ventas desde la primera página
-      obtenerVentasRecursivamente(page);
+    // Agregar el nuevo registro al inicio del array
+    this.registrosCaja.unshift(nuevoRegistro);
+    
+    // Actualizar el saldo actual con el nuevo saldo
+    this.saldo = this.nuevoSaldoModal;
+    
+    // Resetear ingresos y egresos después del cierre
+    this.ingresos = 0;
+    this.egresos = 0;
+    
+    // Limpiar también las variables de ingresos y egresos de localStorage
+    localStorage.setItem('ingresos', '0');
+    localStorage.setItem('egresos', '0');
+    
+    this.guardarDatos();
+    this.ocultarModal('cerrarCajaModal');
+    
+    Swal.fire({
+      icon: 'success',
+      title: '¡Éxito!',
+      text: 'Caja cerrada exitosamente',
+      timer: 2000,
+      showConfirmButton: false
     });
   }
 
+  registrarEgreso() {
+    const valorInput = (<HTMLInputElement>document.getElementById('valorEgreso')).value;
+    const motivoInput = (<HTMLTextAreaElement>document.getElementById('motivoEgreso')).value;
+    
+    const valorNumerico = parseFloat(valorInput.replace(/,/g, ''));
+    
+    if (!isNaN(valorNumerico) && valorNumerico > 0) {
+      this.egresos += valorNumerico;
+      this.guardarDatos();
+      this.ocultarModal('egresoModal');
+      
+      // Limpiar campos
+      (<HTMLInputElement>document.getElementById('valorEgreso')).value = '';
+      (<HTMLTextAreaElement>document.getElementById('motivoEgreso')).value = '';
+      
+      Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: 'Egreso registrado exitosamente',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, ingrese un valor válido'
+      });
+    }
+  }
 
-  sumarVentasDelDia(ventas: VentaDTO[]): number {
+  formatearValor(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const valorSinFormato = input.value.replace(/[^\d]/g, '');
+    const valorNumerico = parseInt(valorSinFormato, 10);
 
-    const fechaActual = new Date().toISOString().split('T')[0];
+    if (!isNaN(valorNumerico)) {
+      input.value = valorNumerico.toLocaleString('en-US');
+    } else {
+      input.value = '';
+    }
+  }
 
-    const ventasDelDia = ventas.filter(venta => venta.fecha.startsWith(fechaActual));
+  guardarDatos() {
+    localStorage.setItem('ingresos', this.ingresos.toString());
+    localStorage.setItem('egresos', this.egresos.toString());
+    localStorage.setItem('saldo', this.saldo.toString());
+    localStorage.setItem('caja', JSON.stringify(this.registrosCaja));
+  }
 
-    const totalVentas = ventasDelDia.reduce((suma, venta) => suma + venta.total, 0);
-
-    return totalVentas;
+  cargarDatos() {
+    this.ingresos = parseFloat(localStorage.getItem('ingresos') || '0');
+    this.egresos = parseFloat(localStorage.getItem('egresos') || '0');
+    this.saldo = parseFloat(localStorage.getItem('saldo') || '0');
+    this.registrosCaja = JSON.parse(localStorage.getItem('caja') || '[]');
   }
 
   limpiarDatos() {
     if (this.menuComponent.estadoMenu) {
       this.menuComponent.cerrarMenu();
     }
-    this.cajaService.preguntarLimpiarCaja().then((result) => {
-      if (result) {
-        localStorage.removeItem('totalVentas');
-        localStorage.removeItem('totalExterno');
-        localStorage.removeItem('totalEfectivo');
+    
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: 'Se eliminarán todos los registros de caja',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, limpiar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6'
+    }).then((result) => {
+      if (result.isConfirmed) {
         localStorage.removeItem('ingresos');
         localStorage.removeItem('egresos');
-        localStorage.removeItem('movimientos');
-        this.totalVentas = 0;
-        this.totalExterno = 0;
-        this.totalEfectivo = 0;
+        localStorage.removeItem('saldo');
+        localStorage.removeItem('caja');
+        
         this.ingresos = 0;
         this.egresos = 0;
-        this.movimientos = [];
-        console.log('Datos limpiados');
+        this.saldo = 0;
+        this.registrosCaja = [];
+        
+        Swal.fire({
+          icon: 'success',
+          title: '¡Limpiado!',
+          text: 'Datos limpiados exitosamente',
+          timer: 2000,
+          showConfirmButton: false
+        });
       }
     });
   }
 
   protected generarReporte() {
-    let reporte = ReporteDTO.crearReporte(this.totalEfectivo, this.totalExterno, this.totalVentas, this.movimientos);
-    this.reporteService.imprimirReporte(reporte);
+    // Implementar generación de reporte con los registros de caja
+    console.log('Generar reporte', this.registrosCaja);
   }
 }
