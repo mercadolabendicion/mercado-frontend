@@ -19,7 +19,7 @@ import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 })
 export class VentaComponent implements DoCheck {
   @ViewChild('inputProducto') inputProductoRef!: ElementRef<HTMLInputElement>;
-
+  @ViewChild('agregarUsuarioModal') modalElement!: ElementRef;
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -708,7 +708,7 @@ export class VentaComponent implements DoCheck {
   cambiarCantidad(index: number, nuevaCantidad: number) {
     const producto = this.listProductos[index];
     const maxDisponible = this.getCantidadDisponible(producto);
-    if (nuevaCantidad < 1) nuevaCantidad = 1;
+    // if (nuevaCantidad < 1) nuevaCantidad = 1;
     if (nuevaCantidad > maxDisponible) nuevaCantidad = maxDisponible;
     producto.cantidad = nuevaCantidad;
     this.calcularValores();

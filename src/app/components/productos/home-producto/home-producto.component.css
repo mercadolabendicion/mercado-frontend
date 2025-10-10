@@ -1,9 +1,16 @@
+.contenedor{
+  background: #ffffff;
+  border-radius: 8px;
+  margin: 20px 5%;
+}
+
 .table-container {
   width: 100%; 
   height: 100%;
   background-color: rgb(67, 164, 255);
   border-radius: 10px;
 }
+
 .table-container .separador{
   margin-top: 10px;
 }

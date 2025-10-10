@@ -127,7 +127,6 @@ button:disabled {
 /* Tabla de productos escaneados */
 .table-container {
   width: 100%;
-  background-color: rgb(67, 164, 255);
   border-radius: 12px;
   margin-bottom: 24px;
 }
@@ -151,9 +150,7 @@ button:disabled {
 }
 
 .venta-table th {
-  background-color: #f8f9fa;
   color: #333;
-  font-weight: 600;
   font-size: 1rem;
 }
 
@@ -175,16 +172,35 @@ button:disabled {
   margin-left: 2px;
 }
 
-.venta-forma-venta-edit {
-  cursor: pointer;
-  color: #007bff;
-  font-weight: 100;
-  transition: color 0.2s;
+.venta-forma-venta-badge{
+  display:inline-flex;
+  align-items:center;
+  text-align: center;
+  gap:.35rem;
+  padding:.15rem .6rem;
+  border:1px solid #cfe2ff;
+  background:#f5faff;
+  color:#2f6fed;
+  border-radius:9999px;
+  font-weight:600;
+  font-size:.75rem;
+  line-height:1;
+  cursor:pointer;
+  transition:all .15s ease-in-out;
+  user-select:none;
 }
 
-.venta-forma-venta-edit:hover {
-  color: #0056b3;
-  text-decoration: underline;
+.venta-forma-venta-badge:hover{
+  background:#e9f2ff;
+  border-color:#b6d4fe;
+  color:#1f5fe0;
+  box-shadow:0 0 0 3px rgba(47,111,237,.08);
+}
+
+/* opcional: que el ícono herede el color y sea pequeñito */
+.venta-forma-venta-badge i{
+  font-size:.85em;
+  color:inherit;
 }
 
 .venta-cantidad-input {
