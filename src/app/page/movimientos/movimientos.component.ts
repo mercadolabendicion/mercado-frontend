@@ -46,7 +46,15 @@ export class MovimientosComponent {
 
   formatearValor(event: Event): void {
     const input = event.target as HTMLInputElement;
+    // Remover todo excepto números
     const valorSinFormato = input.value.replace(/[^\d]/g, '');
+
+    if (valorSinFormato === '') {
+      this.valorFormateado = '';
+      input.value = '';
+      return;
+    }
+
     const valorNumerico = parseInt(valorSinFormato, 10);
 
     if (!isNaN(valorNumerico)) {
@@ -54,6 +62,7 @@ export class MovimientosComponent {
       input.value = this.valorFormateado;
     } else {
       this.valorFormateado = '';
+      input.value = '';
     }
   }
 
@@ -66,7 +75,7 @@ export class MovimientosComponent {
   async ngOnInit() {
     // Establecer fecha actual como filtro predeterminado
     this.fechaFiltro = this.obtenerFechaActual();
-    
+
     this.cargarDatos();
     try {
       await this.obtenerVentas();
@@ -94,7 +103,7 @@ export class MovimientosComponent {
     const horas = String(ahora.getHours()).padStart(2, '0');
     const minutos = String(ahora.getMinutes()).padStart(2, '0');
     const segundos = String(ahora.getSeconds()).padStart(2, '0');
-    
+
     return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
   }
 
@@ -202,7 +211,7 @@ export class MovimientosComponent {
     this.totalEfectivo = parseFloat(localStorage.getItem('totalEfectivo') || '0');
     this.ingresos = parseFloat(localStorage.getItem('ingresos') || '0');
     this.egresos = parseFloat(localStorage.getItem('egresos') || '0');
-    
+
     const movimientosGuardados = localStorage.getItem('movimientos');
     if (movimientosGuardados) {
       this.movimientos = JSON.parse(movimientosGuardados);
@@ -249,7 +258,7 @@ export class MovimientosComponent {
     if (this.menuComponent.estadoMenu) {
       this.menuComponent.cerrarMenu();
     }
-    
+
     Swal.fire({
       title: '¿Está seguro?',
       text: 'Se eliminarán todos los datos de movimientos',
@@ -267,7 +276,7 @@ export class MovimientosComponent {
         localStorage.removeItem('ingresos');
         localStorage.removeItem('egresos');
         localStorage.removeItem('movimientos');
-        
+
         this.totalVentas = 0;
         this.totalExterno = 0;
         this.totalEfectivo = 0;
@@ -275,7 +284,7 @@ export class MovimientosComponent {
         this.egresos = 0;
         this.movimientos = [];
         this.movimientosFiltrados = [];
-        
+
         Swal.fire({
           icon: 'success',
           title: '¡Limpiado!',
@@ -289,9 +298,9 @@ export class MovimientosComponent {
 
   protected generarReporte() {
     let reporte = ReporteDTO.crearReporte(
-      this.totalEfectivo, 
-      this.totalExterno, 
-      this.totalVentas, 
+      this.totalEfectivo,
+      this.totalExterno,
+      this.totalVentas,
       this.movimientosFiltrados
     );
     this.reporteService.imprimirReporte(reporte);

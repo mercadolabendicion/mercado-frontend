@@ -1,8 +1,8 @@
-<div class="cash-container">
+<div class="contenedor">
   <!-- Header -->
   <div class="cash-header">
     <div>
-      <h1 class="cash-title">Gestión de Caja</h1>
+      <h1 class="cash-title">Gestión de caja</h1>
       <p class="cash-subtitle">Administra tus ingresos y egresos en tiempo real</p>
     </div>
   </div>
@@ -57,7 +57,7 @@
   <div class="transactions-section">
     <div class="section-header">
       <div>
-        <h2 class="section-title">Historial de Transacciones</h2>
+        <h2 class="section-title">Historial de cierres de caja</h2>
         <p class="section-subtitle">Registro detallado de movimientos de caja</p>
       </div>
       <span class="records-badge">{{ registrosCaja.length }} registros</span>
@@ -127,7 +127,7 @@
 <div class="modal" id="cerrarCajaModal">
   <div class="modal-content">
     <div class="modal-header">
-      <h5 class="modal-title">Cerrar Caja</h5>
+      <h5 class="modal-title">Cerrar caja</h5>
       <span class="close" (click)="ocultarModal('cerrarCajaModal')">&times;</span>
     </div>
     <div class="modal-body">
@@ -167,7 +167,7 @@
         Cancelar
       </button>
       <button type="button" class="btn btn-primary" (click)="cerrarCaja()">
-        Cerrar Caja
+        Cerrar caja
       </button>
     </div>
   </div>
