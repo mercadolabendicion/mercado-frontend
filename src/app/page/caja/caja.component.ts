@@ -23,6 +23,7 @@ export class CajaComponent {
   ingresos: number = 0;
   egresos: number = 0;
   saldo: number = 0;
+  totalVentas : number = 0;
   registrosCaja: RegistroCaja[] = [];
   
   // Campos del modal
@@ -192,6 +193,8 @@ export class CajaComponent {
 
   cargarDatos() {
     this.ingresos = parseFloat(localStorage.getItem('ingresos') || '0');
+    this.totalVentas = parseFloat(localStorage.getItem('totalVentas') || '0');
+    this.ingresos += this.totalVentas;
     this.egresos = parseFloat(localStorage.getItem('egresos') || '0');
     this.saldo = parseFloat(localStorage.getItem('saldo') || '0');
     this.registrosCaja = JSON.parse(localStorage.getItem('caja') || '[]');

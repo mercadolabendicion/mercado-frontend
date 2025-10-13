@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { ReporteService } from 'src/app/services/domainServices/reporte.service';
 
 interface Movimiento {
+  id: string; // Identificador único para el movimiento
   motivo: string;
   valor: number;
   tipo: 'Ingreso' | 'Egreso';
@@ -33,12 +34,13 @@ export class MovimientosComponent {
   movimientosFiltrados: Movimiento[] = [];
   modalTitle: string = '';
   actionButtonText: string = '';
-  currentAction: 'ingreso' | 'egreso' = 'ingreso';
+  currentAction: 'ingreso' | 'egreso' | 'editar' = 'ingreso';
   protected ventas: VentaDTO[];
   private reporteService: ReporteService = inject(ReporteService);
   valorFormateado: string = '';
   private cajaService: CajaService = inject(CajaService);
   fechaFiltro: string = ''; // Fecha seleccionada en el datepicker
+  movimientoEnEdicion: Movimiento | null = null; // Movimiento que se está editando
 
   constructor(private menuComponent: MenuComponent) {
     this.ventas = [];
@@ -80,6 +82,7 @@ export class MovimientosComponent {
     try {
       await this.obtenerVentas();
       this.totalVentas = this.sumarVentasDelDia(this.ventas);
+      localStorage.setItem('totalVentas', this.totalVentas.toString());
       this.actualizarTotalEfectivo();
       this.filtrarMovimientos();
     } catch (error) {
@@ -107,6 +110,10 @@ export class MovimientosComponent {
     return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
   }
 
+  generarIdUnico(): string {
+    return `mov_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
   filtrarMovimientos() {
     if (this.fechaFiltro) {
       this.movimientosFiltrados = this.movimientos.filter(
@@ -127,6 +134,7 @@ export class MovimientosComponent {
     }
     this.limpiarCampos();
     this.currentAction = action;
+    this.movimientoEnEdicion = null;
     this.modalTitle = action === 'ingreso' ? 'Agregar ingreso' : 'Agregar egreso';
     this.actionButtonText = action === 'ingreso' ? 'Registrar ingreso' : 'Registrar egreso';
     const modal = document.getElementById('ingresoModal');
@@ -135,9 +143,94 @@ export class MovimientosComponent {
     }
   }
 
+  editarMovimiento(movimiento: Movimiento) {
+    if (this.menuComponent.estadoMenu) {
+      this.menuComponent.cerrarMenu();
+    }
+    
+    this.currentAction = 'editar';
+    this.movimientoEnEdicion = movimiento;
+    this.modalTitle = 'Editar movimiento';
+    this.actionButtonText = 'Actualizar registro';
+
+    // Setear los valores en el formulario
+    this.valorFormateado = movimiento.valor.toLocaleString('en-US');
+    
+    // Pequeño delay para asegurar que el DOM esté listo
+    setTimeout(() => {
+      const valorInput = document.getElementById('valor') as HTMLInputElement;
+      const motivoInput = document.getElementById('motivo') as HTMLTextAreaElement;
+      
+      if (valorInput) {
+        valorInput.value = this.valorFormateado;
+      }
+      if (motivoInput) {
+        motivoInput.value = movimiento.motivo;
+      }
+
+      const modal = document.getElementById('ingresoModal');
+      if (modal) {
+        modal.style.display = 'block';
+      }
+    }, 0);
+  }
+
+  eliminarMovimiento(movimiento: Movimiento) {
+    if (this.menuComponent.estadoMenu) {
+      this.menuComponent.cerrarMenu();
+    }
+
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: `Se eliminará el ${movimiento.tipo.toLowerCase()} por valor de ${movimiento.valor.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 })}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Buscar el índice del movimiento en el array original
+        const index = this.movimientos.findIndex(m => m.id === movimiento.id);
+        
+        if (index !== -1) {
+          // Ajustar los totales según el tipo de movimiento
+          if (movimiento.tipo === 'Ingreso') {
+            this.ingresos -= movimiento.valor;
+          } else {
+            this.egresos -= movimiento.valor;
+          }
+
+          // Eliminar el movimiento del array
+          this.movimientos.splice(index, 1);
+          
+          // Actualizar totales y guardar
+          this.actualizarTotalEfectivo();
+          this.guardarDatos();
+          this.filtrarMovimientos();
+
+          Swal.fire({
+            icon: 'success',
+            title: '¡Eliminado!',
+            text: 'El movimiento ha sido eliminado exitosamente',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      }
+    });
+  }
+
   limpiarCampos() {
     this.valorFormateado = '';
-    const motivoInput = <HTMLTextAreaElement>document.getElementById('motivo');
+    const valorInput = document.getElementById('valor') as HTMLInputElement;
+    const motivoInput = document.getElementById('motivo') as HTMLTextAreaElement;
+    
+    if (valorInput) {
+      valorInput.value = '';
+    }
     if (motivoInput) {
       motivoInput.value = '';
     }
@@ -148,6 +241,7 @@ export class MovimientosComponent {
     if (modal) {
       modal.style.display = 'none';
     }
+    this.movimientoEnEdicion = null;
   }
 
   procesarTransaccion() {
@@ -155,38 +249,94 @@ export class MovimientosComponent {
     const motivoInput = (<HTMLTextAreaElement>document.getElementById('motivo')).value;
 
     if (!isNaN(valorNumerico) && valorNumerico > 0) {
-      const nuevoMovimiento: Movimiento = {
-        motivo: motivoInput || 'Sin descripción',
-        valor: valorNumerico,
-        tipo: this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso',
-        fecha: this.obtenerFechaActual(),
-        fechaHora: this.obtenerFechaHoraActual()
-      };
-
-      if (this.currentAction === 'ingreso') {
-        this.ingresos += valorNumerico;
+      if (this.currentAction === 'editar' && this.movimientoEnEdicion) {
+        // Modo edición
+        this.actualizarMovimiento(valorNumerico, motivoInput);
       } else {
-        this.egresos += valorNumerico;
+        // Modo creación
+        this.crearMovimiento(valorNumerico, motivoInput);
       }
-
-      this.movimientos.push(nuevoMovimiento);
-      this.actualizarTotalEfectivo();
-      this.guardarDatos();
-      this.filtrarMovimientos(); // Actualizar la vista filtrada
-      this.ocultarModal();
-
-      Swal.fire({
-        icon: 'success',
-        title: '¡Éxito!',
-        text: `${this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso'} registrado exitosamente`,
-        timer: 2000,
-        showConfirmButton: false
-      });
     } else {
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'Por favor, ingrese un valor válido mayor a 0'
+      });
+    }
+  }
+
+  private crearMovimiento(valorNumerico: number, motivo: string) {
+    const nuevoMovimiento: Movimiento = {
+      id: this.generarIdUnico(),
+      motivo: motivo || 'Sin descripción',
+      valor: valorNumerico,
+      tipo: this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso',
+      fecha: this.obtenerFechaActual(),
+      fechaHora: this.obtenerFechaHoraActual()
+    };
+
+    if (this.currentAction === 'ingreso') {
+      this.ingresos += valorNumerico;
+    } else {
+      this.egresos += valorNumerico;
+    }
+
+    this.movimientos.push(nuevoMovimiento);
+    this.actualizarTotalEfectivo();
+    this.guardarDatos();
+    this.filtrarMovimientos();
+    this.ocultarModal();
+
+    Swal.fire({
+      icon: 'success',
+      title: '¡Éxito!',
+      text: `${this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso'} registrado exitosamente`,
+      timer: 2000,
+      showConfirmButton: false
+    });
+  }
+
+  private actualizarMovimiento(valorNumerico: number, motivo: string) {
+    if (!this.movimientoEnEdicion) return;
+
+    const index = this.movimientos.findIndex(m => m.id === this.movimientoEnEdicion!.id);
+    
+    if (index !== -1) {
+      const movimientoAntiguo = this.movimientos[index];
+      
+      // Revertir el valor anterior
+      if (movimientoAntiguo.tipo === 'Ingreso') {
+        this.ingresos -= movimientoAntiguo.valor;
+      } else {
+        this.egresos -= movimientoAntiguo.valor;
+      }
+
+      // Aplicar el nuevo valor
+      if (movimientoAntiguo.tipo === 'Ingreso') {
+        this.ingresos += valorNumerico;
+      } else {
+        this.egresos += valorNumerico;
+      }
+
+      // Actualizar el movimiento
+      this.movimientos[index] = {
+        ...movimientoAntiguo,
+        valor: valorNumerico,
+        motivo: motivo || 'Sin descripción',
+        fechaHora: this.obtenerFechaHoraActual() // Actualizar fecha de modificación
+      };
+
+      this.actualizarTotalEfectivo();
+      this.guardarDatos();
+      this.filtrarMovimientos();
+      this.ocultarModal();
+
+      Swal.fire({
+        icon: 'success',
+        title: '¡Actualizado!',
+        text: 'El movimiento ha sido actualizado exitosamente',
+        timer: 2000,
+        showConfirmButton: false
       });
     }
   }
@@ -215,6 +365,20 @@ export class MovimientosComponent {
     const movimientosGuardados = localStorage.getItem('movimientos');
     if (movimientosGuardados) {
       this.movimientos = JSON.parse(movimientosGuardados);
+      
+      // Migrar movimientos antiguos sin ID
+      this.movimientos = this.movimientos.map(mov => {
+        if (!mov.id) {
+          return {
+            ...mov,
+            id: this.generarIdUnico()
+          };
+        }
+        return mov;
+      });
+      
+      // Guardar si se hizo migración
+      localStorage.setItem('movimientos', JSON.stringify(this.movimientos));
     } else {
       this.movimientos = [];
     }

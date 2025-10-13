@@ -65,8 +65,6 @@
 }
 
 .card-label {
-  /* sd-size: 13px;
-  sd-weight: 500; */
   color: #64748b;
   margin: 0 0 4px 0;
 }
@@ -93,8 +91,6 @@
   padding: 14px 24px;
   border-radius: 10px;
   border: none;
-  /* sd-size: 15px;
-  sd-weight: 600; */
   width: 100%;
   cursor: pointer;
   transition: all 0.2s;
@@ -122,7 +118,6 @@
 }
 
 /* Sección de filtro moderna */
-
 .filter-input-group {
   display: flex;
   flex-direction: row;
@@ -133,8 +128,6 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  /* sd-size: 13px;
-  sd-weight: 600; */
   color: #475569;
   margin: 0;
 }
@@ -143,7 +136,6 @@
   padding: 10px 14px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  /* sd-size: 14px; */
   color: #0f172a;
   background: #ffffff;
   transition: all 0.2s;
@@ -157,14 +149,12 @@
 }
 
 .filter-info {
-  /* sd-size: 16px; */
   color: #64748b;
   margin: 20px 0;
 }
 
 .filter-info strong {
   color: #0f172a;
-  /* sd-weight: 600; */
 }
 
 /* Tabla moderna */
@@ -191,17 +181,19 @@
 .modern-table th {
   padding: 16px;
   text-align: left;
-  /* sd-size: 13px;
-  sd-weight: 600; */
   color: #475569;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-bottom: 1px solid #e2e8f0;
 }
 
+.modern-table th.actions-header {
+  text-align: center;
+  width: 120px;
+}
+
 .modern-table td {
   padding: 16px;
-  /* sd-size: 14px; */
   color: #334155;
   border-bottom: 1px solid #f1f5f9;
 }
@@ -223,14 +215,55 @@
   color: #0f172a;
 }
 
+/* Botones de acción en tabla */
+.action-buttons-cell {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+}
+
+.btn-edit {
+  color: #3b82f6;
+  background: #eff6ff;
+}
+
+.btn-edit:hover {
+  background: #dbeafe;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.btn-delete {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+.btn-delete:hover {
+  background: #fee2e2;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+}
+
 /* Badges modernos */
 .badge {
   display: inline-flex;
   align-items: center;
   padding: 4px 12px;
   border-radius: 6px;
-  /* sd-size: 12px;
-  sd-weight: 600; */
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -259,7 +292,6 @@
 
 .empty-state p {
   margin: 0;
-  /* sd-size: 14px; */
 }
 
 /* Botón de reporte */
@@ -277,8 +309,6 @@
   color: #ffffff;
   border: none;
   border-radius: 10px;
-  /* sd-size: 15px;
-  sd-weight: 600; */
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -321,8 +351,6 @@
 
 .modal-header h5 {
   margin: 0;
-  /* sd-size: 20px;
-  sd-weight: 700; */
   color: #0f172a;
 }
 
@@ -349,8 +377,6 @@
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  /* sd-size: 14px;
-  sd-weight: 600; */
   color: #334155;
 }
 
@@ -359,7 +385,6 @@
   padding: 10px 14px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  /* sd-size: 14px; */
   color: #0f172a;
   transition: all 0.2s;
   box-sizing: border-box;
@@ -387,8 +412,6 @@ textarea.form-control {
 .modal-footer button {
   padding: 10px 20px;
   border-radius: 8px;
-  /* sd-size: 14px;
-  sd-weight: 600; */
   cursor: pointer;
   transition: all 0.2s;
   border: none;
@@ -420,10 +443,6 @@ textarea.form-control {
     padding: 20px;
   }
 
-  /* .page-title {
-    sd-size: 24px;
-  } */
-
   .summary-cards {
     grid-template-columns: 1fr;
   }
@@ -441,13 +460,27 @@ textarea.form-control {
     width: 100%;
   }
 
-  /* .modern-table {
-    sd-size: 13px;
-  } */
-
   .modern-table th,
   .modern-table td {
     padding: 12px 8px;
+  }
+
+  .modern-table th.actions-header {
+    width: 100px;
+  }
+
+  .action-buttons-cell {
+    gap: 6px;
+  }
+
+  .btn-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .btn-icon svg {
+    width: 14px;
+    height: 14px;
   }
 
   .footer-actions {

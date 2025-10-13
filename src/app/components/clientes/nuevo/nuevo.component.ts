@@ -5,6 +5,7 @@ import { CrearClienteDTO } from 'src/app/dto/cliente/CrearClienteDTO';
 import { ClienteAlertService } from 'src/app/utils/cliente-alert/clienteAlert.service';
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
 import { MenuComponent } from '../../menu/menu.component';
+import { VentaComponent } from '../../venta/venta/venta.component';
 @Component({
   selector: 'app-nuevo',
   templateUrl: './nuevo.component.html',
@@ -18,6 +19,7 @@ export class NuevoComponent {
   private clienteService: ClienteService = inject(ClienteService);
   private clientAlert: ClienteAlertService = inject(ClienteAlertService);
   private menuComponent: MenuComponent = inject(MenuComponent);
+  private ventaComponent: VentaComponent = inject(VentaComponent);
 
   ngOnInit(): void {
     this.formulario = this.formBuilder.group({
@@ -29,15 +31,21 @@ export class NuevoComponent {
     });
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (!this.formulario.valid) {
       this.marcarCamposComoTocados();
-    }else{
+    } else {
       const { cedula, nombre, direccion, correo } = this.formulario.value;
       const cliente = CrearClienteDTO.crearCliente(cedula, nombre, direccion, correo);
-      this.clienteService.crearCliente(cliente);
-      this.formulario.reset();
-      this.menuComponent.listarClientes();
+      
+      try {
+        await this.clienteService.crearCliente(cliente);
+        this.formulario.reset();
+        this.menuComponent.listarClientes();
+        this.ventaComponent.listarClientes();
+      } catch (error) {
+        console.error('Error al crear cliente:', error);
+      }
     }
   }
 

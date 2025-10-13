@@ -217,7 +217,7 @@ export class VentaComponent implements DoCheck {
    * Este método se encarga de listar todos los clientes disponibles desde localStorage,
    * donde los datos son actualizados por el endpoint getTodosClientes.
    */
-  protected listarClientes(): void {
+  listarClientes(): void {
     this.menuComponent.listarClientes();
     this.clientes = [];
     const clientesGuardados = localStorage.getItem('clientes');
