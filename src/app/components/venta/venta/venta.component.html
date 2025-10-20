@@ -1,6 +1,36 @@
 <div class="formulario">
   <div class="col-12">
     <h1>Hacer una venta</h1>
+      <!-- Botones de control de balanza -->
+  <div class="d-flex gap-2 mb-2">
+    <button 
+      *ngIf="!balanzaConectada" 
+      class="btn btn-success btn-sm" 
+      (click)="conectarBalanza()"
+      type="button">
+      <i class="fa-solid fa-weight-scale me-1"></i> Conectar Balanza
+    </button>
+    
+    <button 
+      *ngIf="balanzaConectada" 
+      class="btn btn-danger btn-sm" 
+      (click)="desconectarBalanza()"
+      type="button">
+      <i class="fa-solid fa-weight-scale me-1"></i> Desconectar Balanza
+    </button>
+    
+    <!-- Indicador de estado de la balanza -->
+<span 
+  *ngIf="balanzaConectada" 
+  class="badge d-flex align-items-center"
+  [ngClass]="pesoEstable ? 'bg-warning' : 'bg-warning'">
+  <i class="fa-solid fa-circle-dot me-1"></i>
+  Peso: {{ pesoActual | number:'1.3-3' }} kg
+  <span *ngIf="!pesoEstable" class="ms-1">(Inestable)</span>
+</span>
+
+  </div>
+</div>
     <div class="productos my-3">
       <div [formGroup]="productosForm">
         <div class="row">
@@ -71,9 +101,27 @@
                             (click)="cambiarCantidad(i, producto.cantidad - 1)" [disabled]="producto.cantidad <= 1">
                             <i class="fa-solid fa-minus"></i>
                           </button>
-                          <input type="number" class="form-control form-control-sm text-center venta-cantidad-input"
+                          <!-- <input type="number" class="form-control form-control-sm text-center venta-cantidad-input"
                             [value]="producto.cantidad" (input)="cambiarCantidad(i, obtenerValorInputNumber($event))"
-                            min="0" step="0.01" [max]="getCantidadDisponible(producto)" placeholder="0.00">
+                            min="0" step="0.01" [max]="getCantidadDisponible(producto)" placeholder="0.00"> -->
+<input 
+  type="number" 
+  class="form-control form-control-sm text-center venta-cantidad-input"
+  [value]="producto.cantidad" 
+  (input)="cambiarCantidad(i, obtenerValorInputNumber($event))"
+  (focus)="onCantidadTablaFocus(i)"
+  (blur)="onCantidadTablaBlur()"
+  min="0" 
+  step="0.01" 
+  [max]="getCantidadDisponible(producto)" 
+  placeholder="0.00"
+  [title]="balanzaConectada ? 'Enfoca y pesa en la balanza' : 'Cantidad'">
+    <!-- Indicador cuando el campo está enfocado -->
+  <small 
+    *ngIf="campoEnfocado === 'cantidad' && balanzaConectada" 
+    class="text-primary">
+    <i class="fa-solid fa-weight-scale"></i> Esperando peso de la balanza...
+  </small>
                           <button class="btn btn-sm btn-outline-secondary ms-1"
                             (click)="cambiarCantidad(i, producto.cantidad + 1)"
                             [disabled]="producto.cantidad >= getCantidadDisponible(producto)">
@@ -176,7 +224,7 @@
               <input class="form-check-input" type="checkbox" id="applyDiscountCheckbox" [(ngModel)]="aplicarDescuento"
                 name="aplicarDescuento" />
               <label class="form-check-label ms-2" for="applyDiscountCheckbox">
-                Aplicar descuento
+                Mostrar descuento
               </label>
             </div>
             <div class="mb-2" *ngIf="aplicarDescuento">
@@ -217,5 +265,3 @@
       </div>
     </div>
   </div>
-
-</div>

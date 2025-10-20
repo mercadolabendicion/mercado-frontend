@@ -11,6 +11,8 @@ import { ClienteService } from 'src/app/services/domainServices/cliente.service'
 import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 import { CarritoProductoDTO } from 'src/app/dto/producto/CarritoProductoDTO';
 import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
+import { ScaleService } from 'src/app/services/domainServices/scale.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-venta',
@@ -21,6 +23,7 @@ export class VentaComponent implements DoCheck {
   @ViewChild('inputProducto') inputProductoRef!: ElementRef<HTMLInputElement>;
   @ViewChild('agregarUsuarioModal') modalElement!: ElementRef;
   @HostListener('document:click', ['$event'])
+  
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     // Si el click fue en el input de producto, no hacer nada
@@ -81,7 +84,16 @@ export class VentaComponent implements DoCheck {
   // Para saber qué fila está editando la forma de venta
   editandoFormaVentaIndex: number | null = null;
 
-  constructor() {
+  // Propiedades para la balanza
+  private scaleSubscription?: Subscription;
+  protected balanzaConectada: boolean = false;
+  protected pesoActual: number = 0;
+  protected pesoEstable: boolean = false;
+  protected campoEnfocado: string | null = null;
+
+  constructor(
+    private scaleService: ScaleService
+  ) {
     this.clientes = [];
     this.productos = [];
     this.listProductos = [];
@@ -100,6 +112,110 @@ export class VentaComponent implements DoCheck {
     this.listarClientes();
     this.valorDescuento = null;
     this.setClientePorDefecto('222222222222');
+    // Suscribirse a los datos de la balanza
+    this.suscribirseABalanza();
+  }
+
+  ngOnDestroy() {
+    // Limpiar suscripciones y desconectar balanza
+    if (this.scaleSubscription) {
+      this.scaleSubscription.unsubscribe();
+    }
+    this.scaleService.disconnect();
+  }
+
+  /**
+ * Se suscribe a los cambios de peso de la balanza
+ */
+  private suscribirseABalanza(): void {
+    this.scaleSubscription = this.scaleService.weight$.subscribe(data => {
+      this.pesoActual = data.weight;      
+      this.pesoEstable = data.stable;
+
+      // Si el peso es estable y el campo de cantidad está enfocado
+      if (data.stable && this.campoEnfocado === 'cantidad') {
+        this.actualizarCantidadDesdeBalanza(data.weight);
+        console.log(`Peso estable recibido de balanza: ${data.weight} ${data.unit}`);
+        
+      }
+    });
+  }
+
+  /**
+ * Conecta con la balanza
+ */
+  async conectarBalanza(): Promise<void> {
+    try {
+      this.balanzaConectada = await this.scaleService.connect();
+      if (this.balanzaConectada) {
+        alert('Balanza conectada exitosamente');
+      } else {
+        alert('No se pudo conectar con la balanza');
+      }
+    } catch (error) {
+      console.error('Error al conectar balanza:', error);
+      alert('Error al conectar con la balanza. Verifica que uses Chrome/Edge y que el cable esté conectado.');
+    }
+  }
+
+  /**
+ * Desconecta la balanza
+ */
+  async desconectarBalanza(): Promise<void> {
+    await this.scaleService.disconnect();
+    this.balanzaConectada = false;
+    alert('Balanza desconectada');
+  }
+
+  /**
+ * Actualiza la cantidad del producto desde el peso de la balanza
+ */
+  private actualizarCantidadDesdeBalanza(peso: number): void {
+    // Solo actualizar si hay un producto seleccionado
+    if (!this.productoSeleccionado) return;
+
+    // Convertir el peso según la unidad (si viene en gramos y necesitas kg, por ejemplo)
+    let cantidadFinal = peso;
+
+    // Si el peso es muy pequeño, ignorarlo (evitar ruido)
+    if (cantidadFinal < 0.01) return;
+
+    // Redondear a 2 decimales
+    cantidadFinal = Math.round(cantidadFinal * 100) / 100;
+
+    // Actualizar el formulario
+    this.productosForm.patchValue({
+      cantidadProducto: cantidadFinal
+    });
+
+    console.log(`Cantidad actualizada desde balanza: ${cantidadFinal}`);
+  }
+
+  /**
+ * Método para detectar cuando el input de cantidad recibe el foco
+ */
+  onCantidadFocus(): void {
+    this.campoEnfocado = 'cantidad';
+    console.log('Campo cantidad enfocado - esperando peso de balanza');
+  }
+
+  /**
+   * Método para detectar cuando el input de cantidad pierde el foco
+   */
+  onCantidadBlur(): void {
+    this.campoEnfocado = null;
+    console.log('Campo cantidad desenfocado');
+  }
+
+  /**
+   * Actualizar cantidad en la tabla desde la balanza
+   */
+  onCantidadTablaFocus(index: number): void {
+    this.campoEnfocado = `cantidad-${index}`;
+  }
+
+  onCantidadTablaBlur(): void {
+    this.campoEnfocado = null;
   }
 
   /**
@@ -704,16 +820,24 @@ export class VentaComponent implements DoCheck {
     return forma ? forma.cantidad : 99999;
   }
 
-  // Cambiar cantidad (botón o input)
+  /**
+ * Modificar el método cambiarCantidad para soportar actualización desde balanza
+ */
   cambiarCantidad(index: number, nuevaCantidad: number) {
     const producto = this.listProductos[index];
     const maxDisponible = this.getCantidadDisponible(producto);
-    // if (nuevaCantidad < 1) nuevaCantidad = 1;
+
+    // Si estamos recibiendo peso de la balanza
+    if (this.campoEnfocado === `cantidad-${index}` && this.pesoEstable) {
+      nuevaCantidad = this.pesoActual;
+    }
+
     if (nuevaCantidad > maxDisponible) nuevaCantidad = maxDisponible;
     producto.cantidad = nuevaCantidad;
     this.calcularValores();
     this.focusInputProducto();
   }
+
 
   // Editar forma de venta
   activarEdicionFormaVenta(index: number) {
