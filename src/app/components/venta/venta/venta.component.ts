@@ -95,6 +95,7 @@ export class VentaComponent implements DoCheck {
   protected pesoActual: number = 0;
   protected pesoEstable: boolean = false;
   protected campoEnfocado: string | null = null;
+  protected indiceProductoEnfocado: number | null = null;
 
   constructor(
     private scaleService: ScaleService
@@ -572,6 +573,22 @@ export class VentaComponent implements DoCheck {
   }
 
   /**
+   * Método para detectar cuando el input de cantidad de un producto del carrito recibe el foco
+   */
+  onCantidadFocusCarrito(index: number): void {
+    this.indiceProductoEnfocado = index;
+    console.log(`Campo cantidad del producto ${index} enfocado - esperando peso de balanza`);
+  }
+
+  /**
+   * Método para detectar cuando el input de cantidad de un producto del carrito pierde el foco
+   */
+  onCantidadBlurCarrito(): void {
+    this.indiceProductoEnfocado = null;
+    console.log('Campo cantidad desenfocado');
+  }
+
+  /**
    * Método para detectar cuando el input de cantidad recibe el foco
    */
   onCantidadFocus(): void {
@@ -593,11 +610,6 @@ export class VentaComponent implements DoCheck {
   cambiarCantidad(index: number, nuevaCantidad: number) {
     const producto = this.listProductos[index];
     const maxDisponible = this.getCantidadDisponible(producto);
-
-    // Si estamos recibiendo peso de la balanza
-    if (this.campoEnfocado === `cantidad-${index}` && this.pesoEstable) {
-      nuevaCantidad = this.pesoActual;
-    }
 
     if (nuevaCantidad > maxDisponible) nuevaCantidad = maxDisponible;
     producto.cantidad = nuevaCantidad;
@@ -789,13 +801,51 @@ export class VentaComponent implements DoCheck {
       this.pesoActual = data.weight;
       this.pesoEstable = data.stable;
 
-      // Si el peso es estable y el campo de cantidad está enfocado
-      if (data.stable && this.campoEnfocado === 'cantidad') {
+      // Si el peso es estable y hay un producto del carrito enfocado
+      if (data.stable && this.indiceProductoEnfocado !== null) {
+        this.actualizarCantidadCarritoDesdeBalanza(this.indiceProductoEnfocado, data.weight);
+        console.log(`Peso estable recibido de balanza: ${data.weight} ${data.unit} - Aplicado al producto ${this.indiceProductoEnfocado}`);
+      }
+      // Si el peso es estable y el campo de cantidad del formulario está enfocado
+      else if (data.stable && this.campoEnfocado === 'cantidad') {
         this.actualizarCantidadDesdeBalanza(data.weight);
         console.log(`Peso estable recibido de balanza: ${data.weight} ${data.unit}`);
-
       }
     });
+  }
+
+  /**
+   * Actualiza la cantidad de un producto en el carrito desde el peso de la balanza
+   */
+  private actualizarCantidadCarritoDesdeBalanza(index: number, peso: number): void {
+    // Verificar que el índice sea válido
+    if (index < 0 || index >= this.listProductos.length) return;
+
+    const producto = this.listProductos[index];
+
+    // Convertir el peso según la unidad
+    let cantidadFinal = peso;
+
+    // Si el peso es muy pequeño, ignorarlo (evitar ruido)
+    if (cantidadFinal < 0.01) return;
+
+    // Redondear a 3 decimales (como está configurado en el servicio)
+    cantidadFinal = Math.round(cantidadFinal * 1000) / 1000;
+
+    // Verificar que no exceda el stock disponible
+    const maxDisponible = this.getCantidadDisponible(producto);
+    if (cantidadFinal > maxDisponible) {
+      cantidadFinal = maxDisponible;
+      console.warn(`Peso ${peso} excede el stock disponible (${maxDisponible}). Se ajustó a ${cantidadFinal}`);
+    }
+
+    // Actualizar la cantidad del producto
+    producto.cantidad = cantidadFinal;
+
+    // Recalcular totales
+    this.calcularValores();
+
+    console.log(`Cantidad del producto "${producto.nombre}" actualizada a ${cantidadFinal} kg desde balanza`);
   }
 
   /**
