@@ -101,27 +101,10 @@
                             (click)="cambiarCantidad(i, producto.cantidad - 1)" [disabled]="producto.cantidad <= 1">
                             <i class="fa-solid fa-minus"></i>
                           </button>
-                          <!-- <input type="number" class="form-control form-control-sm text-center venta-cantidad-input"
+                          <input type="number" class="form-control form-control-sm text-center venta-cantidad-input"
                             [value]="producto.cantidad" (input)="cambiarCantidad(i, obtenerValorInputNumber($event))"
-                            min="0" step="0.01" [max]="getCantidadDisponible(producto)" placeholder="0.00"> -->
-<input 
-  type="number" 
-  class="form-control form-control-sm text-center venta-cantidad-input"
-  [value]="producto.cantidad" 
-  (input)="cambiarCantidad(i, obtenerValorInputNumber($event))"
-  (focus)="onCantidadTablaFocus(i)"
-  (blur)="onCantidadTablaBlur()"
-  min="0" 
-  step="0.01" 
-  [max]="getCantidadDisponible(producto)" 
-  placeholder="0.00"
-  [title]="balanzaConectada ? 'Enfoca y pesa en la balanza' : 'Cantidad'">
-    <!-- Indicador cuando el campo está enfocado -->
-  <small 
-    *ngIf="campoEnfocado === 'cantidad' && balanzaConectada" 
-    class="text-primary">
-    <i class="fa-solid fa-weight-scale"></i> Esperando peso de la balanza...
-  </small>
+                            min="0" step="0.01" [max]="getCantidadDisponible(producto)" placeholder="0.00">
+
                           <button class="btn btn-sm btn-outline-secondary ms-1"
                             (click)="cambiarCantidad(i, producto.cantidad + 1)"
                             [disabled]="producto.cantidad >= getCantidadDisponible(producto)">
