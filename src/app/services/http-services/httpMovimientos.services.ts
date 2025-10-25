@@ -37,4 +37,8 @@ export class HttpMovimientosService {
             .set('size', size.toString());
         return this.http.get(`${this.URL_API}/movimientos/paginados`, { params });
     }
+
+    public eliminarMovimiento(id: string): Observable<any> {
+        return this.http.delete(`${this.URL_API}/movimientos/eliminar/${id}`);
+    }
 }

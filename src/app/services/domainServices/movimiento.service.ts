@@ -35,8 +35,7 @@ export class MovimientoService {
     public obtenerMovimientos(): Observable<MovimientoResponseDTO[]> {
         return this.httpMovimientoService.obtenerMovimientos().pipe(
             catchError((error) => {
-                console.error('Error al obtener movimientos:', error);
-                this.alert.simpleErrorAlert('Error al cargar los movimientos');
+                console.warn(error.error.mensaje);
                 return of([]);
             })
         );
@@ -49,7 +48,7 @@ export class MovimientoService {
     public obtenerMovimientosPorFecha(fecha: string): Observable<MovimientoResponseDTO[]> {
         return this.httpMovimientoService.obtenerMovimientosPorFecha(fecha).pipe(
             catchError((error) => {
-                console.warn('Error al obtener movimientos por fecha:', error.error.mensaje);
+                console.warn(error.error.mensaje);
                 return of([]);
             })
         );
@@ -66,6 +65,21 @@ export class MovimientoService {
                 console.error('Error al obtener movimientos paginados:', error);
                 this.alert.simpleErrorAlert('Error al cargar los movimientos');
                 return of({ content: [], totalElements: 0 });
+            })
+        );
+    }
+
+    /**
+     * Elimina un movimiento por ID
+     */
+    public eliminarMovimiento(id: string): Observable<boolean> {
+        return this.httpMovimientoService.eliminarMovimiento(id).pipe(
+            tap(() => this.alert.simpleSuccessAlert('Movimiento eliminado correctamente')),
+            map(() => true),
+            catchError((error) => {
+                console.error('Error al eliminar movimiento:', error);
+                this.alert.simpleErrorAlert(error.error?.mensaje || 'Error al eliminar el movimiento');
+                return of(false);
             })
         );
     }

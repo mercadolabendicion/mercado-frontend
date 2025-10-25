@@ -10,6 +10,7 @@ import { ReporteService } from 'src/app/services/domainServices/reporte.service'
 import { MovimientoService } from 'src/app/services/domainServices/movimiento.service';
 import { MovimientoDTO } from 'src/app/dto/movimiento/MovimientoDTO';
 import { MovimientoResponseDTO } from 'src/app/dto/movimiento/MovimientoResponseDTO';
+import { CajaMenorService } from 'src/app/services/domainServices/cajaMenor.service';
 
 interface Movimiento {
   id: string;
@@ -29,7 +30,7 @@ interface Movimiento {
 })
 export class MovimientosComponent {
   totalVentas: number = 0;
-  totalExterno: number = 0;
+  saldoCajaMenor: number = 0;
   totalEfectivo: number = 0;
   ingresos: number = 0;
   egresos: number = 0;
@@ -41,10 +42,17 @@ export class MovimientosComponent {
   protected ventas: VentaDTO[];
   private reporteService: ReporteService = inject(ReporteService);
   private movimientoService: MovimientoService = inject(MovimientoService);
+  private cajaMenorService: CajaMenorService = inject(CajaMenorService);
   valorFormateado: string = '';
   private cajaService: CajaService = inject(CajaService);
   fechaFiltro: string = '';
   movimientoEnEdicion: Movimiento | null = null;
+
+  // Variables para el resumen de cierre de caja
+  totalVentasCierre: number = 0;
+  totalEgresosCierre: number = 0;
+  totalIngresosCierre: number = 0;
+  valorCierreFormateado: string = '';
 
   constructor(private menuComponent: MenuComponent) {
     this.ventas = [];
@@ -71,6 +79,27 @@ export class MovimientosComponent {
     }
   }
 
+  formatearValorCierre(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const valorSinFormato = input.value.replace(/[^\d]/g, '');
+
+    if (valorSinFormato === '') {
+      this.valorCierreFormateado = '';
+      input.value = '';
+      return;
+    }
+
+    const valorNumerico = parseInt(valorSinFormato, 10);
+
+    if (!isNaN(valorNumerico)) {
+      this.valorCierreFormateado = valorNumerico.toLocaleString('en-US');
+      input.value = this.valorCierreFormateado;
+    } else {
+      this.valorCierreFormateado = '';
+      input.value = '';
+    }
+  }
+
   triggerToggleCollapse() {
     if (!this.menuComponent.estadoMenu) {
       this.menuComponent.toggleCollapse();
@@ -84,13 +113,35 @@ export class MovimientosComponent {
       await this.obtenerVentas();
       this.totalVentas = this.sumarVentasDelDia(this.ventas);
       
-      // Cargar movimientos por fecha desde el backend
       await this.cargarMovimientosPorFecha(this.fechaFiltro);
+      
+      // Consultar el saldo de caja menor desde el backend
+      await this.consultarSaldoCajaMenor();
       
       this.actualizarTotalEfectivo();
     } catch (error) {
       console.error('Error durante la inicialización:', error);
     }
+  }
+
+  /**
+   * Consulta el saldo de la caja menor desde el backend
+   */
+  consultarSaldoCajaMenor(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.cajaMenorService.consultarSaldo().subscribe({
+        next: (saldo) => {
+          this.saldoCajaMenor = saldo;
+          console.log('Saldo de caja menor obtenido:', saldo);
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error al consultar saldo de caja menor:', err);
+          this.saldoCajaMenor = 0;
+          reject(err);
+        }
+      });
+    });
   }
 
   obtenerFechaActual(): string {
@@ -114,7 +165,6 @@ export class MovimientosComponent {
   }
 
   convertirMovimientoResponse(movResponse: MovimientoResponseDTO): Movimiento {
-    // Convertir la fecha ISO del backend a formato local
     const fechaHora = new Date(movResponse.fechaHora);
     const dia = String(fechaHora.getDate()).padStart(2, '0');
     const mes = String(fechaHora.getMonth() + 1).padStart(2, '0');
@@ -126,7 +176,6 @@ export class MovimientosComponent {
     const fechaHoraFormateada = `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
     const fechaSolo = `${anio}-${mes}-${dia}`;
 
-    // Normalizar el tipo (el backend devuelve INGRESO/EGRESO, el frontend usa Ingreso/Egreso)
     const tipoNormalizado = movResponse.tipo.charAt(0).toUpperCase() + 
                            movResponse.tipo.slice(1).toLowerCase();
 
@@ -203,6 +252,85 @@ export class MovimientosComponent {
     }
   }
 
+  mostrarModalCierreCaja() {
+    if (this.menuComponent.estadoMenu) {
+      this.menuComponent.cerrarMenu();
+    }
+
+    // Calcular totales para el cierre
+    this.totalVentasCierre = this.totalVentas;
+    
+    // Egresos de la fecha actual
+    this.totalEgresosCierre = this.movimientosFiltrados
+      .filter(m => m.tipo === 'Egreso')
+      .reduce((sum, m) => sum + m.valor, 0);
+    
+    // Ingresos de la fecha actual + ventas del día
+    const ingresosDelDia = this.movimientosFiltrados
+      .filter(m => m.tipo === 'Ingreso')
+      .reduce((sum, m) => sum + m.valor, 0);
+    
+    this.totalIngresosCierre = ingresosDelDia + this.totalVentas;
+
+    // Limpiar el campo de valor de cierre
+    this.valorCierreFormateado = '';
+    setTimeout(() => {
+      const valorCierreInput = document.getElementById('valorCierre') as HTMLInputElement;
+      if (valorCierreInput) {
+        valorCierreInput.value = '';
+      }
+    }, 0);
+
+    const modal = document.getElementById('cierreCajaModal');
+    if (modal) {
+      modal.style.display = 'block';
+    }
+  }
+
+  ocultarModalCierreCaja() {
+    const modal = document.getElementById('cierreCajaModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  }
+
+  async confirmarCierreCaja() {
+    const valorCierre = parseFloat(this.valorCierreFormateado.replace(/,/g, ''));
+
+    if (isNaN(valorCierre) || valorCierre <= 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, ingrese un valor válido para el cierre de caja'
+      });
+      return;
+    }
+
+    this.cajaMenorService.cerrarCaja(valorCierre).subscribe({
+      next: async (success) => {
+        if (success) {
+          this.ocultarModalCierreCaja();
+          
+          // Actualizar el saldo de caja menor después del cierre
+          await this.consultarSaldoCajaMenor();
+          this.actualizarTotalEfectivo();
+          
+          Swal.fire({
+            icon: 'success',
+            title: '¡Caja cerrada!',
+            text: 'La caja menor ha sido cerrada exitosamente',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error al cerrar caja:', err);
+        this.ocultarModalCierreCaja();
+      }
+    });
+  }
+
   editarMovimiento(movimiento: Movimiento) {
     if (this.menuComponent.estadoMenu) {
       this.menuComponent.cerrarMenu();
@@ -248,30 +376,24 @@ export class MovimientosComponent {
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       reverseButtons: true
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const index = this.movimientos.findIndex(m => m.id === movimiento.id);
-        
-        if (index !== -1) {
-          if (movimiento.tipo === 'Ingreso') {
-            this.ingresos -= movimiento.valor;
-          } else {
-            this.egresos -= movimiento.valor;
+        // Llamar al servicio para eliminar en el backend
+        this.movimientoService.eliminarMovimiento(movimiento.id).subscribe({
+          next: async (success) => {
+            if (success) {
+              // Recargar los movimientos desde el backend
+              await this.cargarMovimientosPorFecha(this.fechaFiltro);
+              
+              // Actualizar el saldo de caja menor
+              await this.consultarSaldoCajaMenor();
+              this.actualizarTotalEfectivo();
+            }
+          },
+          error: (err) => {
+            console.error('Error al eliminar movimiento:', err);
           }
-
-          this.movimientos.splice(index, 1);
-          
-          this.actualizarTotalEfectivo();
-          this.filtrarMovimientos();
-
-          Swal.fire({
-            icon: 'success',
-            title: '¡Eliminado!',
-            text: 'El movimiento ha sido eliminado exitosamente',
-            timer: 2000,
-            showConfirmButton: false
-          });
-        }
+        });
       }
     });
   }
@@ -316,16 +438,19 @@ export class MovimientosComponent {
     }
   }
 
-  private crearMovimiento(valorNumerico: number, motivo: string) {
+  private async crearMovimiento(valorNumerico: number, motivo: string) {
     const tipo = this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso';
     
     let movimientoDTO = MovimientoDTO.crearMovimientoDTO(valorNumerico, tipo, motivo);
     
-    this.movimientoService.crearMovimiento(movimientoDTO).subscribe((success) => {
+    this.movimientoService.crearMovimiento(movimientoDTO).subscribe(async (success) => {
       if (success) {
         this.ocultarModal();
-        // Recargar los movimientos de la fecha actual
-        this.cargarMovimientosPorFecha(this.fechaFiltro);
+        await this.cargarMovimientosPorFecha(this.fechaFiltro);
+        
+        // Actualizar el saldo de caja menor después de crear un movimiento
+        await this.consultarSaldoCajaMenor();
+        this.actualizarTotalEfectivo();
       }
     });
   }
@@ -372,8 +497,8 @@ export class MovimientosComponent {
   }
 
   actualizarTotalEfectivo() {
-    this.totalEfectivo = this.totalVentas + this.ingresos - this.egresos;
-    this.totalExterno = this.ingresos - this.egresos;
+    // El saldoCajaMenor ahora viene del backend, no lo calculamos localmente
+    this.totalEfectivo = this.totalVentas + this.saldoCajaMenor;
   }
 
   obtenerVentas(): Promise<void> {
@@ -427,7 +552,7 @@ export class MovimientosComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.totalVentas = 0;
-        this.totalExterno = 0;
+        this.saldoCajaMenor = 0;
         this.totalEfectivo = 0;
         this.ingresos = 0;
         this.egresos = 0;
@@ -448,7 +573,7 @@ export class MovimientosComponent {
   protected generarReporte() {
     let reporte = ReporteDTO.crearReporte(
       this.totalEfectivo,
-      this.totalExterno,
+      this.saldoCajaMenor,
       this.totalVentas,
       this.movimientosFiltrados
     );
