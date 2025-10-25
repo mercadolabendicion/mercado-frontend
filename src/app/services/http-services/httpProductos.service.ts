@@ -14,8 +14,6 @@ import { GuardarFormaVenta } from 'src/app/dto/formasVenta/GuardarFormaVenta';
   providedIn: 'root'
 })
 export class HttpProductoService {
-  
-  
 
   private URL_API: string = environment.ApiUrl;
   private http: HttpClient = inject(HttpClient);

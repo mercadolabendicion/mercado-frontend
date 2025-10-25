@@ -7,14 +7,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { ReporteService } from 'src/app/services/domainServices/reporte.service';
+import { MovimientoService } from 'src/app/services/domainServices/movimiento.service';
+import { MovimientoDTO } from 'src/app/dto/movimiento/MovimientoDTO';
 
 interface Movimiento {
-  id: string; // Identificador único para el movimiento
+  id: string;
   motivo: string;
   valor: number;
   tipo: 'Ingreso' | 'Egreso';
-  fecha: string; // Fecha en formato YYYY-MM-DD
-  fechaHora: string; // Fecha y hora completa para mostrar
+  fecha: string;
+  fechaHora: string;
 }
 
 @Component({
@@ -37,10 +39,11 @@ export class MovimientosComponent {
   currentAction: 'ingreso' | 'egreso' | 'editar' = 'ingreso';
   protected ventas: VentaDTO[];
   private reporteService: ReporteService = inject(ReporteService);
+  private movimientoService: MovimientoService = inject(MovimientoService);
   valorFormateado: string = '';
   private cajaService: CajaService = inject(CajaService);
-  fechaFiltro: string = ''; // Fecha seleccionada en el datepicker
-  movimientoEnEdicion: Movimiento | null = null; // Movimiento que se está editando
+  fechaFiltro: string = '';
+  movimientoEnEdicion: Movimiento | null = null;
 
   constructor(private menuComponent: MenuComponent) {
     this.ventas = [];
@@ -48,7 +51,6 @@ export class MovimientosComponent {
 
   formatearValor(event: Event): void {
     const input = event.target as HTMLInputElement;
-    // Remover todo excepto números
     const valorSinFormato = input.value.replace(/[^\d]/g, '');
 
     if (valorSinFormato === '') {
@@ -75,7 +77,6 @@ export class MovimientosComponent {
   }
 
   async ngOnInit() {
-    // Establecer fecha actual como filtro predeterminado
     this.fechaFiltro = this.obtenerFechaActual();
 
     this.cargarDatos();
@@ -147,20 +148,18 @@ export class MovimientosComponent {
     if (this.menuComponent.estadoMenu) {
       this.menuComponent.cerrarMenu();
     }
-    
+
     this.currentAction = 'editar';
     this.movimientoEnEdicion = movimiento;
     this.modalTitle = 'Editar movimiento';
     this.actionButtonText = 'Actualizar registro';
 
-    // Setear los valores en el formulario
     this.valorFormateado = movimiento.valor.toLocaleString('en-US');
-    
-    // Pequeño delay para asegurar que el DOM esté listo
+
     setTimeout(() => {
       const valorInput = document.getElementById('valor') as HTMLInputElement;
       const motivoInput = document.getElementById('motivo') as HTMLTextAreaElement;
-      
+
       if (valorInput) {
         valorInput.value = this.valorFormateado;
       }
@@ -192,21 +191,17 @@ export class MovimientosComponent {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        // Buscar el índice del movimiento en el array original
         const index = this.movimientos.findIndex(m => m.id === movimiento.id);
-        
+
         if (index !== -1) {
-          // Ajustar los totales según el tipo de movimiento
           if (movimiento.tipo === 'Ingreso') {
             this.ingresos -= movimiento.valor;
           } else {
             this.egresos -= movimiento.valor;
           }
 
-          // Eliminar el movimiento del array
           this.movimientos.splice(index, 1);
-          
-          // Actualizar totales y guardar
+
           this.actualizarTotalEfectivo();
           this.guardarDatos();
           this.filtrarMovimientos();
@@ -227,7 +222,7 @@ export class MovimientosComponent {
     this.valorFormateado = '';
     const valorInput = document.getElementById('valor') as HTMLInputElement;
     const motivoInput = document.getElementById('motivo') as HTMLTextAreaElement;
-    
+
     if (valorInput) {
       valorInput.value = '';
     }
@@ -250,10 +245,8 @@ export class MovimientosComponent {
 
     if (!isNaN(valorNumerico) && valorNumerico > 0) {
       if (this.currentAction === 'editar' && this.movimientoEnEdicion) {
-        // Modo edición
         this.actualizarMovimiento(valorNumerico, motivoInput);
       } else {
-        // Modo creación
         this.crearMovimiento(valorNumerico, motivoInput);
       }
     } else {
@@ -266,33 +259,44 @@ export class MovimientosComponent {
   }
 
   private crearMovimiento(valorNumerico: number, motivo: string) {
-    const nuevoMovimiento: Movimiento = {
-      id: this.generarIdUnico(),
-      motivo: motivo || 'Sin descripción',
-      valor: valorNumerico,
-      tipo: this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso',
-      fecha: this.obtenerFechaActual(),
-      fechaHora: this.obtenerFechaHoraActual()
-    };
+    const tipo = this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso';
 
-    if (this.currentAction === 'ingreso') {
-      this.ingresos += valorNumerico;
-    } else {
-      this.egresos += valorNumerico;
-    }
+    // Crear el DTO para enviar al backend
+    let movimientoDTO = MovimientoDTO.crearMovimientoDTO(valorNumerico, tipo, motivo);
 
-    this.movimientos.push(nuevoMovimiento);
-    this.actualizarTotalEfectivo();
-    this.guardarDatos();
-    this.filtrarMovimientos();
-    this.ocultarModal();
+    // Enviar al backend
+    this.movimientoService.crearMovimiento(movimientoDTO).subscribe((success) => {
+      if (success) {
+        // Crear el objeto local para el frontend
+        const nuevoMovimiento: Movimiento = {
+          id: this.generarIdUnico(),
+          motivo: motivo || 'Sin descripción',
+          valor: valorNumerico,
+          tipo: tipo as 'Ingreso' | 'Egreso',
+          fecha: this.obtenerFechaActual(),
+          fechaHora: this.obtenerFechaHoraActual()
+        };
 
-    Swal.fire({
-      icon: 'success',
-      title: '¡Éxito!',
-      text: `${this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso'} registrado exitosamente`,
-      timer: 2000,
-      showConfirmButton: false
+        if (this.currentAction === 'ingreso') {
+          this.ingresos += valorNumerico;
+        } else {
+          this.egresos += valorNumerico;
+        }
+
+        this.movimientos.push(nuevoMovimiento);
+        this.actualizarTotalEfectivo();
+        this.guardarDatos();
+        this.filtrarMovimientos();
+        this.ocultarModal();
+
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: `${this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso'} registrado exitosamente`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
     });
   }
 
@@ -300,30 +304,27 @@ export class MovimientosComponent {
     if (!this.movimientoEnEdicion) return;
 
     const index = this.movimientos.findIndex(m => m.id === this.movimientoEnEdicion!.id);
-    
+
     if (index !== -1) {
       const movimientoAntiguo = this.movimientos[index];
-      
-      // Revertir el valor anterior
+
       if (movimientoAntiguo.tipo === 'Ingreso') {
         this.ingresos -= movimientoAntiguo.valor;
       } else {
         this.egresos -= movimientoAntiguo.valor;
       }
 
-      // Aplicar el nuevo valor
       if (movimientoAntiguo.tipo === 'Ingreso') {
         this.ingresos += valorNumerico;
       } else {
         this.egresos += valorNumerico;
       }
 
-      // Actualizar el movimiento
       this.movimientos[index] = {
         ...movimientoAntiguo,
         valor: valorNumerico,
         motivo: motivo || 'Sin descripción',
-        fechaHora: this.obtenerFechaHoraActual() // Actualizar fecha de modificación
+        fechaHora: this.obtenerFechaHoraActual()
       };
 
       this.actualizarTotalEfectivo();
@@ -365,8 +366,7 @@ export class MovimientosComponent {
     const movimientosGuardados = localStorage.getItem('movimientos');
     if (movimientosGuardados) {
       this.movimientos = JSON.parse(movimientosGuardados);
-      
-      // Migrar movimientos antiguos sin ID
+
       this.movimientos = this.movimientos.map(mov => {
         if (!mov.id) {
           return {
@@ -376,8 +376,7 @@ export class MovimientosComponent {
         }
         return mov;
       });
-      
-      // Guardar si se hizo migración
+
       localStorage.setItem('movimientos', JSON.stringify(this.movimientos));
     } else {
       this.movimientos = [];
