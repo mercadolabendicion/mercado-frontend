@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { ReporteService } from 'src/app/services/domainServices/reporte.service';
 import { MovimientoService } from 'src/app/services/domainServices/movimiento.service';
 import { MovimientoDTO } from 'src/app/dto/movimiento/MovimientoDTO';
+import { MovimientoResponseDTO } from 'src/app/dto/movimiento/MovimientoResponseDTO';
 
 interface Movimiento {
   id: string;
@@ -79,13 +80,14 @@ export class MovimientosComponent {
   async ngOnInit() {
     this.fechaFiltro = this.obtenerFechaActual();
 
-    this.cargarDatos();
     try {
       await this.obtenerVentas();
       this.totalVentas = this.sumarVentasDelDia(this.ventas);
-      localStorage.setItem('totalVentas', this.totalVentas.toString());
+      
+      // Cargar movimientos por fecha desde el backend
+      await this.cargarMovimientosPorFecha(this.fechaFiltro);
+      
       this.actualizarTotalEfectivo();
-      this.filtrarMovimientos();
     } catch (error) {
       console.error('Error durante la inicialización:', error);
     }
@@ -111,8 +113,63 @@ export class MovimientosComponent {
     return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
   }
 
-  generarIdUnico(): string {
-    return `mov_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  convertirMovimientoResponse(movResponse: MovimientoResponseDTO): Movimiento {
+    // Convertir la fecha ISO del backend a formato local
+    const fechaHora = new Date(movResponse.fechaHora);
+    const dia = String(fechaHora.getDate()).padStart(2, '0');
+    const mes = String(fechaHora.getMonth() + 1).padStart(2, '0');
+    const anio = fechaHora.getFullYear();
+    const horas = String(fechaHora.getHours()).padStart(2, '0');
+    const minutos = String(fechaHora.getMinutes()).padStart(2, '0');
+    const segundos = String(fechaHora.getSeconds()).padStart(2, '0');
+
+    const fechaHoraFormateada = `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
+    const fechaSolo = `${anio}-${mes}-${dia}`;
+
+    // Normalizar el tipo (el backend devuelve INGRESO/EGRESO, el frontend usa Ingreso/Egreso)
+    const tipoNormalizado = movResponse.tipo.charAt(0).toUpperCase() + 
+                           movResponse.tipo.slice(1).toLowerCase();
+
+    return {
+      id: movResponse.id.toString(),
+      motivo: movResponse.motivo,
+      valor: movResponse.valor,
+      tipo: tipoNormalizado as 'Ingreso' | 'Egreso',
+      fecha: fechaSolo,
+      fechaHora: fechaHoraFormateada
+    };
+  }
+
+  cargarMovimientosPorFecha(fecha: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.movimientoService.obtenerMovimientosPorFecha(fecha).subscribe({
+        next: (data) => {
+          this.movimientos = data.map(mov => this.convertirMovimientoResponse(mov));
+          this.movimientosFiltrados = [...this.movimientos];
+          this.calcularTotales();
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error al cargar movimientos:', err);
+          this.movimientos = [];
+          this.movimientosFiltrados = [];
+          this.calcularTotales();
+          reject(err);
+        }
+      });
+    });
+  }
+
+  calcularTotales() {
+    this.ingresos = this.movimientos
+      .filter(m => m.tipo === 'Ingreso')
+      .reduce((sum, m) => sum + m.valor, 0);
+    
+    this.egresos = this.movimientos
+      .filter(m => m.tipo === 'Egreso')
+      .reduce((sum, m) => sum + m.valor, 0);
+    
+    this.actualizarTotalEfectivo();
   }
 
   filtrarMovimientos() {
@@ -125,8 +182,10 @@ export class MovimientosComponent {
     }
   }
 
-  onFechaChange() {
-    this.filtrarMovimientos();
+  async onFechaChange() {
+    if (this.fechaFiltro) {
+      await this.cargarMovimientosPorFecha(this.fechaFiltro);
+    }
   }
 
   mostrarModal(action: 'ingreso' | 'egreso') {
@@ -148,18 +207,18 @@ export class MovimientosComponent {
     if (this.menuComponent.estadoMenu) {
       this.menuComponent.cerrarMenu();
     }
-
+    
     this.currentAction = 'editar';
     this.movimientoEnEdicion = movimiento;
     this.modalTitle = 'Editar movimiento';
     this.actionButtonText = 'Actualizar registro';
 
     this.valorFormateado = movimiento.valor.toLocaleString('en-US');
-
+    
     setTimeout(() => {
       const valorInput = document.getElementById('valor') as HTMLInputElement;
       const motivoInput = document.getElementById('motivo') as HTMLTextAreaElement;
-
+      
       if (valorInput) {
         valorInput.value = this.valorFormateado;
       }
@@ -192,7 +251,7 @@ export class MovimientosComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         const index = this.movimientos.findIndex(m => m.id === movimiento.id);
-
+        
         if (index !== -1) {
           if (movimiento.tipo === 'Ingreso') {
             this.ingresos -= movimiento.valor;
@@ -201,9 +260,8 @@ export class MovimientosComponent {
           }
 
           this.movimientos.splice(index, 1);
-
+          
           this.actualizarTotalEfectivo();
-          this.guardarDatos();
           this.filtrarMovimientos();
 
           Swal.fire({
@@ -222,7 +280,7 @@ export class MovimientosComponent {
     this.valorFormateado = '';
     const valorInput = document.getElementById('valor') as HTMLInputElement;
     const motivoInput = document.getElementById('motivo') as HTMLTextAreaElement;
-
+    
     if (valorInput) {
       valorInput.value = '';
     }
@@ -260,42 +318,14 @@ export class MovimientosComponent {
 
   private crearMovimiento(valorNumerico: number, motivo: string) {
     const tipo = this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso';
-
-    // Crear el DTO para enviar al backend
+    
     let movimientoDTO = MovimientoDTO.crearMovimientoDTO(valorNumerico, tipo, motivo);
-
-    // Enviar al backend
+    
     this.movimientoService.crearMovimiento(movimientoDTO).subscribe((success) => {
       if (success) {
-        // Crear el objeto local para el frontend
-        const nuevoMovimiento: Movimiento = {
-          id: this.generarIdUnico(),
-          motivo: motivo || 'Sin descripción',
-          valor: valorNumerico,
-          tipo: tipo as 'Ingreso' | 'Egreso',
-          fecha: this.obtenerFechaActual(),
-          fechaHora: this.obtenerFechaHoraActual()
-        };
-
-        if (this.currentAction === 'ingreso') {
-          this.ingresos += valorNumerico;
-        } else {
-          this.egresos += valorNumerico;
-        }
-
-        this.movimientos.push(nuevoMovimiento);
-        this.actualizarTotalEfectivo();
-        this.guardarDatos();
-        this.filtrarMovimientos();
         this.ocultarModal();
-
-        Swal.fire({
-          icon: 'success',
-          title: '¡Éxito!',
-          text: `${this.currentAction === 'ingreso' ? 'Ingreso' : 'Egreso'} registrado exitosamente`,
-          timer: 2000,
-          showConfirmButton: false
-        });
+        // Recargar los movimientos de la fecha actual
+        this.cargarMovimientosPorFecha(this.fechaFiltro);
       }
     });
   }
@@ -304,10 +334,10 @@ export class MovimientosComponent {
     if (!this.movimientoEnEdicion) return;
 
     const index = this.movimientos.findIndex(m => m.id === this.movimientoEnEdicion!.id);
-
+    
     if (index !== -1) {
       const movimientoAntiguo = this.movimientos[index];
-
+      
       if (movimientoAntiguo.tipo === 'Ingreso') {
         this.ingresos -= movimientoAntiguo.valor;
       } else {
@@ -328,7 +358,6 @@ export class MovimientosComponent {
       };
 
       this.actualizarTotalEfectivo();
-      this.guardarDatos();
       this.filtrarMovimientos();
       this.ocultarModal();
 
@@ -345,42 +374,6 @@ export class MovimientosComponent {
   actualizarTotalEfectivo() {
     this.totalEfectivo = this.totalVentas + this.ingresos - this.egresos;
     this.totalExterno = this.ingresos - this.egresos;
-  }
-
-  guardarDatos() {
-    localStorage.setItem('totalVentas', this.totalVentas.toString());
-    localStorage.setItem('totalExterno', this.totalExterno.toString());
-    localStorage.setItem('totalEfectivo', this.totalEfectivo.toString());
-    localStorage.setItem('ingresos', this.ingresos.toString());
-    localStorage.setItem('egresos', this.egresos.toString());
-    localStorage.setItem('movimientos', JSON.stringify(this.movimientos));
-  }
-
-  cargarDatos() {
-    this.totalVentas = parseFloat(localStorage.getItem('totalVentas') || '0');
-    this.totalExterno = parseFloat(localStorage.getItem('totalExterno') || '0');
-    this.totalEfectivo = parseFloat(localStorage.getItem('totalEfectivo') || '0');
-    this.ingresos = parseFloat(localStorage.getItem('ingresos') || '0');
-    this.egresos = parseFloat(localStorage.getItem('egresos') || '0');
-
-    const movimientosGuardados = localStorage.getItem('movimientos');
-    if (movimientosGuardados) {
-      this.movimientos = JSON.parse(movimientosGuardados);
-
-      this.movimientos = this.movimientos.map(mov => {
-        if (!mov.id) {
-          return {
-            ...mov,
-            id: this.generarIdUnico()
-          };
-        }
-        return mov;
-      });
-
-      localStorage.setItem('movimientos', JSON.stringify(this.movimientos));
-    } else {
-      this.movimientos = [];
-    }
   }
 
   obtenerVentas(): Promise<void> {
@@ -433,13 +426,6 @@ export class MovimientosComponent {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
-        localStorage.removeItem('totalVentas');
-        localStorage.removeItem('totalExterno');
-        localStorage.removeItem('totalEfectivo');
-        localStorage.removeItem('ingresos');
-        localStorage.removeItem('egresos');
-        localStorage.removeItem('movimientos');
-
         this.totalVentas = 0;
         this.totalExterno = 0;
         this.totalEfectivo = 0;
