@@ -148,13 +148,23 @@
     </div>
   </div>
 
-  <div class="footer-actions">
-    <button class="btn-report" (click)="generarReporte()">
-      Generar reporte
-    </button>
-    <button class="btn-close-cash" (click)="mostrarModalCierreCaja()">
-      Cerrar caja menor
-    </button>
+  <div class="row align-items-center">
+    <div class="row">
+      <div class="col-12 col-md-3 col-lg-3">
+        <button class="btn-action btn-reporte" (click)="generarReporte()">
+          Generar reporte
+        </button>
+      </div>
+      <div class="col-12 col-md-3 col-lg-3">
+      </div>
+      <div class="col-12 col-md-3 col-lg-3">
+      </div>
+      <div class="col-12 col-md-3 col-lg-3">
+        <button class="btn-action btn-cerrar" (click)="mostrarModalCierreCaja()">
+          Cerrar caja menor
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -256,13 +266,8 @@
           </svg>
           Valor de Cierre de Caja:
         </label>
-        <input 
-          type="text" 
-          class="form-control cierre-input" 
-          id="valorCierre" 
-          [value]="valorCierreFormateado"
-          (input)="formatearValorCierre($event)"
-          placeholder="Ingrese el valor de cierre" />
+        <input type="text" class="form-control cierre-input" id="valorCierre" [value]="valorCierreFormateado"
+          (input)="formatearValorCierre($event)" placeholder="Ingrese el valor de cierre" />
       </div>
 
       <p class="cierre-warning">

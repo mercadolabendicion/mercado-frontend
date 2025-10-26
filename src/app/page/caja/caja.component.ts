@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { ReporteService } from 'src/app/services/domainServices/reporte.service';
 import { MovimientoService } from 'src/app/services/domainServices/movimiento.service';
 import { MovimientoResponseDTO } from 'src/app/dto/movimiento/MovimientoResponseDTO';
+import { MovimientoDTO } from 'src/app/dto/movimiento/MovimientoDTO';
 import { VentaService } from 'src/app/services/domainServices/venta.service';
 import { CajaMenorService } from 'src/app/services/domainServices/cajaMenor.service';
 import { CajaMayorService } from 'src/app/services/domainServices/cajaMayor.service';
@@ -356,7 +357,7 @@ export class CajaComponent {
     console.log('Generar reporte', this.registrosCajaMenor);
   }
 
-formatearValorCierre(event: Event): void {
+  formatearValorCierre(event: Event): void {
     const input = event.target as HTMLInputElement;
     const valorSinFormato = input.value.replace(/[^\d]/g, '');
 
@@ -378,5 +379,119 @@ formatearValorCierre(event: Event): void {
       this.valorCierreCajaMayor = 0;
       input.value = '';
     }
+  }
+
+  // Añadir después de las variables existentes del modal de cierre
+  valorPasoCajaMenor: number = 0;
+  valorPasoFormateado: string = '';
+
+  // Añadir este método después de formatearValorCierre
+  formatearValorPaso(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const valorSinFormato = input.value.replace(/[^\d]/g, '');
+
+    if (valorSinFormato === '') {
+      this.valorPasoFormateado = '';
+      this.valorPasoCajaMenor = 0;
+      input.value = '';
+      return;
+    }
+
+    const valorNumerico = parseInt(valorSinFormato, 10);
+
+    if (!isNaN(valorNumerico)) {
+      this.valorPasoFormateado = valorNumerico.toLocaleString('en-US');
+      this.valorPasoCajaMenor = valorNumerico;
+      input.value = this.valorPasoFormateado;
+    } else {
+      this.valorPasoFormateado = '';
+      this.valorPasoCajaMenor = 0;
+      input.value = '';
+    }
+  }
+
+  // Añadir este método después de mostrarModalCerrarCaja
+  mostrarModalPasarCajaMenor() {
+    if (this.menuComponent.estadoMenu) {
+      this.menuComponent.cerrarMenu();
+    }
+
+    // Limpiar el valor del paso
+    this.valorPasoCajaMenor = 0;
+    this.valorPasoFormateado = '';
+
+    const modal = document.getElementById('pasarCajaMenorModal');
+    if (modal) {
+      modal.style.display = 'block';
+    }
+  }
+
+  // Añadir este método después de cerrarCaja
+  pasarACajaMenor() {
+    // Validar que el valor sea mayor a 0
+    if (this.valorPasoCajaMenor <= 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, ingrese un valor válido'
+      });
+      return;
+    }
+
+    // Validar que haya suficiente saldo en caja mayor
+    if (this.valorPasoCajaMenor > this.saldo) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Saldo insuficiente',
+        text: 'No hay suficiente saldo en caja mayor para realizar esta operación'
+      });
+      return;
+    }
+
+    // Primero cerrar caja mayor con el valor especificado
+    this.cajaMayorService.cerrarCaja(this.valorPasoCajaMenor).subscribe({
+      next: (successCierre) => {
+        if (successCierre) {
+          // Si el cierre fue exitoso, registrar el ingreso en caja menor
+          const movimientoDTO = MovimientoDTO.crearMovimientoDTO(
+            this.valorPasoCajaMenor,
+            'Ingreso',
+            'Ingreso desde la caja mayor'
+          );
+
+          this.movimientoService.crearMovimiento(movimientoDTO).subscribe({
+            next: (successIngreso) => {
+              if (successIngreso) {
+                this.ocultarModal('pasarCajaMenorModal');
+
+                Swal.fire({
+                  icon: 'success',
+                  title: '¡Transferencia exitosa!',
+                  text: `Se han transferido ${this.valorPasoCajaMenor.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 })} a caja menor`,
+                  timer: 2500,
+                  showConfirmButton: false
+                });
+
+                // Recargar datos después de la transferencia
+                setTimeout(() => {
+                  this.ngOnInit();
+                }, 2500);
+              }
+            },
+            error: (err) => {
+              console.error('Error al registrar ingreso en caja menor:', err);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al registrar el ingreso en caja menor. Por favor, verifique manualmente.'
+              });
+            }
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error al cerrar caja mayor:', err);
+      }
+    });
   }
 }

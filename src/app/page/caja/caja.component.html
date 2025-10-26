@@ -15,7 +15,7 @@
         <span class="card-label">Ingresos</span>
         <div class="icon-circle icon-green">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 19V5M5 12l7-7 7 7"/>
+            <path d="M12 19V5M5 12l7-7 7 7" />
           </svg>
         </div>
       </div>
@@ -29,7 +29,7 @@
         <span class="card-label">Egresos</span>
         <div class="icon-circle icon-red">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M5 12l7 7 7-7"/>
+            <path d="M12 5v14M5 12l7 7 7-7" />
           </svg>
         </div>
       </div>
@@ -43,8 +43,8 @@
         <span class="card-label">Saldo Caja Mayor</span>
         <div class="icon-circle icon-blue">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="5" width="20" height="14" rx="2"/>
-            <path d="M2 10h20"/>
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <path d="M2 10h20" />
           </svg>
         </div>
       </div>
@@ -79,7 +79,7 @@
             <td>
               <span class="amount-cell amount-income">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
                 </svg>
                 {{ registro.valorCierre | currency : "USD" : "symbol" : "1.0-0" }}
               </span>
@@ -96,25 +96,19 @@
 
     <!-- Paginación Caja Menor -->
     <div class="pagination-controls" *ngIf="registrosCajaMenor.length > 0">
-      <button 
-        class="btn-pagination" 
-        [disabled]="paginaActualMenor === 0"
-        (click)="paginaAnteriorMenor()">
+      <button class="btn-pagination" [disabled]="paginaActualMenor === 0" (click)="paginaAnteriorMenor()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 18l-6-6 6-6"/>
+          <path d="M15 18l-6-6 6-6" />
         </svg>
         Anterior
       </button>
-      
+
       <span class="pagination-info">Página {{ paginaActualMenor + 1 }}</span>
-      
-      <button 
-        class="btn-pagination" 
-        [disabled]="!tieneMasRegistrosMenor"
-        (click)="paginaSiguienteMenor()">
+
+      <button class="btn-pagination" [disabled]="!tieneMasRegistrosMenor" (click)="paginaSiguienteMenor()">
         Siguiente
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 18l6-6-6-6"/>
+          <path d="M9 18l6-6-6-6" />
         </svg>
       </button>
     </div>
@@ -146,7 +140,7 @@
             <td>
               <span class="amount-cell amount-income">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
                 </svg>
                 {{ registro.valorCierre | currency : "USD" : "symbol" : "1.0-0" }}
               </span>
@@ -163,25 +157,19 @@
 
     <!-- Paginación Caja Mayor -->
     <div class="pagination-controls" *ngIf="registrosCajaMayor.length > 0">
-      <button 
-        class="btn-pagination" 
-        [disabled]="paginaActualMayor === 0"
-        (click)="paginaAnteriorMayor()">
+      <button class="btn-pagination" [disabled]="paginaActualMayor === 0" (click)="paginaAnteriorMayor()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 18l-6-6 6-6"/>
+          <path d="M15 18l-6-6 6-6" />
         </svg>
         Anterior
       </button>
-      
+
       <span class="pagination-info">Página {{ paginaActualMayor + 1 }}</span>
-      
-      <button 
-        class="btn-pagination" 
-        [disabled]="!tieneMasRegistrosMayor"
-        (click)="paginaSiguienteMayor()">
+
+      <button class="btn-pagination" [disabled]="!tieneMasRegistrosMayor" (click)="paginaSiguienteMayor()">
         Siguiente
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 18l6-6-6-6"/>
+          <path d="M9 18l6-6-6-6" />
         </svg>
       </button>
     </div>
@@ -191,15 +179,25 @@
   <div class="actions-footer">
     <button class="btn-secondary" id="consultarValor">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        <path d="M9 10a3 3 0 016 0v5"/>
-        <path d="M9 16h6"/>
+        <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <path d="M9 10a3 3 0 016 0v5" />
+        <path d="M9 16h6" />
       </svg>
       Consultar valor del negocio
     </button>
+
+    <button class="btn-yellow" id="pasarCajaMenor" (click)="triggerToggleCollapse()"
+      (click)="mostrarModalPasarCajaMenor()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M7 16V4M7 4L3 8M7 4l4 4" />
+        <path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
+      </svg>
+      Pasar a caja menor
+    </button>
+
     <button class="btn-primary" id="cerrarCaja" (click)="triggerToggleCollapse()" (click)="mostrarModalCerrarCaja()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M18 6L6 18M6 6l12 12"/>
+        <path d="M18 6L6 18M6 6l12 12" />
       </svg>
       Cerrar caja
     </button>
@@ -217,13 +215,8 @@
       <form>
         <div class="form-group">
           <label for="valorCierre">Valor de cierre de caja mayor:</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="valorCierre" 
-            [value]="valorCierreFormateado"
-            (input)="formatearValorCierre($event)"
-            placeholder="Ingrese el valor de cierre" />
+          <input type="text" class="form-control" id="valorCierre" [value]="valorCierreFormateado"
+            (input)="formatearValorCierre($event)" placeholder="Ingrese el valor de cierre" />
         </div>
       </form>
     </div>
@@ -264,6 +257,44 @@
       </button>
       <button type="button" class="btn btn-primary" (click)="registrarEgreso()">
         Registrar Egreso
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pasar a Caja Menor -->
+<div class="modal" id="pasarCajaMenorModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Pasar a caja menor</h5>
+      <span class="close" (click)="ocultarModal('pasarCajaMenorModal')">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="info-box" style="background-color: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #2196f3;">
+        <p style="margin: 0; color: #1976d2; font-size: 14px;">
+          <strong>Saldo disponible en caja mayor:</strong> {{ saldo | currency : "USD" : "symbol" : "1.0-0" }}
+        </p>
+      </div>
+      <form>
+        <div class="form-group">
+          <label for="valorPaso">Valor a transferir:</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="valorPaso" 
+            [value]="valorPasoFormateado"
+            (input)="formatearValorPaso($event)"
+            placeholder="Ingrese el valor a transferir" />
+          <small class="form-text text-muted">Este valor se restará de caja mayor y se sumará a caja menor</small>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="ocultarModal('pasarCajaMenorModal')">
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="pasarACajaMenor()">
+        Transferir a caja menor
       </button>
     </div>
   </div>
