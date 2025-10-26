@@ -53,14 +53,14 @@
     </div>
   </div>
 
-  <!-- Transactions History -->
+  <!-- Historial Caja Menor -->
   <div class="transactions-section">
     <div class="section-header">
       <div>
-        <h2 class="section-title">Historial de cierres de caja</h2>
-        <p class="section-subtitle">Registro detallado de movimientos de caja</p>
+        <h2 class="section-title">Historial de cierres de caja menor</h2>
+        <p class="section-subtitle">Registro detallado de cierres de caja menor</p>
       </div>
-      <span class="records-badge">{{ registrosCaja.length }} registros</span>
+      <span class="records-badge">{{ registrosCajaMenor.length }} registros</span>
     </div>
 
     <div class="table-wrapper">
@@ -68,39 +68,122 @@
         <thead>
           <tr>
             <th>Fecha y hora</th>
-            <th>Total egresos</th>
-            <th>Total ingresos</th>
-            <th>Saldo anterior</th>
-            <th>Saldo</th>
+            <th>Valor de cierre</th>
+            <th>Restante</th>
+            <th>Usuario</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let registro of registrosCaja">
-            <td>{{ registro.fechaHora }}</td>
-            <td>
-              <span class="amount-cell amount-expense">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 5v14M5 12l7 7 7-7"/>
-                </svg>
-                {{ registro.totalEgresos | currency : "USD" : "symbol" : "1.0-0" }}
-              </span>
-            </td>
+          <tr *ngFor="let registro of registrosCajaMenor">
+            <td>{{ formatearFecha(registro.fechaHoraCierre) }}</td>
             <td>
               <span class="amount-cell amount-income">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 19V5M5 12l7-7 7 7"/>
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
                 </svg>
-                {{ registro.totalIngresos | currency : "USD" : "symbol" : "1.0-0" }}
+                {{ registro.valorCierre | currency : "USD" : "symbol" : "1.0-0" }}
               </span>
             </td>
-            <td>{{ registro.saldoAnterior | currency : "USD" : "symbol" : "1.0-0" }}</td>
-            <td class="amount-bold">{{ registro.nuevoSaldo | currency : "USD" : "symbol" : "1.0-0" }}</td>
+            <td class="amount-bold">{{ registro.restante | currency : "USD" : "symbol" : "1.0-0" }}</td>
+            <td>{{ registro.nombreUsuario }}</td>
           </tr>
-          <tr *ngIf="registrosCaja.length === 0">
-            <td colspan="5" class="empty-state">No hay registros de caja</td>
+          <tr *ngIf="registrosCajaMenor.length === 0">
+            <td colspan="4" class="empty-state">No hay registros de caja menor</td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Paginación Caja Menor -->
+    <div class="pagination-controls" *ngIf="registrosCajaMenor.length > 0">
+      <button 
+        class="btn-pagination" 
+        [disabled]="paginaActualMenor === 0"
+        (click)="paginaAnteriorMenor()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        Anterior
+      </button>
+      
+      <span class="pagination-info">Página {{ paginaActualMenor + 1 }}</span>
+      
+      <button 
+        class="btn-pagination" 
+        [disabled]="!tieneMasRegistrosMenor"
+        (click)="paginaSiguienteMenor()">
+        Siguiente
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Historial Caja Mayor -->
+  <div class="transactions-section">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Historial de cierres de caja mayor</h2>
+        <p class="section-subtitle">Registro detallado de cierres de caja mayor</p>
+      </div>
+      <span class="records-badge">{{ registrosCajaMayor.length }} registros</span>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th>Fecha y hora</th>
+            <th>Valor de cierre</th>
+            <th>Restante</th>
+            <th>Usuario</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let registro of registrosCajaMayor">
+            <td>{{ formatearFecha(registro.fechaHoraCierre) }}</td>
+            <td>
+              <span class="amount-cell amount-income">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                </svg>
+                {{ registro.valorCierre | currency : "USD" : "symbol" : "1.0-0" }}
+              </span>
+            </td>
+            <td class="amount-bold">{{ registro.restante | currency : "USD" : "symbol" : "1.0-0" }}</td>
+            <td>{{ registro.nombreUsuario }}</td>
+          </tr>
+          <tr *ngIf="registrosCajaMayor.length === 0">
+            <td colspan="4" class="empty-state">No hay registros de caja mayor</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación Caja Mayor -->
+    <div class="pagination-controls" *ngIf="registrosCajaMayor.length > 0">
+      <button 
+        class="btn-pagination" 
+        [disabled]="paginaActualMayor === 0"
+        (click)="paginaAnteriorMayor()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        Anterior
+      </button>
+      
+      <span class="pagination-info">Página {{ paginaActualMayor + 1 }}</span>
+      
+      <button 
+        class="btn-pagination" 
+        [disabled]="!tieneMasRegistrosMayor"
+        (click)="paginaSiguienteMayor()">
+        Siguiente
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -134,7 +217,7 @@
       <form>
         <div class="form-group">
           <label for="fechaHora">Fecha y hora:</label>
-          <input type="text" class="form-control" id="fechaHora" [(ngModel)]="fechaHoraModal" name="fechaHora" />
+          <input type="text" class="form-control" id="fechaHora" [(ngModel)]="fechaHoraModal" name="fechaHora" readonly />
         </div>
 
         <div class="form-group">

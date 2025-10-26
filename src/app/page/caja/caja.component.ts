@@ -8,14 +8,10 @@ import { ReporteService } from 'src/app/services/domainServices/reporte.service'
 import { MovimientoService } from 'src/app/services/domainServices/movimiento.service';
 import { MovimientoResponseDTO } from 'src/app/dto/movimiento/MovimientoResponseDTO';
 import { VentaService } from 'src/app/services/domainServices/venta.service';
-
-interface RegistroCaja {
-  fechaHora: string;
-  totalEgresos: number;
-  totalIngresos: number;
-  saldoAnterior: number;
-  nuevoSaldo: number;
-}
+import { CajaMenorService } from 'src/app/services/domainServices/cajaMenor.service';
+import { CajaMayorService } from 'src/app/services/domainServices/cajaMayor.service';
+import { HistorialCajaMenorDTO } from '../../dto/caja/HistorialCajaMenorDTO';
+import { HistorialCajaMayorDTO } from '../../dto/caja/HistorialCajaMayorDTO';
 
 @Component({
   selector: 'app-caja',
@@ -27,7 +23,18 @@ export class CajaComponent {
   egresos: number = 0;
   saldo: number = 0;
   totalVentas: number = 0;
-  registrosCaja: RegistroCaja[] = [];
+  
+  // Historial caja menor
+  registrosCajaMenor: HistorialCajaMenorDTO[] = [];
+  paginaActualMenor: number = 0;
+  tamanioPaginaMenor: number = 15;
+  tieneMasRegistrosMenor: boolean = true;
+  
+  // Historial caja mayor
+  registrosCajaMayor: HistorialCajaMayorDTO[] = [];
+  paginaActualMayor: number = 0;
+  tamanioPaginaMayor: number = 15;
+  tieneMasRegistrosMayor: boolean = true;
   
   // Campos del modal
   fechaHoraModal: string = '';
@@ -41,6 +48,8 @@ export class CajaComponent {
   private cajaService: CajaService = inject(CajaService);
   private movimientoService: MovimientoService = inject(MovimientoService);
   private ventaService: VentaService = inject(VentaService);
+  private cajaMenorService: CajaMenorService = inject(CajaMenorService);
+  private cajaMayorService: CajaMayorService = inject(CajaMayorService);
 
   constructor(private menuComponent: MenuComponent) {
     this.ventas = [];
@@ -54,6 +63,9 @@ export class CajaComponent {
 
   async ngOnInit() {
     await this.cargarDatos();
+    this.cargarHistorialCajaMenor();
+    this.cargarHistorialCajaMayor();
+    this.cargarSaldoActual();
   }
 
   /**
@@ -124,6 +136,104 @@ export class CajaComponent {
     });
   }
 
+  /**
+   * Carga el historial de cierres de caja menor desde el backend
+   */
+  cargarHistorialCajaMenor() {
+    this.cajaMenorService.obtenerHistorial(this.paginaActualMenor, this.tamanioPaginaMenor).subscribe({
+      next: (historial) => {
+        this.registrosCajaMenor = historial;
+        this.tieneMasRegistrosMenor = historial.length === this.tamanioPaginaMenor;
+      },
+      error: (err) => {
+        console.error('Error al cargar historial de caja menor:', err);
+      }
+    });
+  }
+
+  /**
+   * Carga el historial de cierres de caja mayor desde el backend
+   */
+  cargarHistorialCajaMayor() {
+    this.cajaMayorService.obtenerHistorial(this.paginaActualMayor, this.tamanioPaginaMayor).subscribe({
+      next: (historial) => {
+        this.registrosCajaMayor = historial;
+        this.tieneMasRegistrosMayor = historial.length === this.tamanioPaginaMayor;
+      },
+      error: (err) => {
+        console.error('Error al cargar historial de caja mayor:', err);
+      }
+    });
+  }
+
+  /**
+   * Carga el saldo actual desde el backend
+   */
+  cargarSaldoActual() {
+    this.cajaMenorService.consultarSaldo().subscribe({
+      next: (saldo) => {
+        this.saldo = saldo;
+      },
+      error: (err) => {
+        console.error('Error al cargar saldo:', err);
+      }
+    });
+  }
+
+  /**
+   * Formatea la fecha para mostrarla de forma legible
+   */
+  formatearFecha(fechaISO: string): string {
+    const fecha = new Date(fechaISO);
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const anio = fecha.getFullYear();
+    const horas = String(fecha.getHours()).padStart(2, '0');
+    const minutos = String(fecha.getMinutes()).padStart(2, '0');
+    
+    return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
+  }
+
+  /**
+   * Navega a la página anterior de caja menor
+   */
+  paginaAnteriorMenor() {
+    if (this.paginaActualMenor > 0) {
+      this.paginaActualMenor--;
+      this.cargarHistorialCajaMenor();
+    }
+  }
+
+  /**
+   * Navega a la página siguiente de caja menor
+   */
+  paginaSiguienteMenor() {
+    if (this.tieneMasRegistrosMenor) {
+      this.paginaActualMenor++;
+      this.cargarHistorialCajaMenor();
+    }
+  }
+
+  /**
+   * Navega a la página anterior de caja mayor
+   */
+  paginaAnteriorMayor() {
+    if (this.paginaActualMayor > 0) {
+      this.paginaActualMayor--;
+      this.cargarHistorialCajaMayor();
+    }
+  }
+
+  /**
+   * Navega a la página siguiente de caja mayor
+   */
+  paginaSiguienteMayor() {
+    if (this.tieneMasRegistrosMayor) {
+      this.paginaActualMayor++;
+      this.cargarHistorialCajaMayor();
+    }
+  }
+
   mostrarModalCerrarCaja() {
     if (this.menuComponent.estadoMenu) {
       this.menuComponent.cerrarMenu();
@@ -180,37 +290,33 @@ export class CajaComponent {
   }
 
   cerrarCaja() {
-    const nuevoRegistro: RegistroCaja = {
-      fechaHora: this.fechaHoraModal,
-      totalEgresos: this.totalEgresosModal,
-      totalIngresos: this.totalIngresosModal,
-      saldoAnterior: this.saldoAnteriorModal,
-      nuevoSaldo: this.nuevoSaldoModal
-    };
-
-    // Agregar el nuevo registro al inicio del array
-    this.registrosCaja.unshift(nuevoRegistro);
+    const valorCierre = this.nuevoSaldoModal;
     
-    // Actualizar el saldo actual con el nuevo saldo
-    this.saldo = this.nuevoSaldoModal;
-    
-    // Resetear ingresos y egresos después del cierre
-    this.ingresos = 0;
-    this.egresos = 0;
-    
-    // Limpiar también las variables de ingresos y egresos de localStorage
-    localStorage.setItem('ingresos', '0');
-    localStorage.setItem('egresos', '0');
-    
-    this.guardarDatos();
-    this.ocultarModal('cerrarCajaModal');
-    
-    Swal.fire({
-      icon: 'success',
-      title: '¡Éxito!',
-      text: 'Caja cerrada exitosamente',
-      timer: 2000,
-      showConfirmButton: false
+    this.cajaMenorService.cerrarCaja(valorCierre).subscribe({
+      next: (success) => {
+        if (success) {
+          // Recargar datos después del cierre
+          this.cargarHistorialCajaMenor();
+          this.cargarSaldoActual();
+          
+          // Resetear ingresos y egresos después del cierre
+          this.ingresos = 0;
+          this.egresos = 0;
+          
+          this.ocultarModal('cerrarCajaModal');
+          
+          Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'Caja cerrada exitosamente',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error al cerrar caja:', err);
+      }
     });
   }
 
@@ -222,7 +328,6 @@ export class CajaComponent {
     
     if (!isNaN(valorNumerico) && valorNumerico > 0) {
       this.egresos += valorNumerico;
-      this.guardarDatos();
       this.ocultarModal('egresoModal');
       
       // Limpiar campos
@@ -257,64 +362,13 @@ export class CajaComponent {
     }
   }
 
-  guardarDatos() {
-    localStorage.setItem('ingresos', this.ingresos.toString());
-    localStorage.setItem('egresos', this.egresos.toString());
-    localStorage.setItem('saldo', this.saldo.toString());
-    localStorage.setItem('caja', JSON.stringify(this.registrosCaja));
-  }
-
   async cargarDatos() {
     // Cargar movimientos del día desde el backend
     await this.cargarMovimientosDelDia();
-    
-    // Cargar saldo y registros desde localStorage
-    this.saldo = parseFloat(localStorage.getItem('saldo') || '0');
-    this.registrosCaja = JSON.parse(localStorage.getItem('caja') || '[]');
-    
-    // Ya no cargamos ingresos y egresos del localStorage
-    // porque ahora vienen del backend
-  }
-
-  limpiarDatos() {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
-    
-    Swal.fire({
-      title: '¿Está seguro?',
-      text: 'Se eliminarán todos los registros de caja',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, limpiar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        localStorage.removeItem('ingresos');
-        localStorage.removeItem('egresos');
-        localStorage.removeItem('saldo');
-        localStorage.removeItem('caja');
-        
-        this.ingresos = 0;
-        this.egresos = 0;
-        this.saldo = 0;
-        this.registrosCaja = [];
-        
-        Swal.fire({
-          icon: 'success',
-          title: '¡Limpiado!',
-          text: 'Datos limpiados exitosamente',
-          timer: 2000,
-          showConfirmButton: false
-        });
-      }
-    });
   }
 
   protected generarReporte() {
     // Implementar generación de reporte con los registros de caja
-    console.log('Generar reporte', this.registrosCaja);
+    console.log('Generar reporte', this.registrosCajaMenor);
   }
 }

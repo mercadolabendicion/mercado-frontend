@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { HttpCajaMenorService } from '../http-services/httpCajaMenorService';
+import { HistorialCajaMenorDTO } from '../../dto/caja/HistorialCajaMenorDTO';
 import { AlertService } from "src/app/utils/alert.service";
 
 @Injectable({
@@ -36,6 +37,21 @@ export class CajaMenorService {
                 console.error('Error al consultar saldo:', error);
                 this.alert.simpleErrorAlert('Error al consultar el saldo de caja menor');
                 return of(0);
+            })
+        );
+    }
+
+    /**
+     * Obtiene el historial de cierres de caja menor paginado
+     * @param page - Número de página (empezando en 0)
+     * @param size - Cantidad de registros por página
+     */
+    public obtenerHistorial(page: number, size: number): Observable<HistorialCajaMenorDTO[]> {
+        return this.httpCajaMenorService.obtenerHistorial(page, size).pipe(
+            catchError((error) => {
+                console.error('Error al obtener historial:', error);
+                this.alert.simpleErrorAlert('Error al cargar el historial de caja menor');
+                return of([]);
             })
         );
     }
