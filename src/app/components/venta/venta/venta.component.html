@@ -3,7 +3,7 @@
     <h1>Hacer una venta</h1>
     <!-- Indicador balanza (auto, siempre visible si connected) -->
     <span class="badge d-flex align-items-center mb-2"
-      [ngClass]="balanzaConectada ? (pesoEstable ? 'bg-success' : 'bg-warning') : 'bg-secondary'">
+      [ngClass]="balanzaConectada ? (pesoEstable ? '' : '') : ''">
       <i class="fa-solid fa-circle-dot me-1"></i>
       Peso: {{ pesoActual | number:'1.3-3' }} kg
       <span *ngIf="balanzaConectada && !pesoEstable" class="ms-1">(Inestable)</span>
