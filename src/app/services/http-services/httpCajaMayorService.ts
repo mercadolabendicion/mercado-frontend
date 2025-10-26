@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../env/env';
 import { HistorialCajaMayorDTO } from '../../dto/caja/HistorialCajaMayorDTO';
+import { EstadoCajaMayorDTO } from '../../dto/caja/EstadoCajaMayorDTO';
 
 @Injectable({
     providedIn: 'root'
@@ -19,6 +20,10 @@ export class HttpCajaMayorService {
 
     public consultarSaldo(): Observable<number> {
         return this.http.get<number>(`${this.URL_API}/caja-mayor/saldo`);
+    }
+
+    public obtenerEstado(): Observable<EstadoCajaMayorDTO> {
+        return this.http.get<EstadoCajaMayorDTO>(`${this.URL_API}/caja-mayor/estado`);
     }
 
     public obtenerHistorial(page: number, size: number): Observable<HistorialCajaMayorDTO[]> {

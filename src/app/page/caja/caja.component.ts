@@ -10,8 +10,8 @@ import { MovimientoResponseDTO } from 'src/app/dto/movimiento/MovimientoResponse
 import { VentaService } from 'src/app/services/domainServices/venta.service';
 import { CajaMenorService } from 'src/app/services/domainServices/cajaMenor.service';
 import { CajaMayorService } from 'src/app/services/domainServices/cajaMayor.service';
-import { HistorialCajaMenorDTO } from '../../dto/caja/HistorialCajaMenorDTO';
-import { HistorialCajaMayorDTO } from '../../dto/caja/HistorialCajaMayorDTO';
+import { HistorialCajaMenorDTO } from 'src/app/dto/caja/HistorialCajaMenorDTO';
+import { HistorialCajaMayorDTO } from 'src/app/dto/caja/HistorialCajaMayorDTO';
 
 @Component({
   selector: 'app-caja',
@@ -23,25 +23,22 @@ export class CajaComponent {
   egresos: number = 0;
   saldo: number = 0;
   totalVentas: number = 0;
-  
+
   // Historial caja menor
   registrosCajaMenor: HistorialCajaMenorDTO[] = [];
   paginaActualMenor: number = 0;
   tamanioPaginaMenor: number = 15;
   tieneMasRegistrosMenor: boolean = true;
-  
+
   // Historial caja mayor
   registrosCajaMayor: HistorialCajaMayorDTO[] = [];
   paginaActualMayor: number = 0;
   tamanioPaginaMayor: number = 15;
   tieneMasRegistrosMayor: boolean = true;
-  
+
   // Campos del modal
-  fechaHoraModal: string = '';
-  totalEgresosModal: number = 0;
-  totalIngresosModal: number = 0;
-  saldoAnteriorModal: number = 0;
-  nuevoSaldoModal: number = 0;
+  valorCierreCajaMayor: number = 0;
+  valorCierreFormateado: string = '';
 
   protected ventas: VentaDTO[];
   private reporteService: ReporteService = inject(ReporteService);
@@ -84,7 +81,7 @@ export class CajaComponent {
    */
   async cargarMovimientosDelDia(): Promise<void> {
     const fechaActual = this.obtenerFechaActual();
-    
+
     return new Promise((resolve, reject) => {
       this.movimientoService.obtenerMovimientosPorFecha(fechaActual).subscribe({
         next: (movimientos: MovimientoResponseDTO[]) => {
@@ -92,20 +89,20 @@ export class CajaComponent {
           const ingresosMovimientos = movimientos
             .filter(mov => mov.tipo.toUpperCase() === 'INGRESO')
             .reduce((sum, mov) => sum + mov.valor, 0);
-          
+
           // Calcular total de egresos
           this.egresos = movimientos
             .filter(mov => mov.tipo.toUpperCase() === 'EGRESO')
             .reduce((sum, mov) => sum + mov.valor, 0);
-          
+
           // Obtener total de ventas del día
           this.ventaService.obtenerTotalVentasPorFecha(fechaActual).subscribe({
             next: (totalVentas) => {
               this.totalVentas = totalVentas;
-              
+
               // Sumar ingresos de movimientos + ventas del día
               this.ingresos = ingresosMovimientos + totalVentas;
-              
+
               console.log('Datos del día cargados:', {
                 movimientos: movimientos.length,
                 ingresosMovimientos: ingresosMovimientos,
@@ -113,7 +110,7 @@ export class CajaComponent {
                 ingresosTotal: this.ingresos,
                 egresos: this.egresos
               });
-              
+
               resolve();
             },
             error: (err) => {
@@ -167,15 +164,17 @@ export class CajaComponent {
   }
 
   /**
-   * Carga el saldo actual desde el backend
+   * Carga el saldo actual desde el backend (caja mayor)
    */
   cargarSaldoActual() {
-    this.cajaMenorService.consultarSaldo().subscribe({
-      next: (saldo) => {
-        this.saldo = saldo;
+    this.cajaMayorService.obtenerEstado().subscribe({
+      next: (estado) => {
+        if (estado) {
+          this.saldo = estado.saldo;
+        }
       },
       error: (err) => {
-        console.error('Error al cargar saldo:', err);
+        console.error('Error al cargar saldo de caja mayor:', err);
       }
     });
   }
@@ -190,7 +189,7 @@ export class CajaComponent {
     const anio = fecha.getFullYear();
     const horas = String(fecha.getHours()).padStart(2, '0');
     const minutos = String(fecha.getMinutes()).padStart(2, '0');
-    
+
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
   }
 
@@ -238,14 +237,10 @@ export class CajaComponent {
     if (this.menuComponent.estadoMenu) {
       this.menuComponent.cerrarMenu();
     }
-    
-    // Cargar datos actuales
-    this.fechaHoraModal = this.obtenerFechaHoraActual();
-    this.totalEgresosModal = this.egresos;
-    this.totalIngresosModal = this.ingresos;
-    this.saldoAnteriorModal = this.saldo;
-    this.nuevoSaldoModal = this.calcularNuevoSaldo();
-    
+
+    // Limpiar el valor del cierre
+    this.valorCierreCajaMayor = 0;
+
     const modal = document.getElementById('cerrarCajaModal');
     if (modal) {
       modal.style.display = 'block';
@@ -276,46 +271,35 @@ export class CajaComponent {
     const anio = ahora.getFullYear();
     const horas = String(ahora.getHours()).padStart(2, '0');
     const minutos = String(ahora.getMinutes()).padStart(2, '0');
-    
+
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
   }
 
-  calcularNuevoSaldo(): number {
-    return this.saldoAnteriorModal + this.totalIngresosModal - this.totalEgresosModal;
-  }
-
-  onCampoModalChange() {
-    // Recalcular el nuevo saldo cuando cambien los campos
-    this.nuevoSaldoModal = this.saldoAnteriorModal + this.totalIngresosModal - this.totalEgresosModal;
-  }
-
   cerrarCaja() {
-    const valorCierre = this.nuevoSaldoModal;
-    
-    this.cajaMenorService.cerrarCaja(valorCierre).subscribe({
+    // Validar que el valor sea mayor a 0
+    if (this.valorCierreCajaMayor <= 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Por favor, ingrese un valor válido para cerrar la caja'
+      });
+      return;
+    }
+
+    // Usar el servicio de caja mayor
+    this.cajaMayorService.cerrarCaja(this.valorCierreCajaMayor).subscribe({
       next: (success) => {
         if (success) {
-          // Recargar datos después del cierre
-          this.cargarHistorialCajaMenor();
-          this.cargarSaldoActual();
-          
-          // Resetear ingresos y egresos después del cierre
-          this.ingresos = 0;
-          this.egresos = 0;
-          
           this.ocultarModal('cerrarCajaModal');
-          
-          Swal.fire({
-            icon: 'success',
-            title: '¡Éxito!',
-            text: 'Caja cerrada exitosamente',
-            timer: 2000,
-            showConfirmButton: false
-          });
+
+          // La alerta ya la muestra el servicio, solo recargamos
+          setTimeout(() => {
+            this.ngOnInit();
+          }, 2000);
         }
       },
       error: (err) => {
-        console.error('Error al cerrar caja:', err);
+        console.error('Error al cerrar caja mayor:', err);
       }
     });
   }
@@ -323,17 +307,17 @@ export class CajaComponent {
   registrarEgreso() {
     const valorInput = (<HTMLInputElement>document.getElementById('valorEgreso')).value;
     const motivoInput = (<HTMLTextAreaElement>document.getElementById('motivoEgreso')).value;
-    
+
     const valorNumerico = parseFloat(valorInput.replace(/,/g, ''));
-    
+
     if (!isNaN(valorNumerico) && valorNumerico > 0) {
       this.egresos += valorNumerico;
       this.ocultarModal('egresoModal');
-      
+
       // Limpiar campos
       (<HTMLInputElement>document.getElementById('valorEgreso')).value = '';
       (<HTMLTextAreaElement>document.getElementById('motivoEgreso')).value = '';
-      
+
       Swal.fire({
         icon: 'success',
         title: '¡Éxito!',
@@ -370,5 +354,29 @@ export class CajaComponent {
   protected generarReporte() {
     // Implementar generación de reporte con los registros de caja
     console.log('Generar reporte', this.registrosCajaMenor);
+  }
+
+formatearValorCierre(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const valorSinFormato = input.value.replace(/[^\d]/g, '');
+
+    if (valorSinFormato === '') {
+      this.valorCierreFormateado = '';
+      this.valorCierreCajaMayor = 0;
+      input.value = '';
+      return;
+    }
+
+    const valorNumerico = parseInt(valorSinFormato, 10);
+
+    if (!isNaN(valorNumerico)) {
+      this.valorCierreFormateado = valorNumerico.toLocaleString('en-US');
+      this.valorCierreCajaMayor = valorNumerico; // Guardar el valor numérico
+      input.value = this.valorCierreFormateado;
+    } else {
+      this.valorCierreFormateado = '';
+      this.valorCierreCajaMayor = 0;
+      input.value = '';
+    }
   }
 }

@@ -40,7 +40,7 @@
     <!-- Saldo Actual Card -->
     <div class="summary-card summary-card-highlight">
       <div class="card-header">
-        <span class="card-label">Saldo Actual</span>
+        <span class="card-label">Saldo Caja Mayor</span>
         <div class="icon-circle icon-blue">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="2" y="5" width="20" height="14" rx="2"/>
@@ -49,7 +49,7 @@
         </div>
       </div>
       <div class="card-amount card-amount-large">{{ saldo | currency : "USD" : "symbol" : "1.0-0" }}</div>
-      <div class="card-description">Balance disponible en caja</div>
+      <div class="card-description">Balance disponible en caja mayor</div>
     </div>
   </div>
 
@@ -206,42 +206,24 @@
   </div>
 </div>
 
-<!-- Modal Cerrar Caja -->
+<!-- Modal Cerrar Caja Mayor -->
 <div class="modal" id="cerrarCajaModal">
   <div class="modal-content">
     <div class="modal-header">
-      <h5 class="modal-title">Cerrar caja</h5>
+      <h5 class="modal-title">Cerrar caja mayor</h5>
       <span class="close" (click)="ocultarModal('cerrarCajaModal')">&times;</span>
     </div>
     <div class="modal-body">
       <form>
         <div class="form-group">
-          <label for="fechaHora">Fecha y hora:</label>
-          <input type="text" class="form-control" id="fechaHora" [(ngModel)]="fechaHoraModal" name="fechaHora" readonly />
-        </div>
-
-        <div class="form-group">
-          <label for="totalEgresos">Total egresos:</label>
-          <input type="number" class="form-control" id="totalEgresos" [(ngModel)]="totalEgresosModal"
-            name="totalEgresos" (ngModelChange)="onCampoModalChange()" />
-        </div>
-
-        <div class="form-group">
-          <label for="totalIngresos">Total ingresos:</label>
-          <input type="number" class="form-control" id="totalIngresos" [(ngModel)]="totalIngresosModal"
-            name="totalIngresos" (ngModelChange)="onCampoModalChange()" />
-        </div>
-
-        <div class="form-group">
-          <label for="saldoAnterior">Saldo anterior:</label>
-          <input type="number" class="form-control" id="saldoAnterior" [(ngModel)]="saldoAnteriorModal"
-            name="saldoAnterior" (ngModelChange)="onCampoModalChange()" />
-        </div>
-
-        <div class="form-group">
-          <label for="nuevoSaldo">Nuevo saldo:</label>
-          <input type="number" class="form-control" id="nuevoSaldo" [(ngModel)]="nuevoSaldoModal" name="nuevoSaldo"
-            readonly />
+          <label for="valorCierre">Valor de cierre de caja mayor:</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="valorCierre" 
+            [value]="valorCierreFormateado"
+            (input)="formatearValorCierre($event)"
+            placeholder="Ingrese el valor de cierre" />
         </div>
       </form>
     </div>
@@ -250,7 +232,7 @@
         Cancelar
       </button>
       <button type="button" class="btn btn-primary" (click)="cerrarCaja()">
-        Cerrar caja
+        Cerrar caja mayor
       </button>
     </div>
   </div>

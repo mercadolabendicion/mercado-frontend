@@ -4,6 +4,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { HttpCajaMayorService } from '../http-services/httpCajaMayorService';
 import { AlertService } from "src/app/utils/alert.service";
 import { HistorialCajaMayorDTO } from '../../dto/caja/HistorialCajaMayorDTO';
+import { EstadoCajaMayorDTO } from '../../dto/caja/EstadoCajaMayorDTO';
 
 @Injectable({
     providedIn: 'root'
@@ -37,6 +38,19 @@ export class CajaMayorService {
                 console.error('Error al consultar saldo:', error);
                 this.alert.simpleErrorAlert('Error al consultar el saldo de caja mayor');
                 return of(0);
+            })
+        );
+    }
+
+    /**
+ * Obtiene el estado completo de la caja mayor (id y saldo)
+ */
+    public obtenerEstado(): Observable<EstadoCajaMayorDTO | null> {
+        return this.httpCajaMayorService.obtenerEstado().pipe(
+            catchError((error) => {
+                console.error('Error al obtener estado de caja mayor:', error);
+                this.alert.simpleErrorAlert('Error al consultar el estado de caja mayor');
+                return of(null);
             })
         );
     }
