@@ -1,4 +1,4 @@
-import { Component, DoCheck, ViewChild, ElementRef, HostListener, inject } from '@angular/core';
+import { Component, DoCheck, ViewChild, ElementRef, HostListener, inject, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -52,6 +52,7 @@ export class VentaComponent implements DoCheck {
   private productoService: ProductoService = inject(ProductoService);
   private ventaService: VentaService = inject(VentaService);
   private menuComponent: MenuComponent = inject(MenuComponent);
+  private cdr = inject(ChangeDetectorRef);
 
   // Estados UI / Formularios
   protected formulario!: FormGroup;
@@ -90,8 +91,8 @@ export class VentaComponent implements DoCheck {
   protected stockProducto: number;
 
   // Balanza
-  private scaleSubscription?: Subscription;
-  protected balanzaConectada: boolean = false;
+  private scaleSubscription: Subscription | undefined = undefined;
+  protected balanzaConectada: boolean = false;  // Se setea auto
   protected pesoActual: number = 0;
   protected pesoEstable: boolean = false;
   protected campoEnfocado: string | null = null;
@@ -111,22 +112,47 @@ export class VentaComponent implements DoCheck {
     this.validarFormularios();
   }
 
-  ngOnInit() {
-    this.generarIdFactura();
-    this.buildForms();
-    this.listarProductos();
-    this.listarClientes();
-    this.valorDescuento = null;
-    this.setClientePorDefecto('222222222222');
-    this.suscribirseABalanza();// Suscribirse a los datos de la balanza
-  }
+ngOnInit() {
+  // AUTO-CONEXIÓN BALANZA
+  console.log('[VENTA] Iniciando auto-conexión balanza...');
+  this.scaleService.connect().then(connected => {
+    this.balanzaConectada = connected;
+    if (connected) {
+      console.log('[VENTA] Balanza conectada – suscribiendo a live.');
+      this.suscribirseABalanza();  // ✅ SOLO UNA VEZ AQUÍ
+    } else {
+      console.warn('[VENTA] Balanza no conectó – chequea server Python.');
+    }
+  }).catch(err => {
+    console.error('[VENTA] Error auto-conexión:', err);
+    this.balanzaConectada = false;
+  });
 
-  ngOnDestroy() {
-    // Limpiar suscripciones y desconectar balanza
+  // Carga último peso del JSON (inmediato)
+  this.scaleService.getLastWeight().then(last => {
+    if (last) {
+      this.pesoActual = last.weight;
+      this.pesoEstable = last.stable;
+      console.log('[VENTA] Último peso cargado (stable:', last.stable, '):', last);
+    }
+  });
+
+  this.generarIdFactura();
+  this.buildForms();
+  this.listarProductos();
+  this.listarClientes();
+  this.valorDescuento = null;
+  this.setClientePorDefecto('222222222222');
+  // ❌ ELIMINA ESTA LÍNEA: this.suscribirseABalanza();
+}
+
+  ngOnDestroy(): void {
+    // ... tu código existente si hay
     if (this.scaleSubscription) {
       this.scaleSubscription.unsubscribe();
+      this.scaleSubscription = undefined;
     }
-    this.scaleService.disconnect();
+    this.scaleService.disconnect().catch(err => console.error('[VENTA] Error destroy disconnect:', err));
   }
 
   /**
@@ -510,15 +536,16 @@ export class VentaComponent implements DoCheck {
     )
   }
 
-  /**
-   * Este metodo se encarga de calcular el subtotal, igv y total de la factura
-   */
-  private calcularValores(): void {
-    this.subtotal = this.listProductos.reduce((total: number, producto: CarritoProductoDTO) => total + (producto.precio * producto.cantidad), 0);
-    this.igv = this.subtotal * (this.porcentajeIva / 100);
-    this.total = this.subtotal - this.descuento;
-    this.totalReal = this.total;
-  }
+
+/**
+ * Este metodo se encarga de calcular el subtotal, igv y total de la factura
+ */
+protected calcularValores(): void {  // ✅ Cambió de private a protected
+  this.subtotal = this.listProductos.reduce((total: number, producto: CarritoProductoDTO) => total + (producto.precio * producto.cantidad), 0);
+  this.igv = this.subtotal * (this.porcentajeIva / 100);
+  this.total = this.subtotal - this.descuento;
+  this.totalReal = this.total;
+}
 
   /**
    * Este metodo se encarga de eliminar un producto de la lista de productos de la factura
@@ -575,34 +602,51 @@ export class VentaComponent implements DoCheck {
   /**
    * Método para detectar cuando el input de cantidad de un producto del carrito recibe el foco
    */
-  onCantidadFocusCarrito(index: number): void {
-    this.indiceProductoEnfocado = index;
-    console.log(`Campo cantidad del producto ${index} enfocado - esperando peso de balanza`);
+onCantidadFocusCarrito(index: number): void {
+  this.indiceProductoEnfocado = index;
+  console.log(`[VENTA] 🎯 Campo cantidad producto ${index} enfocado`);
+  console.log(`[VENTA] Estado actual: peso=${this.pesoActual}, stable=${this.pesoEstable}`);
+  
+  // ✅ Si YA hay peso estable, actualiza inmediatamente
+  if (this.pesoEstable && this.pesoActual > 0.01) {
+    console.log('[VENTA] 🚀 Peso ya estable, actualizando inmediatamente');
+    this.actualizarCantidadCarritoDesdeBalanza(index, this.pesoActual);
+  } else {
+    console.log('[VENTA] ⏳ Esperando peso estable de la balanza...');
   }
+}
 
   /**
    * Método para detectar cuando el input de cantidad de un producto del carrito pierde el foco
    */
   onCantidadBlurCarrito(): void {
     this.indiceProductoEnfocado = null;
-    console.log('Campo cantidad desenfocado');
+    console.log('[VENTA] Campo cantidad desenfocado.');
   }
 
   /**
    * Método para detectar cuando el input de cantidad recibe el foco
    */
-  onCantidadFocus(): void {
-    this.campoEnfocado = 'cantidad';
-    console.log('Campo cantidad enfocado - esperando peso de balanza');
+onCantidadFocus(): void {
+  this.campoEnfocado = 'cantidad';
+  console.log('[VENTA] 📝 Campo cantidad enfocado - esperando peso estable');
+  
+  // ✅ Si YA hay peso estable, actualiza inmediatamente
+  if (this.pesoEstable && this.pesoActual > 0.01) {
+    console.log('[VENTA] 🚀 Peso ya estable, actualizando formulario inmediatamente');
+    this.actualizarCantidadDesdeBalanza(this.pesoActual);
+  } else {
+    console.log('[VENTA] ⏳ Esperando peso estable de la balanza...');
   }
+}
 
   /**
    * Método para detectar cuando el input de cantidad pierde el foco
    */
-  onCantidadBlur(): void {
-    this.campoEnfocado = null;
-    console.log('Campo cantidad desenfocado');
-  }
+onCantidadBlur(): void {
+  this.campoEnfocado = null;
+  console.log('[VENTA] Campo cantidad desenfocado');
+}
 
   /**
    * Este metodo cambia la cantidad de un producto en el carrito
@@ -793,59 +837,83 @@ export class VentaComponent implements DoCheck {
 
   //BALANZA
 
-  /**
-   * Se suscribe a los cambios de peso de la balanza
-   */
-  private suscribirseABalanza(): void {
-    this.scaleSubscription = this.scaleService.weight$.subscribe(data => {
-      this.pesoActual = data.weight;
-      this.pesoEstable = data.stable;
-
-      // Si el peso es estable y hay un producto del carrito enfocado
-      if (data.stable && this.indiceProductoEnfocado !== null) {
-        this.actualizarCantidadCarritoDesdeBalanza(this.indiceProductoEnfocado, data.weight);
-        console.log(`Peso estable recibido de balanza: ${data.weight} ${data.unit} - Aplicado al producto ${this.indiceProductoEnfocado}`);
-      }
-      // Si el peso es estable y el campo de cantidad del formulario está enfocado
-      else if (data.stable && this.campoEnfocado === 'cantidad') {
-        this.actualizarCantidadDesdeBalanza(data.weight);
-        console.log(`Peso estable recibido de balanza: ${data.weight} ${data.unit}`);
-      }
-    });
+// SUSCRIPCIÓN A PESO LIVE - CORREGIDA
+private suscribirseABalanza(): void {
+  if (this.scaleSubscription) {
+    console.log('[VENTA] Ya existe suscripción, cancelando...');
+    this.scaleSubscription.unsubscribe();
+    this.scaleSubscription = undefined;
   }
+
+  this.scaleSubscription = this.scaleService.weight$.subscribe(data => {
+    console.log('[VENTA] 📊 Peso LIVE recibido:', {
+      weight: data.weight,
+      stable: data.stable,
+      unit: data.unit,
+      timestamp: data.timestamp
+    });
+
+    // ✅ SIEMPRE actualiza el estado
+    this.pesoActual = data.weight;
+    this.pesoEstable = data.stable;
+
+    // ✅ SOLO actualiza campos si está estable Y enfocado
+    if (data.stable) {
+      console.log('[VENTA] ✅ Peso ESTABLE detectado');
+      
+      // Actualizar carrito si hay producto enfocado
+      if (this.indiceProductoEnfocado !== null) {
+        console.log('[VENTA] 🎯 Actualizando carrito índice', this.indiceProductoEnfocado);
+        this.actualizarCantidadCarritoDesdeBalanza(this.indiceProductoEnfocado, data.weight);
+      } 
+      // Actualizar formulario si el campo cantidad está enfocado
+      else if (this.campoEnfocado === 'cantidad') {
+        console.log('[VENTA] 📝 Actualizando formulario cantidad');
+        this.actualizarCantidadDesdeBalanza(data.weight);
+      }
+    } else {
+      console.log('[VENTA] ⚠️ Peso INESTABLE – esperando estabilización...');
+    }
+  });
+
+  console.log('[VENTA] ✅ Suscrito a weight$ – listo para live updates.');
+}
 
   /**
    * Actualiza la cantidad de un producto en el carrito desde el peso de la balanza
    */
   private actualizarCantidadCarritoDesdeBalanza(index: number, peso: number): void {
-    // Verificar que el índice sea válido
-    if (index < 0 || index >= this.listProductos.length) return;
+    if (index < 0 || index >= this.listProductos.length) {
+      console.warn('[VENTA] Índice inválido:', index);
+      return;
+    }
 
     const producto = this.listProductos[index];
-
-    // Convertir el peso según la unidad
     let cantidadFinal = peso;
 
-    // Si el peso es muy pequeño, ignorarlo (evitar ruido)
-    if (cantidadFinal < 0.01) return;
+    // Ignora pesos muy pequeños (ruido)
+    if (cantidadFinal < 0.01) {
+      console.log('[VENTA] ⚠️ Peso muy bajo, ignorando:', peso);
+      return;
+    }
 
-    // Redondear a 3 decimales (como está configurado en el servicio)
+    // Redondea a 3 decimales
     cantidadFinal = Math.round(cantidadFinal * 1000) / 1000;
 
-    // Verificar que no exceda el stock disponible
     const maxDisponible = this.getCantidadDisponible(producto);
     if (cantidadFinal > maxDisponible) {
       cantidadFinal = maxDisponible;
-      console.warn(`Peso ${peso} excede el stock disponible (${maxDisponible}). Se ajustó a ${cantidadFinal}`);
+      console.warn(`[VENTA] ⚠️ Peso ${peso} excede stock (${maxDisponible}). Ajustado a ${cantidadFinal}`);
     }
 
-    // Actualizar la cantidad del producto
+    // ✅ Actualiza la cantidad
     producto.cantidad = cantidadFinal;
-
-    // Recalcular totales
     this.calcularValores();
-
-    console.log(`Cantidad del producto "${producto.nombre}" actualizada a ${cantidadFinal} kg desde balanza`);
+    
+    // ✅ CRÍTICO: Fuerza detección de cambios
+    this.cdr.detectChanges();
+    
+    console.log(`[VENTA] ✅ Cantidad actualizada: "${producto.nombre}" → ${cantidadFinal} kg`);
   }
 
   /**
@@ -865,36 +933,50 @@ export class VentaComponent implements DoCheck {
     }
   }
 
-  /**
-   * Desconecta la balanza
-   */
+  // En desconectarBalanza():
   async desconectarBalanza(): Promise<void> {
-    await this.scaleService.disconnect();
-    this.balanzaConectada = false;
-    alert('Balanza desconectada');
+    try {
+      // NUEVO: Limpia subscription ANTES de disconnect
+      if (this.scaleSubscription) {
+        this.scaleSubscription.unsubscribe();
+        this.scaleSubscription = undefined;  // FIX: Cambia null por undefined
+        console.log('[VENTA] Subscription des-suscrita.');
+      }
+      await this.scaleService.disconnect();
+      this.balanzaConectada = false;
+      this.pesoActual = 0;
+      this.pesoEstable = true; // Reset
+      alert('Balanza desconectada');
+      console.log('[VENTA] Balanza desconectada y limpiado.');
+    } catch (error) {
+      console.error('Error al desconectar balanza:', error);
+      this.balanzaConectada = false;
+    }
   }
 
   /**
    * Actualiza la cantidad del producto desde el peso de la balanza
    */
-  private actualizarCantidadDesdeBalanza(peso: number): void {
-    // Solo actualizar si hay un producto seleccionado
-    if (!this.productoSeleccionado) return;
-
-    // Convertir el peso según la unidad (si viene en gramos y necesitas kg, por ejemplo)
-    let cantidadFinal = peso;
-
-    // Si el peso es muy pequeño, ignorarlo (evitar ruido)
-    if (cantidadFinal < 0.01) return;
-
-    // Redondear a 2 decimales
-    cantidadFinal = Math.round(cantidadFinal * 100) / 100;
-
-    // Actualizar el formulario
-    this.productosForm.patchValue({
-      cantidadProducto: cantidadFinal
-    });
-
-    console.log(`Cantidad actualizada desde balanza: ${cantidadFinal}`);
+// Actualiza el formulario desde el peso
+private actualizarCantidadDesdeBalanza(peso: number): void {
+  if (!this.productoSeleccionado) {
+    console.warn('[VENTA] No hay producto seleccionado');
+    return;
   }
+
+  let cantidadFinal = peso;
+
+  if (cantidadFinal < 0.01) {
+    console.log('[VENTA] ⚠️ Peso muy bajo, ignorando:', peso);
+    return;
+  }
+
+  cantidadFinal = Math.round(cantidadFinal * 1000) / 1000;
+
+  this.productosForm.patchValue({
+    cantidadProducto: cantidadFinal
+  });
+
+  console.log(`[VENTA] ✅ Cantidad formulario actualizada: ${cantidadFinal} kg`);
+}
 }
