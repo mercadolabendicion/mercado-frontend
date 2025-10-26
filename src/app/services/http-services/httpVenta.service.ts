@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../env/env';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { CrearVentaDTO } from '../../dto/venta/CrearVentaDTO';
 import { Observable } from 'rxjs';
 import { VentaDTO } from '../../dto/venta/VentaDTO';
@@ -13,20 +13,20 @@ import { EFacturaDTO } from 'src/app/dto/efactura/EFacturaDTO';
   providedIn: 'root'
 })
 export class HttpVentaService {
-  
+
 
   private URL_API: string = environment.ApiUrl;
   private http: HttpClient = inject(HttpClient);
-  
+
   public obtenerVentas(page: number): Observable<Page<VentaDTO>> {
-    return this.http.get<Page<VentaDTO>>(`${this.URL_API}/venta/obtener-ventas-completadas?page=${page}`); 
+    return this.http.get<Page<VentaDTO>>(`${this.URL_API}/venta/obtener-ventas-completadas?page=${page}`);
   }
 
   public obtenerVentasTodas(): Observable<VentaDTO[]> {
-    return this.http.get<VentaDTO[]>(`${this.URL_API}/venta/obtener-ventas`); 
+    return this.http.get<VentaDTO[]>(`${this.URL_API}/venta/obtener-ventas`);
   }
-  
-  public generaIdVenta(): Observable<number>{
+
+  public generaIdVenta(): Observable<number> {
     return this.http.get<number>(`${this.URL_API}/venta/siguiente-id`);
   }
 
@@ -53,5 +53,15 @@ export class HttpVentaService {
   obtenerEFacturas(page: number): Observable<Page<EFacturaDTO>> {
     return this.http.get<Page<EFacturaDTO>>(`${this.URL_API}/efactura/obtener-efacturas?page=${page}`);
   }
-  
+
+  /**
+ * Obtiene el total de ventas para una fecha específica
+ * @param fecha Fecha en formato YYYY-MM-DD
+ * @returns Observable con el total de ventas (número)
+ */
+  public obtenerTotalVentasPorFecha(fecha: string): Observable<number> {
+    const params = new HttpParams().set('fecha', fecha);
+    return this.http.get<number>(`${this.URL_API}/venta/total-ventas`, { params });
+  }
+
 }

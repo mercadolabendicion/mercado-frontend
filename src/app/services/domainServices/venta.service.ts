@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { ClienteService } from "./cliente.service";
-import { map, Observable, Subject } from "rxjs";
+import { map, Observable, Subject, of } from "rxjs";
 import { HttpVentaService } from "../http-services/httpVenta.service";
 import { AlertService } from "src/app/utils/alert.service";
 import { CrearVentaDTO } from "src/app/dto/venta/CrearVentaDTO";
@@ -14,19 +14,20 @@ import { CarritoProductoDTO } from "src/app/dto/producto/CarritoProductoDTO";
 import { CrearEFacturaDTO } from "src/app/dto/efactura/CrearEFacturaDTO";
 import { EFacturaDTO } from "src/app/dto/efactura/EFacturaDTO";
 import { lastValueFrom } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VentaService {
- 
+
 
   private httpVentaService: HttpVentaService = inject(HttpVentaService);
   private alert: AlertService = inject(AlertService);
   private clientService: ClienteService = inject(ClienteService);
-  private dinero:number;
+  private dinero: number;
 
-  constructor() { 
+  constructor() {
     this.dinero = 0;
   }
 
@@ -48,11 +49,11 @@ export class VentaService {
           resolve(false);
           return;
         }
-  
+
         try {
           venta.dineroRecibido = result;
           venta.cambio = this.dinero - total;
-  
+
           // Asegurar que `guardarVenta()` también retorne una promesa
           this.guardarVenta(venta, total)
             .then(() => resolve(true))
@@ -63,7 +64,7 @@ export class VentaService {
       }).catch((error) => reject(error)); // Manejar errores en `simpleInputAlert()`
     });
   }
-  
+
 
   /**
    * Este metodo se encarga de validar el dinero ingresado por el usuario
@@ -111,7 +112,7 @@ export class VentaService {
       throw error; // Rechaza la promesa si hay error
     });
   }
-  
+
   /**
    * Este metodo se encarga de mostrar el cambio al usuario 
    * @param dinero Cantidad de dinero dada por el usuario
@@ -120,7 +121,7 @@ export class VentaService {
   private mostrarCambio(total: number) {
     this.alert.simpleSuccessAlert(
       'El cambio es: $ ' + Math.floor(this.dinero - total).toLocaleString('en-US')
-    ); 
+    );
   }
 
   /**
@@ -147,7 +148,7 @@ export class VentaService {
    */
   public obtenerCliente(cedula: string): Observable<ClienteDTO | null> {
     return this.clientService.obtenerCliente(cedula).pipe(
-      map(response => {return response;})
+      map(response => { return response; })
     );
   }
 
@@ -172,12 +173,12 @@ export class VentaService {
 
     return true;
   }
-  
+
   /**
    * Este metodo se encarga de obtener las ventas de la base de datos
    * @returns un observable de tipo DetalleVentaDTO
    */
-  public obtenerVentas(page:number): Observable<Page<VentaDTO>> {
+  public obtenerVentas(page: number): Observable<Page<VentaDTO>> {
     return this.httpVentaService.obtenerVentas(page);
   }
 
@@ -225,7 +226,7 @@ export class VentaService {
         },
         error: (error) => {
           this.alert.simpleErrorAlert(error.error.mensaje);
-          observer.next(false); 
+          observer.next(false);
           observer.complete();
         }
       });
@@ -253,5 +254,20 @@ export class VentaService {
 
   obtenerFacturasElectronicas(page: number): Observable<Page<EFacturaDTO>> {
     return this.httpVentaService.obtenerEFacturas(page);
+  }
+
+  /**
+   * Obtiene el total de ventas para una fecha específica
+   * @param fecha Fecha en formato YYYY-MM-DD
+   * @returns Observable con el total de ventas
+   */
+  public obtenerTotalVentasPorFecha(fecha: string): Observable<number> {
+    return this.httpVentaService.obtenerTotalVentasPorFecha(fecha).pipe(
+      catchError((error) => {
+        console.error('Error al obtener total de ventas:', error);
+        this.alert.simpleErrorAlert('Error al cargar el total de ventas');
+        return of(0);
+      })
+    );
   }
 }

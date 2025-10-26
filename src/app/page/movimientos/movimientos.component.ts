@@ -11,6 +11,7 @@ import { MovimientoService } from 'src/app/services/domainServices/movimiento.se
 import { MovimientoDTO } from 'src/app/dto/movimiento/MovimientoDTO';
 import { MovimientoResponseDTO } from 'src/app/dto/movimiento/MovimientoResponseDTO';
 import { CajaMenorService } from 'src/app/services/domainServices/cajaMenor.service';
+import { VentaService } from 'src/app/services/domainServices/venta.service';
 
 interface Movimiento {
   id: string;
@@ -43,6 +44,7 @@ export class MovimientosComponent {
   private reporteService: ReporteService = inject(ReporteService);
   private movimientoService: MovimientoService = inject(MovimientoService);
   private cajaMenorService: CajaMenorService = inject(CajaMenorService);
+  private ventaService: VentaService = inject(VentaService);
   valorFormateado: string = '';
   private cajaService: CajaService = inject(CajaService);
   fechaFiltro: string = '';
@@ -110,9 +112,10 @@ export class MovimientosComponent {
     this.fechaFiltro = this.obtenerFechaActual();
 
     try {
-      await this.obtenerVentas();
-      this.totalVentas = this.sumarVentasDelDia(this.ventas);
+      // Cargar total de ventas desde el backend
+      await this.cargarTotalVentasPorFecha(this.fechaFiltro);
       
+      // Cargar movimientos
       await this.cargarMovimientosPorFecha(this.fechaFiltro);
       
       // Consultar el saldo de caja menor desde el backend
@@ -122,6 +125,26 @@ export class MovimientosComponent {
     } catch (error) {
       console.error('Error durante la inicialización:', error);
     }
+  }
+
+  /**
+   * Carga el total de ventas para una fecha específica
+   */
+  cargarTotalVentasPorFecha(fecha: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.ventaService.obtenerTotalVentasPorFecha(fecha).subscribe({
+        next: (total) => {
+          this.totalVentas = total;
+          console.log('Total de ventas del día obtenido:', total);
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error al cargar total de ventas:', err);
+          this.totalVentas = 0;
+          reject(err);
+        }
+      });
+    });
   }
 
   /**
@@ -233,7 +256,14 @@ export class MovimientosComponent {
 
   async onFechaChange() {
     if (this.fechaFiltro) {
+      // Cargar ventas de la nueva fecha
+      await this.cargarTotalVentasPorFecha(this.fechaFiltro);
+      
+      // Cargar movimientos de la nueva fecha
       await this.cargarMovimientosPorFecha(this.fechaFiltro);
+      
+      // Actualizar el total efectivo
+      this.actualizarTotalEfectivo();
     }
   }
 
@@ -499,40 +529,6 @@ export class MovimientosComponent {
   actualizarTotalEfectivo() {
     // El saldoCajaMenor ahora viene del backend, no lo calculamos localmente
     this.totalEfectivo = this.totalVentas + this.saldoCajaMenor;
-  }
-
-  obtenerVentas(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      let page = 0;
-      this.ventas = [];
-
-      const obtenerVentasRecursivamente = (paginaActual: number): void => {
-        this.cajaService.getVentas(paginaActual).subscribe({
-          next: (data) => {
-            if (data.content.length > 0) {
-              this.ventas = [...this.ventas, ...data.content];
-              obtenerVentasRecursivamente(paginaActual + 1);
-            } else {
-              console.log('Todas las ventas han sido cargadas:', this.ventas.length);
-              resolve();
-            }
-          },
-          error: (err) => {
-            console.error('Error al listar ventas:', err);
-            reject(err);
-          }
-        });
-      };
-
-      obtenerVentasRecursivamente(page);
-    });
-  }
-
-  sumarVentasDelDia(ventas: VentaDTO[]): number {
-    const fechaActual = new Date().toISOString().split('T')[0];
-    const ventasDelDia = ventas.filter(venta => venta.fecha.startsWith(fechaActual));
-    const totalVentas = ventasDelDia.reduce((suma, venta) => suma + venta.total, 0);
-    return totalVentas;
   }
 
   limpiarDatos() {
