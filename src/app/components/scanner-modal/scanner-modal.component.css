@@ -1,0 +1,76 @@
+.scanner-container {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  margin: 0 auto;
+  background-color: #000;
+  overflow: hidden;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.scanning-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scanning-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.scanner-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 160px;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.scanning-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: #007bff;
+  animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+  0% {
+    top: 0;
+  }
+  50% {
+    top: 100%;
+  }
+  100% {
+    top: 0;
+  }
+}
+
+.scan-status {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-top: 1px solid #dee2e6;
+}
+
+/* Ajustes para el modal de bootstrap */
+:host ::ng-deep .modal-dialog {
+  max-width: 500px;
+  margin: 1.75rem auto;
+}
+
+:host ::ng-deep .modal-content {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}

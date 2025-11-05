@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ProductoCompletoDTO } from 'src/app/dto/producto/ProductoCompletoDTO';
 import { ProductoDTO } from 'src/app/dto/producto/ProductoDTO';
+import { ScannerModalComponent } from '../../scanner-modal/scanner-modal.component';
 import { ProductoService } from 'src/app/services/domainServices/producto.service';
 import { ProductoAlertService } from 'src/app/utils/product-alert/productoAlert.service';
 import { MenuComponent } from '../../menu/menu.component';
@@ -42,6 +43,7 @@ export class HomeProductoComponent {
   protected idProductoSeleccionado: string = '';
   private dialog: MatDialog = inject(MatDialog);
   rangoVisible: number = 5; // Número de paginas que se van a mostrar en el paginador
+  protected buscarInput: HTMLInputElement | null = null;
 
   constructor(private fb: FormBuilder) {
     this.productos = [];
@@ -55,6 +57,7 @@ export class HomeProductoComponent {
     this.ajustarRangoVisible(); 
     this.obtenerProductos(0);
     this.updateProductoCount();
+    this.buscarInput = document.getElementById('buscar') as HTMLInputElement;
     this.actualizarProductoForm = this.fb.group({
       codigo: ['', Validators.required],
       nombre: ['', Validators.required],
@@ -399,4 +402,45 @@ export class HomeProductoComponent {
     }
   }
 
+  /**
+   * Este método abre un modal con el escáner de la cámara.
+   * Cuando se detecta un código de barras, se cierra automáticamente
+   * y se coloca el código en el campo de búsqueda.
+   */
+  abrirCamara(): void {
+    if (this.menuComponent.estadoMenu) {
+      this.menuComponent.cerrarMenu();
+    }
+
+    const dialogRef = this.dialog.open(ScannerModalComponent, {
+      width: '100%',
+      maxWidth: '450px',
+      panelClass: ['scanner-modal', 'modal-fullscreen-sm-down'],
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Código escaneado:', result);
+        // Buscar el input y actualizar su valor
+        const buscarInput = document.getElementById('buscar') as HTMLInputElement;
+        if (buscarInput) {
+          buscarInput.value = result;
+          // Crear y disparar un evento keyup para activar la búsqueda
+          const event = new KeyboardEvent('keyup', {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true
+          });
+          buscarInput.dispatchEvent(event);
+        }
+      }
+
+      if (!this.menuComponent.estadoMenu) {
+        this.menuComponent.abrirMenu();
+      }
+    });
+  }
 }

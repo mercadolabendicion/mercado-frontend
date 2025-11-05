@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { ScannerModalComponent } from './components/scanner-modal/scanner-modal.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ClienteComponent } from './page/cliente/cliente.component';
@@ -52,7 +53,8 @@ import { DecimalPipe } from '@angular/common';
     ConfiguracionComponent,
     ListaVentasComponent,
     FacturacionElectronicaComponent,
-    AutofocusDirective
+    AutofocusDirective,
+    ScannerModalComponent
   ],
   imports: [
     BrowserModule,

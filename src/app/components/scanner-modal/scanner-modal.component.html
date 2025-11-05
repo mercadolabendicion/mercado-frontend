@@ -1,0 +1,20 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Escáner de Códigos de Barras</h5>
+    <button type="button" class="btn-close" (click)="closeScanner()"></button>
+  </div>
+  <div class="modal-body p-0">
+    <div class="scanner-container">
+      <div class="video-container">
+        <video #video playsinline class="scanning-video"></video>
+        <canvas #canvas class="scanning-canvas"></canvas>
+        <div class="scanner-overlay">
+          <div class="scanning-line"></div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center py-2 scan-status">
+      <small class="text-muted">Centrando el código de barras en el área de escaneo...</small>
+    </div>
+  </div>
+</div>
