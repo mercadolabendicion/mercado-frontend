@@ -36,7 +36,6 @@ export class ClienteAlertService {
             if (result.isConfirmed) {
                 return true;
             } else {
-                this.alertService.cancelarOperacionAlert();
                 return false;
             }
         });

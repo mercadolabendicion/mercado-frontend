@@ -19,7 +19,6 @@ export class ProductoAlertService {
         }).then((result) => {
             if (result.isConfirmed) return true;
             else {
-                this.alertService.cancelarOperacionAlert();
                 return false;
             }
         });
