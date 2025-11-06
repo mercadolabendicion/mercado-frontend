@@ -1,64 +1,94 @@
+/* === MODAL BASE === */
 .modal {
   display: flex;
   justify-content: center;
   align-items: center;
   background: rgba(0, 0, 0, 0.4);
+  padding: 1rem; /* Espacio en pantallas pequeñas */
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  overflow-y: auto; /* Permite scroll si el contenido es muy alto */
 }
 
+/* === DIÁLOGO RESPONSIVE === */
 .modal-dialog {
+  width: 100%;
   max-width: 700px;
+  margin: auto;
+  /* En móviles: ocupará casi todo el ancho */
 }
 
+/* === CONTENIDO DEL MODAL === */
 .modal-content {
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.modal-header {
-  background: #fefefe; 
-}
-
-.modal-title {
-  font-weight: bold;
-  letter-spacing: 0.5px;
-}
-
-.modal-body {
-  padding: 20px;
-}
-
-.btnAggFormas{
-  background-color: transparent;
-  border-style: solid;
-  border-color: rgb(195, 205, 214);
-  border-width: 2px;
-  color: black;
-}
-
-.btnAggFormas:hover{
-  background-color: rgb(255, 255, 255);
-  border-color: rgb(67, 164, 255);
-}
-.form-control, .form-select {
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  padding: 10px;
-  transition: all 0.3s ease-in-out;
-}
-
-.form-control:focus, .form-select:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-.form-control.readonly {
-  background-color: #f8f9fa;
-  opacity: 0.7;
-}
-
-.table {
-  border-radius: 8px;
+  width: 100%;
+  max-height: 90vh; /* Evita que sea más alto que la pantalla */
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+}
+
+/* === HEADER === */
+.modal-header, .modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* === BODY === */
+.modal-body {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+}
+
+/* === CONTENEDOR DE TABLA === */
+.table-container {
+  max-height: 40vh; /* Altura relativa a la pantalla */
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background-color: #ffff;
+  position: relative;
+}
+
+.table-container-title {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 0.3rem 0.3rem;
+  font-weight: 600;
+  background-color: #ffff;
+  margin-bottom: 0.5rem;
+}
+
+/* === TABLA SCROLL === */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-formas {
+  width: 100%;
+  min-width: 500px; /* Evita colapso en móviles */
+  margin-bottom: 0;
+}
+
+.table-formas th,
+.table-formas td {
+  white-space: nowrap;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.table-header {
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 .table thead {
@@ -70,56 +100,151 @@
   background-color: rgba(0, 123, 255, 0.1);
 }
 
+/* === FORMULARIOS === */
+.form-control,
+.form-select {
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease-in-out;
+  font-size: 1rem;
+  /* padding: 0.5rem 0.75rem; */
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.form-control.readonly {
+  background-color: #f8f9fa;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* === BOTONES === */
 .btn-close {
   font-size: 18px;
   padding: 5px;
 }
 
+.btn-close:hover {
+  opacity: 1;
+}
+
 .btn-primary {
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
   transition: all 0.3s;
+  white-space: nowrap;
 }
 
 .btn-primary:hover {
   background-color: #0056b3;
 }
-.table-container {
-  max-height: 300px; /* Ajusta este valor según el diseño */
-  overflow-y: auto;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background-color: #f8f9fa;
-  position: relative;
+
+.btnAggFormas:hover {
+  background-color: rgb(255, 255, 255);
+  border-color: rgb(67, 164, 255);
+  color: rgb(67, 164, 255);
 }
 
-.table-container-title {
-  border: 1px solid #ddd;
-  border-radius: 10px;
+/* === RESPONSIVE BREAKPOINTS === */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 768px) {
+  .modal-dialog {
+    max-width: 90%;
+    margin: 1rem auto;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .table-formas th,
+  .table-formas td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 0.95rem;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .btn-primary {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
 }
 
-.table-header {
-  background: white; /* Asegura que el encabezado no se mezcle con el scroll */
-  position: sticky;
-  top: 0;
-  z-index: 2;
+/* Móviles pequeños */
+@media (max-width: 480px) {
+  .modal {
+    padding: 0.5rem;
+  }
+
+  .modal-dialog {
+    max-width: 95%;
+  }
+
+  .modal-header h5 {
+    font-size: 1.1rem;
+  }
+
+  .modal-body {
+    padding: 0.75rem;
+  }
+
+  .table-container {
+    max-height: 35vh;
+  }
+
+  .table-formas {
+    min-width: 400px;
+  }
+
+  .table-formas th,
+  .table-formas td {
+    padding: 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .btn-primary {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .btn-close {
+    font-size: 1.3rem;
+  }
+
+  /* Forzar botones en columna si hay varios */
+  .modal-footer .btn + .btn {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
 }
 
-.table-body-scroll {
-  max-height: 300px; /* Ajusta la altura según lo necesites */
-  overflow-y: auto;
+/* Pantallas muy pequeñas (evitar zoom forzado) */
+@media (max-width: 360px) {
+  .table-formas {
+    min-width: 360px;
+  }
 }
-
-
-/* Asegura que la tabla ocupe el 100% del ancho disponible */
-.table-scroll {
-  width: 100%;
-  overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
-}
-
-/* Evita que las celdas se deformen */
-.table-formas th,
-.table-formas td {
-  white-space: nowrap; /* Mantiene el contenido en una línea */
-}
-

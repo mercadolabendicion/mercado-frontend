@@ -153,8 +153,6 @@ p.rojo{
   align-items: center;
 }
 
-
-
 div.pup-up{
   position: absolute;
   bottom:  0;
@@ -185,7 +183,6 @@ div.pup-up span{
   cursor: pointer;
 }
 
-
 .table-container .pup-up.oculto{
   display: none;
 }
@@ -212,7 +209,6 @@ button#nuevo:hover {
   background-color: #007bff;
   transform: scale(1.05); /* Pequeña animación de escala */
 }
-
 
 @media (max-width: 576px) {
   button#nuevo {

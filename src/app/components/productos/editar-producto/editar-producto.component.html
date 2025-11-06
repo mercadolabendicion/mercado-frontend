@@ -4,7 +4,7 @@
 
       <!-- Encabezado -->
       <div class="modal-header">
-        <h2 class="modal-title">✏️ Editar Producto</h2>
+        <h5>✏️ Editar Producto</h5>
         <button type="button" class="btn-close" (click)="cerrarModal()"></button>
       </div>
 
@@ -46,7 +46,7 @@
         </div>
 
         <!-- Tabla de Formas de Venta -->
-        <h5 class="mt-4">Formas de Venta</h5>
+        <p class="mt-4">Formas de Venta</p>
         <div *ngIf="productoSeleccionado?.formaVentas; else sinDatos">
           <div class="table-container-title">
             <table class="table table-hover">
@@ -56,7 +56,7 @@
                   <th>Precio de compra</th>
                   <th>Precio de venta</th>
                   <th>Cantidad</th>
-                  <th>Eliminar</th>
+                  <th class="d-none d-sm-table-cell">Eliminar</th>
                 </tr>
               </thead>
             </table>
@@ -75,10 +75,10 @@
             </div>
           </div>
         </div>
-        <h5 class="mt-4">Agregar Forma de venta</h5>
+        <p class="mt-4">Agregar forma de venta</p>
         <div class="col-md-12">
           <!-- Botón para mostrar los inputs -->
-          <button *ngIf="!mostrarInputs" type="button" class="btn mt-2 formulario btnAggFormas w-100"
+          <button *ngIf="!mostrarInputs" type="button" class="btn-lg mt-2 formulario w-100" id="blanco"
             (click)="agregarFila()">+</button>
 
           <!-- Inputs que aparecen cuando se hace clic en el botón -->
@@ -96,13 +96,18 @@
                   placeholder="Precio de venta" />
               </div>
               <div class="col-md-3">
-                <input type="number" class="form-control mb-2" formControlName="cantidadNuevaForma" placeholder="Cantidad" />
+                <input type="number" class="form-control mb-2" formControlName="cantidadNuevaForma"
+                  placeholder="Cantidad" />
               </div>
             </div>
           </div>
-
+        </div>
+      </div>
+      <!-- Modal footer -->
+      <div class="modal-footer bg-white text-white">
+        <div class="row w-100">
           <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary btn-lg mt-5" (click)="guardarCambios()">Guardar
+            <button type="submit" class="btn-lg w-50" id="azul" (click)="guardarCambios()">Guardar
               cambios</button>
           </div>
         </div>
