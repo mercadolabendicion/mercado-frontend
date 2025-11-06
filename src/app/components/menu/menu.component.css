@@ -30,7 +30,7 @@ li {
 }
 
 li:hover {
-  transform: translateX(10px);
+    transform: translateX(10px);
 }
 
 /* Layout skeleton */
@@ -116,43 +116,43 @@ a.sidebar-link {
     width: 100vw;
 }
 
-button{
-  margin-right: 16px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  border: none;
-  font-weight: 600;
-  font-size: 16px;
-  color: #113253;
-  text-align: left;
-  padding-left: 10px;
-  cursor: pointer;
+button {
+    margin-right: 16px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    font-size: 16px;
+    color: #113253;
+    text-align: left;
+    padding-left: 10px;
+    cursor: pointer;
 }
 
-button.salir{
-  background-color: #ffffff;
-  border-radius: 0;
-  height: 40px;
-  width: 80px;
-  padding-bottom: 20px;
-  
+button.salir {
+    background-color: #ffffff;
+    border-radius: 0;
+    height: 40px;
+    width: 80px;
+    padding-bottom: 20px;
+
 }
 
-.empresa{
-  
-  margin-top: 8px;
+.empresa {
+
+    margin-top: 8px;
 }
 
 .sidebar-link:hover {
-  margin-right: 20px;
-  border-radius: 10px;
-  background-color: #f5f5f5;
+    margin-right: 20px;
+    border-radius: 10px;
+    background-color: #f5f5f5;
 }
 
 .sidebar-item-red:hover {
-  margin-right: 20px;
-  border-radius: 10px;
-  background-color: #ffc4c4;
+    margin-right: 20px;
+    border-radius: 10px;
+    background-color: #ffc4c4;
 }
 
 /* Responsive */

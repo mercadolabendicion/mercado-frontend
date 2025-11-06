@@ -64,15 +64,13 @@ td button{
   border-radius: 2px;
   text-align: center;
   cursor: pointer;
-  margin: 0 5px;
+  margin: 0;
 }
 
 td button.editar, td button.check{
   background: none;
   border: none;
-  
 }
-
 
 .ocultar{
   display: none;
@@ -169,7 +167,7 @@ button#nuevo {
 
 button#nuevo:hover {
   background-color: #007bff;
-  transform: scale(1.05); /* Pequeña animación de escala */
+  transform: scale(1.02); /* Pequeña animación de escala */
 }
 
 @media (max-width: 576px) {

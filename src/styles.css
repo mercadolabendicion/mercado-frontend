@@ -51,3 +51,68 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     max-height: 100vh !important;
   }
 }
+
+
+/*Styles generales*/
+button {
+  border-radius: 10px;
+  /* width: 100%; */
+  height: 30px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.01);
+}
+
+button#azul {
+  background-color: rgb(67, 164, 255);
+}
+button#azul:hover {
+  background-color: #007bff;
+}
+
+button#verde {
+  background-color: #28a745;
+}
+button#verde:hover {
+  background-color: #218838;
+}
+
+button#gris {
+  background-color: #6c757d;
+}
+button#gris:hover {
+  background-color: #5a6268;
+}
+
+button#naranja {
+  background-color: #fd7e14;
+}
+button#naranja:hover {
+  background-color: #e96b00;
+}
+
+button#rojo {
+  background-color: #dc3545;
+}
+button#rojo:hover {
+  background-color: #c82333;
+}
+
+button#amarillo {
+  background-color: #ffc107;
+  color: #212529;
+}
+button#amarillo:hover {
+  background-color: #e0a800;
+}
