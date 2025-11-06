@@ -647,16 +647,6 @@ export class VentaComponent implements DoCheck {
   }
 
   /**
-   * Este método se encarga de cerrar el menu y asi
-   * evita que se genere un bug con la ventana emergente
-   */
-  cerrarMenu() {
-    if (!this.menuComponent.estadoMenu) {
-      this.menuComponent.toggleCollapse();
-    }
-  }
-
-  /**
    * Este metodo se encarga de cambiar el modo de visualización de la vista
    */
   protected cambiarModoOculto(): void {

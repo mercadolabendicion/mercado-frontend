@@ -75,18 +75,7 @@ export class FacturacionElectronicaComponent {
       this.generarPaginas();
     })
   }
-
-
-  /**
-   * Este método se encarga de cerrar el menu y asi
-   * evita que se genere un bug con la ventana emergente
-   */
-  cerrarMenu() {
-    if (!this.menuComponent.estadoMenu) {
-      this.menuComponent.toggleCollapse();
-    }
-  }
-
+  
   /**
    * Este método se encarga de filtrar las ventas por un valor de búsqueda
    * @param evento contiene el evento de búsqueda

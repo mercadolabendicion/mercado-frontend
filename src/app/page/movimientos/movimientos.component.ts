@@ -268,9 +268,6 @@ export class MovimientosComponent {
   }
 
   mostrarModal(action: 'ingreso' | 'egreso') {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
     this.limpiarCampos();
     this.currentAction = action;
     this.movimientoEnEdicion = null;
@@ -283,10 +280,6 @@ export class MovimientosComponent {
   }
 
   mostrarModalCierreCaja() {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
-
     // Calcular totales para el cierre
     this.totalVentasCierre = this.totalVentas;
     
@@ -362,10 +355,6 @@ export class MovimientosComponent {
   }
 
   editarMovimiento(movimiento: Movimiento) {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
-    
     this.currentAction = 'editar';
     this.movimientoEnEdicion = movimiento;
     this.modalTitle = 'Editar movimiento';
@@ -392,10 +381,6 @@ export class MovimientosComponent {
   }
 
   eliminarMovimiento(movimiento: Movimiento) {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
-
     Swal.fire({
       title: '¿Está seguro?',
       text: `Se eliminará el ${movimiento.tipo.toLowerCase()} por valor de ${movimiento.valor.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 })}`,
@@ -532,10 +517,6 @@ export class MovimientosComponent {
   }
 
   limpiarDatos() {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
-
     Swal.fire({
       title: '¿Está seguro?',
       text: 'Se eliminarán todos los datos de movimientos',

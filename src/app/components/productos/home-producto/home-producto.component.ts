@@ -254,9 +254,6 @@ export class HomeProductoComponent {
    * @param codigo código único del producto que se desea visualizar en el modal
    */
   abrirModal(codigo: string): void {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
     this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
       this.productoSeleccionado = producto;
       const fechaVencimiento = producto.fechaVencimiento
@@ -408,10 +405,6 @@ export class HomeProductoComponent {
    * y se coloca el código en el campo de búsqueda.
    */
   abrirCamara(): void {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
-
     const dialogRef = this.dialog.open(ScannerModalComponent, {
       width: '100%',
       maxWidth: '450px',

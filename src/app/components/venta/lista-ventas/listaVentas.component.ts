@@ -139,24 +139,10 @@ export class ListaVentasComponent {
    * @param venta contiene los datos de la venta seleccionada
    */
   protected mostrarPrevisualizacion(venta: VentaDTO) {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
     this.ventaSeleccionada = venta;
     this.ventaService.obtenerVenta(venta.id).subscribe(data => {
       this.ventaRealizada = data;
     });
-  }
-
-  /**
-   * Este método se encarga de cerrar el menu y asi
-   * evita que se genere un bug con la ventana emergente
-   */
-  cerrarMenu() {
-    if (!this.menuComponent.estadoMenu) {
-      this.menuComponent.toggleCollapse();
-    }
-    console.log('el menu esta', this.menuComponent.estadoMenu);
   }
 
   /**
@@ -196,9 +182,6 @@ export class ListaVentasComponent {
    * @param idVenta es el id de la venta a eliminar
    */
   public eliminarVenta(idVenta: number) {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
     this.ventaService.preguntarEliminarVenta().then((result) => {
       if (result) {
         this.eliminarVentaSinConfirmar(idVenta);

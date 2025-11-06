@@ -41,7 +41,7 @@
               <td class="d-none d-md-table-cell">{{ cliente.fechaCreacion | date }}</td>
               <td class="eliminar">
                 <button (click)="eliminarPorId(cliente.id)">❌</button>
-                <button class="editar" data-bs-toggle="modal" data-bs-target="#editarClienteModal" (click)="cerrarMenu()" (click)="toggleModoEdicion(cliente)">✏️</button>
+                <button class="editar" data-bs-toggle="modal" data-bs-target="#editarClienteModal" (click)="toggleModoEdicion(cliente)">✏️</button>
               </td>
             </tr>
             }

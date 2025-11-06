@@ -225,13 +225,6 @@ export class HomeClienteComponent {
   }
 
   /**
-   * Si el menú lateral está abierto, lo vuelve a cierra.
-   */
-  cerrarMenu() {
-    this.menuComponent.cerrarMenu();
-  }
-
-  /**
    * Si el menú lateral está cerrado, lo vuelve a abrir automáticamente.
    */
   cerrarModal(): void {

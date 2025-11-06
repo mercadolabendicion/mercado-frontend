@@ -61,9 +61,6 @@ export class EditarProductoComponent {
    */
   abrirModal(codigo: string): void {
     this.modalAbierto = true;
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
     this.productoService.obtenerProductoCompleto(codigo).subscribe((producto) => {
       const productoFormateado = {
         ...producto,
@@ -129,7 +126,6 @@ export class EditarProductoComponent {
    * Es útil para restaurar la interfaz principal tras cerrar un diálogo.
    */
   cerrarModal(): void {
-    this.menuComponent.abrirMenu();
     this.dialogRef.close();
   }
 

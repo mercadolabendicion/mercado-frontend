@@ -235,10 +235,6 @@ export class CajaComponent {
   }
 
   mostrarModalCerrarCaja() {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
-
     // Limpiar el valor del cierre
     this.valorCierreCajaMayor = 0;
 
@@ -249,9 +245,6 @@ export class CajaComponent {
   }
 
   mostrarModalEgreso() {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
     const modal = document.getElementById('egresoModal');
     if (modal) {
       modal.style.display = 'block';
@@ -412,10 +405,6 @@ export class CajaComponent {
 
   // Añadir este método después de mostrarModalCerrarCaja
   mostrarModalPasarCajaMenor() {
-    if (this.menuComponent.estadoMenu) {
-      this.menuComponent.cerrarMenu();
-    }
-
     // Limpiar el valor del paso
     this.valorPasoCajaMenor = 0;
     this.valorPasoFormateado = '';

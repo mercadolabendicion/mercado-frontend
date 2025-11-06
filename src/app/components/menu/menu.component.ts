@@ -54,11 +54,11 @@ export class MenuComponent {
     this.router.navigate(['/login']);
   }
 
-  public cerrarMenu() {
-    if (this.estadoMenu) {
-      this.toggleCollapse();
-    }
-  }
+  // public cerrarMenu() {
+  //   if (this.estadoMenu) {
+  //     this.toggleCollapse();
+  //   }
+  // }
 
   public abrirMenu() {
       this.toggleCollapse();
