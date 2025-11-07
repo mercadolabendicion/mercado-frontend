@@ -3,7 +3,7 @@
     <h1>Hacer una venta</h1>
     <!-- Botones de control de balanza -->
     <div class="d-flex gap-2 mb-2">
-      <button *ngIf="!balanzaConectada" class="btn btn-success btn-sm" (click)="conectarBalanza()" type="button">
+      <button *ngIf="!balanzaConectada" class="btn-md px-2" id="verde" (click)="conectarBalanza()" type="button">
         <i class="fa-solid fa-weight-scale me-1"></i> Conectar Balanza
       </button>
 
@@ -87,21 +87,21 @@
                     </td>
                     <td class="align-middle">
                       <div class="d-flex align-items-center justify-content-center">
-                        <button class="btn btn-sm btn-outline-secondary me-1"
-                          (click)="cambiarCantidad(i, producto.cantidad - 1)" [disabled]="producto.cantidad <= 1">
+                        <button class="btn-md me-1 px-2" id="blanco"
+                          (click)="cambiarCantidad(i, producto.cantidad - 1)" *ngIf="producto.cantidad > 1">
                           <i class="fa-solid fa-minus"></i>
                         </button>
-                        <input type="number" class="form-control form-control-sm text-center venta-cantidad-input"
+                        <input type="number" class="form-control form-control-sm text-center venta-cantidad-input mx-2"
                           [value]="producto.cantidad" 
                           (input)="cambiarCantidad(i, obtenerValorInputNumber($event))"
                           (focus)="onCantidadFocusCarrito(i)"
                           (blur)="onCantidadBlurCarrito()"
                           min="0" step="0.001" [max]="getCantidadDisponible(producto)" placeholder="0.000">
 
-                        <button class="btn btn-sm btn-outline-secondary ms-1"
-                          (click)="cambiarCantidad(i, producto.cantidad + 1)"
-                          [disabled]="producto.cantidad >= getCantidadDisponible(producto)">
-                          <i class="fa-solid fa-plus"></i>
+                        <button class="btn-md me-1 px-2" id="blanco"
+                            (click)="cambiarCantidad(i, producto.cantidad + 1)"
+                            *ngIf="producto.cantidad < getCantidadDisponible(producto)">
+                            <i class="fa-solid fa-plus"></i>
                         </button>
                       </div>
                       <div *ngIf="producto.cantidad > getCantidadDisponible(producto)"
@@ -192,7 +192,7 @@
           </div>
         </div>
         <div class="text-end mt-3">
-          <button type="submit" class="btn-primary BotonGeneral" id="verde" (click)="onSubmit()">Vender</button>
+          <button type="submit" class="btn-lg w-100" id="verde" (click)="onSubmit()">Vender</button>
         </div>
         <!-- Columna del checkbox y descuento -->
         <div class="col-12 mt-2">
@@ -209,11 +209,11 @@
               name="valorDescuento" />
           </div>
           <div *ngIf="aplicarDescuento">
-            <button class="btn btn-primary w-100 BotonGeneral mb-2" id="azul" (click)="reducirTotal()">Aplicar
+            <button class="btn-lg w-100 mb-2" id="azul" (click)="reducirTotal()">Aplicar
               descuento</button>
           </div>
           <div *ngIf="descuentoAplicado">
-            <button class="btn btn-danger w-100 BotonCancelar mb-2" (click)="cancelarDescuento()">Cancelar
+            <button class="btn-lg w-100 mb-2" id="rojo" (click)="cancelarDescuento()">Cancelar
               descuento</button>
           </div>
         </div>
