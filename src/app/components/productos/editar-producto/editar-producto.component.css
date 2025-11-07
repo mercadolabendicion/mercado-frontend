@@ -1,3 +1,6 @@
+/*editar-producto*/
+
+
 /* === MODAL BASE === */
 .modal {
   display: flex;
@@ -45,9 +48,9 @@
   -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
 }
 
-/* === CONTENEDOR DE TABLA === */
-.table-container {
-  max-height: 40vh; /* Altura relativa a la pantalla */
+/* === CONTENEDOR DE TABLA DEL MODAL === */
+.modal-body .table-container2 {
+  max-height: 40vh;
   overflow-y: auto;
   border-radius: 10px;
   border: 1px solid #ddd;
@@ -55,50 +58,54 @@
   position: relative;
 }
 
-.table-container-title {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 0.3rem 0.3rem;
-  font-weight: 600;
-  background-color: #ffff;
-  margin-bottom: 0.5rem;
-}
-
-/* === TABLA SCROLL === */
-.table-scroll {
+/* === TABLA SCROLL DEL MODAL === */
+.modal-body .table-scroll {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-.table-formas {
+.modal-body .table-scroll table {
   width: 100%;
-  min-width: 500px; /* Evita colapso en móviles */
+  min-width: 500px;
   margin-bottom: 0;
+  background-color: transparent;
+  table-layout: auto;
 }
 
-.table-formas th,
-.table-formas td {
+.modal-body .table-scroll table th,
+.modal-body .table-scroll table td {
   white-space: nowrap;
   padding: 0.75rem;
   font-size: 0.9rem;
+  border: 1px solid #dee2e6;
 }
 
-.table-header {
-  background: white;
+.modal-body .table thead {
+  background-color: #f8f9fa;
+  color: rgb(97, 97, 97);
+  font-weight: 600;
   position: sticky;
   top: 0;
   z-index: 2;
 }
 
-.table thead {
-  background-color: #007bff;
-  color: white;
+.modal-body .table thead th {
+  background-color: #f8f9fa;
+  color: rgb(97, 97, 97);
+  border-bottom: 2px solid #dee2e6;
 }
 
-.table-hover tbody tr:hover {
+.modal-body .table-hover tbody tr:hover {
   background-color: rgba(0, 123, 255, 0.1);
 }
+
+.modal-body .table tbody tr {
+  background-color: #ffffff;
+}
+
+
+
 
 /* === FORMULARIOS === */
 .form-control,
@@ -190,6 +197,7 @@
 @media (max-width: 480px) {
   .modal {
     padding: 0.5rem;
+    align-items: flex-start; /* colocar modal hacia arriba para permitir scroll vertical */
   }
 
   .modal-dialog {
@@ -200,8 +208,8 @@
     font-size: 1.1rem;
   }
 
-  .modal-body {
-    padding: 0.75rem;
+  .modal-body .table-container2 {
+    max-height: 35vh;
   }
 
   .table-container {

@@ -48,20 +48,18 @@
         <!-- Tabla de Formas de Venta -->
         <p class="mt-4">Formas de Venta</p>
         <div *ngIf="productoSeleccionado?.formaVentas; else sinDatos">
-          <div class="table-container-title">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Nombre Forma</th>
-                  <th>Precio de compra</th>
-                  <th>Precio de venta</th>
-                  <th>Cantidad</th>
-                  <th class="d-none d-sm-table-cell">Eliminar</th>
-                </tr>
-              </thead>
-            </table>
-            <div class="table-body-scroll">
-              <table class="table table-hover">
+          <div class="table-container2">
+            <div class="table-scroll">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Nombre Forma</th>
+                    <th>Precio de compra</th>
+                    <th>Precio de venta</th>
+                    <th>Cantidad</th>
+                    <th>Eliminar</th>
+                  </tr>
+                </thead>
                 <tbody formArrayName="formasVentas">
                   <tr *ngFor="let forma of formasVentas.controls; let i = index" [formGroupName]="i">
                     <td><input type="text" class="form-control" formControlName="nombre" /></td>
