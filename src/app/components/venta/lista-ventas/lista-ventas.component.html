@@ -43,13 +43,13 @@
                 <td class="text-left">{{ venta.fecha | date:'yyyy-MM-dd HH:mm:ss' }}</td>
                 <td class="text-left">$ {{ venta.total | number:'1.0-0' }}</td>
                 <td class="eliminar">
-                  <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary ms-2" (click)="mostrarPrevisualizacion(venta)"
+                  <div class="d-flex justify-content-end gap-2">
+                    <button type="button" class="btn-lg px-2" id="azul" (click)="mostrarPrevisualizacion(venta)"
                       data-bs-toggle="modal" data-bs-target="#previsualizacionFacturaModal">
-                      Generar Facturas
+                      Generar facturas
                     </button>
-                    <button type="button" class="btn btn-light ms-2" (click)="eliminarVenta(venta.id)">
-                      ❌ Eliminar Venta
+                    <button type="button" class="btn-lg px-2" id="blanco" (click)="eliminarVenta(venta.id)">
+                      ❌ Eliminar venta
                     </button>
                   </div>
                 </td>
@@ -98,11 +98,10 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <a href="https://catalogo-vpfe-hab.dian.gov.co/User/PersonLogin" target="_blank"><button type="button" class="btn btn-success" (click)="generarFacturaE(ventaSeleccionada!.id)" >  Factura electrónica </button></a>
-          <button type="button" class="btn btn-success" (click)="confirmarGenerarFactura(ventaSeleccionada?.id)"
+        <div class="modal-footer justify-content-between">
+          <a href="https://catalogo-vpfe-hab.dian.gov.co/User/PersonLogin" target="_blank"><button type="button" class="btn-lg px-2" id="verde" (click)="generarFacturaE(ventaSeleccionada!.id)" >  Factura electrónica </button></a>
+          <button type="button" class="btn-lg px-2" id="azul" (click)="confirmarGenerarFactura(ventaSeleccionada?.id)"
             data-bs-dismiss="modal">Factura física</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
       </div>
     </div>
