@@ -1,101 +1,310 @@
-import { Component, OnInit, ElementRef, ViewChild, OnDestroy, NgZone } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy, NgZone, AfterViewInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { BrowserMultiFormatReader, Result, DecodeHintType, BarcodeFormat } from '@zxing/library';
+import Quagga from '@ericblade/quagga2';
 
 @Component({
   selector: 'app-scanner-modal',
   templateUrl: './scanner-modal.component.html',
   styleUrls: ['./scanner-modal.component.css']
 })
-export class ScannerModalComponent implements OnInit, OnDestroy {
-  @ViewChild('video') video!: ElementRef<HTMLVideoElement>;
+export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('scannerContainer', { static: false }) scannerContainer!: ElementRef<HTMLDivElement>;
   
-  private codeReader: BrowserMultiFormatReader;
-  private videoStream: MediaStream | null = null;
   protected scanningActive = true;
+  protected errorMessage: string = '';
+  protected isLoading: boolean = true;
+  private scannerInitialized = false;
 
   constructor(
     private dialogRef: MatDialogRef<ScannerModalComponent>,
     private ngZone: NgZone
   ) {
-    const hints = new Map<DecodeHintType, any>();
-    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-      BarcodeFormat.EAN_13,
-      BarcodeFormat.EAN_8,
-      BarcodeFormat.CODE_128,
-      BarcodeFormat.CODE_39,
-      BarcodeFormat.UPC_A,
-      BarcodeFormat.UPC_E
-    ]);
-    
-    this.codeReader = new BrowserMultiFormatReader(hints);
+    console.log('[SCANNER] 🚀 Constructor iniciado');
   }
 
   ngOnInit(): void {
-    this.startScanner();
+    console.log('[SCANNER] 📱 ngOnInit llamado');
+  }
+
+  ngAfterViewInit(): void {
+    console.log('[SCANNER] 🎬 ngAfterViewInit llamado');
+    
+    if (!this.scannerContainer || !this.scannerContainer.nativeElement) {
+      console.error('[SCANNER] ❌ Elemento scannerContainer no encontrado');
+      this.handleError(new Error('Contenedor del scanner no disponible'));
+      return;
+    }
+    
+    console.log('[SCANNER] 📹 Elemento scanner container disponible:', !!this.scannerContainer);
+    
+    // Dar tiempo para que el DOM esté listo
+    setTimeout(() => {
+      console.log('[SCANNER] ⏰ Timeout completado, iniciando scanner');
+      this.startScanner();
+    }, 500);
   }
 
   async startScanner(): Promise<void> {
-    try {
-      // Obtener la cámara trasera si está disponible
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(device => device.kind === 'videoinput');
-      const backCamera = videoDevices.find(device => 
-        device.label.toLowerCase().includes('back') || 
-        device.label.toLowerCase().includes('trasera') ||
-        device.label.toLowerCase().includes('environment')
-      );
+    if (this.scannerInitialized) {
+      console.log('[SCANNER] ⚠️ Scanner ya iniciado, abortando');
+      return;
+    }
 
-      const constraints = {
-        video: {
-          deviceId: backCamera ? { exact: backCamera.deviceId } : undefined,
-          facingMode: backCamera ? undefined : 'environment',
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          aspectRatio: { ideal: 1.777778 }
-        }
+    this.scannerInitialized = true;
+    console.log('[SCANNER] 🔄 ====== INICIANDO SCANNER ======');
+
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      // Verificar soporte del navegador
+      console.log('[SCANNER] 🌐 Verificando soporte...');
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error('Tu navegador no soporta acceso a la cámara');
+      }
+      console.log('[SCANNER] ✅ Navegador compatible');
+
+      // Verificar elemento DOM
+      if (!this.scannerContainer?.nativeElement) {
+        throw new Error('Contenedor del scanner no disponible');
+      }
+      console.log('[SCANNER] ✅ Contenedor encontrado:', this.scannerContainer.nativeElement.id);
+
+      // Detener instancias previas
+      try {
+        Quagga.stop();
+        console.log('[SCANNER] 🛑 Instancias previas detenidas');
+      } catch (e) {
+        console.log('[SCANNER] ℹ️ No había instancias previas');
+      }
+
+      // Configuración de Quagga
+      console.log('[SCANNER] 🔧 Configurando Quagga2...');
+      const config: any = {
+        inputStream: {
+          name: "Live",
+          type: "LiveStream",
+          target: this.scannerContainer.nativeElement,
+          constraints: {
+            width: { min: 640, ideal: 1280, max: 1920 },
+            height: { min: 480, ideal: 720, max: 1080 },
+            facingMode: "environment"
+          },
+          area: {
+            top: "0%",
+            right: "0%",
+            left: "0%",
+            bottom: "0%"
+          }
+        },
+        locator: {
+          patchSize: "medium",
+          halfSample: true
+        },
+        numOfWorkers: navigator.hardwareConcurrency || 2,
+        decoder: {
+          readers: [
+            "ean_reader",
+            "ean_8_reader",
+            "code_128_reader",
+            "code_39_reader",
+            "upc_reader",
+            "upc_e_reader"
+          ],
+          debug: {
+            drawBoundingBox: true,
+            showFrequency: false,
+            drawScanline: true,
+            showPattern: false
+          }
+        },
+        locate: true,
+        frequency: 10
       };
 
-      this.videoStream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.video.nativeElement.srcObject = this.videoStream;
-      await this.video.nativeElement.play();
+      console.log('[SCANNER] 📋 Config:', JSON.stringify(config, null, 2));
 
-      // Comenzar la decodificación continua
-      this.codeReader.decodeFromStream(
-        this.videoStream,
-        this.video.nativeElement,
-        (result: Result | null) => {
-          if (result && this.scanningActive) {
-            const scannedCode = result.getText();
-            console.log('Código escaneado:', scannedCode);
-            // Verificar si es un código de barras numérico válido
-            if (/^\d+$/.test(scannedCode)) {
-              this.scanningActive = false; // Evitar múltiples lecturas
-              this.ngZone.run(() => {
-                this.dialogRef.close(scannedCode);
-              });
-            }
+      // Inicializar Quagga
+      console.log('[SCANNER] 🚀 Llamando a Quagga.init()...');
+      
+      await new Promise<void>((resolve, reject) => {
+        Quagga.init(config, (err: any) => {
+          if (err) {
+            console.error('[SCANNER] ❌ Error en Quagga.init:', err);
+            reject(err);
+            return;
           }
-        }
-      );
 
-    } catch (error) {
-      console.error('Error al acceder a la cámara:', error);
-      alert('No se pudo acceder a la cámara. Por favor, verifica los permisos.');
-      this.closeScanner();
+          console.log('[SCANNER] ✅ Quagga.init exitoso');
+          
+          // Iniciar scanner
+          console.log('[SCANNER] 📸 Llamando a Quagga.start()...');
+          try {
+            Quagga.start();
+            console.log('[SCANNER] ✅ Quagga.start exitoso');
+            
+            this.ngZone.run(() => {
+              this.isLoading = false;
+              console.log('[SCANNER] ✅ Loading desactivado');
+            });
+            
+            resolve();
+          } catch (startError) {
+            console.error('[SCANNER] ❌ Error en Quagga.start:', startError);
+            reject(startError);
+          }
+        });
+      });
+
+      // Configurar listener DESPUÉS de inicializar
+      console.log('[SCANNER] 👂 Configurando listener onDetected...');
+      let detectionCount = 0;
+      
+      Quagga.onDetected((result: any) => {
+        detectionCount++;
+        console.log(`[SCANNER] 🔍 ===== DETECCIÓN #${detectionCount} =====`);
+        
+        if (!this.scanningActive) {
+          console.log('[SCANNER] ⏸️ Scanner desactivado, ignorando');
+          return;
+        }
+
+        const code = result?.codeResult?.code;
+        const format = result?.codeResult?.format;
+        
+        console.log('[SCANNER] 📊 Código RAW:', code);
+        console.log('[SCANNER] 📊 Formato:', format);
+        console.log('[SCANNER] 📊 Result completo:', JSON.stringify(result, null, 2));
+
+        if (!code) {
+          console.log('[SCANNER] ⚠️ Código vacío, ignorando');
+          return;
+        }
+
+        const cleanCode = code.trim();
+        console.log('[SCANNER] 🧹 Código limpio:', cleanCode);
+
+        if (this.isValidBarcode(cleanCode, format)) {
+          console.log('[SCANNER] ✅ ===== CÓDIGO VÁLIDO =====');
+          console.log('[SCANNER] 🎯 Código final:', cleanCode);
+          
+          this.scanningActive = false;
+          this.playBeep();
+          
+          this.ngZone.run(() => {
+            console.log('[SCANNER] 🚪 Cerrando modal con código:', cleanCode);
+            this.stopScanner();
+            this.dialogRef.close(cleanCode);
+          });
+        } else {
+          console.log('[SCANNER] ❌ Código inválido, continuando escaneo');
+        }
+      });
+
+      console.log('[SCANNER] ✅ ====== SCANNER LISTO ======');
+      console.log('[SCANNER] 👀 Esperando detección de códigos...');
+
+    } catch (error: any) {
+      console.error('[SCANNER] ❌❌❌ ERROR CRÍTICO ❌❌❌');
+      console.error('[SCANNER] Error:', error);
+      console.error('[SCANNER] Stack:', error?.stack);
+      
+      this.ngZone.run(() => {
+        this.isLoading = false;
+        this.handleError(error);
+      });
+    }
+  }
+
+  private isValidBarcode(code: string, format?: string): boolean {
+    console.log('[SCANNER] 🔍 Validando:', { code, format, length: code.length });
+
+    if (!code || code.length === 0) {
+      console.log('[SCANNER] ❌ Código vacío');
+      return false;
+    }
+
+    // Códigos muy cortos probablemente sean errores
+    if (code.length < 4) {
+      console.log('[SCANNER] ❌ Código muy corto');
+      return false;
+    }
+
+    // Validar caracteres
+    const validPattern = /^[0-9A-Za-z\-\s]+$/;
+    if (!validPattern.test(code)) {
+      console.log('[SCANNER] ❌ Caracteres inválidos');
+      return false;
+    }
+
+    console.log('[SCANNER] ✅ Validación OK');
+    return true;
+  }
+
+  private handleError(error: any): void {
+    const errorName = error?.name || '';
+    console.log('[SCANNER] 💬 Manejando error:', errorName);
+
+    if (errorName === 'NotAllowedError' || errorName === 'PermissionDeniedError') {
+      this.errorMessage = 'Permiso de cámara denegado. Permite el acceso en la configuración del navegador.';
+    } else if (errorName === 'NotFoundError' || errorName === 'DevicesNotFoundError') {
+      this.errorMessage = 'No se encontró cámara en este dispositivo.';
+    } else if (errorName === 'NotReadableError' || errorName === 'TrackStartError') {
+      this.errorMessage = 'La cámara está siendo usada por otra aplicación.';
+    } else if (errorName === 'OverconstrainedError') {
+      this.errorMessage = 'La cámara no soporta la configuración requerida.';
+    } else {
+      this.errorMessage = `Error: ${error?.message || 'Error desconocido'}`;
+    }
+
+    console.log('[SCANNER] 💬 Mensaje:', this.errorMessage);
+  }
+
+  private playBeep(): void {
+    console.log('[SCANNER] 🔊 Reproduciendo beep...');
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.frequency.value = 800;
+      osc.type = 'sine';
+      gain.gain.value = 0.3;
+      
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.1);
+      console.log('[SCANNER] ✅ Beep reproducido');
+    } catch (e) {
+      console.log('[SCANNER] ⚠️ No se pudo reproducir beep');
+    }
+  }
+
+  private stopScanner(): void {
+    console.log('[SCANNER] 🛑 Deteniendo scanner...');
+    try {
+      if (this.scannerInitialized) {
+        Quagga.offDetected();
+        Quagga.offProcessed();
+        Quagga.stop();
+        console.log('[SCANNER] ✅ Scanner detenido');
+      }
+    } catch (e) {
+      console.error('[SCANNER] ❌ Error al detener:', e);
     }
   }
 
   closeScanner(): void {
+    console.log('[SCANNER] 🚪 Cerrando por botón...');
     this.scanningActive = false;
-    this.codeReader.reset();
-    if (this.videoStream) {
-      this.videoStream.getTracks().forEach(track => track.stop());
-    }
+    this.stopScanner();
     this.dialogRef.close();
   }
 
   ngOnDestroy(): void {
-    this.closeScanner();
+    console.log('[SCANNER] 🧹 ngOnDestroy');
+    this.stopScanner();
   }
 }

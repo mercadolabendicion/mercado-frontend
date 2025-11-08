@@ -1,20 +1,250 @@
-<div class="modal-content">
-  <div class="modal-header">
-    <h5 class="modal-title">Escáner de Códigos de Barras</h5>
-    <button type="button" class="btn-close" (click)="closeScanner()"></button>
+<div class="scanner-wrapper">
+  <!-- Header -->
+  <div class="scanner-header">
+    <h5 class="scanner-title">Escanear Código de Barras</h5>
+    <button type="button" class="btn-close" (click)="closeScanner()" aria-label="Cerrar"></button>
   </div>
-  <div class="modal-body p-0">
-    <div class="scanner-container">
-      <div class="video-container">
-        <video #video playsinline class="scanning-video"></video>
-        <canvas #canvas class="scanning-canvas"></canvas>
-        <div class="scanner-overlay">
-          <div class="scanning-line"></div>
-        </div>
+
+  <!-- Scanner Container -->
+  <div class="scanner-body">
+    <!-- Mensaje de carga -->
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="spinner-border text-light" role="status">
+        <span class="visually-hidden">Cargando...</span>
       </div>
+      <p class="text-light mt-3">Iniciando cámara...</p>
     </div>
-    <div class="text-center py-2 scan-status">
-      <small class="text-muted">Centrando el código de barras en el área de escaneo...</small>
+
+    <!-- Mensaje de error -->
+    <div *ngIf="errorMessage && !isLoading" class="error-overlay">
+      <div class="alert alert-danger m-3" role="alert">
+        <i class="fa-solid fa-exclamation-triangle me-2"></i>
+        {{ errorMessage }}
+      </div>
+      <button class="btn btn-light mt-2" (click)="closeScanner()">Cerrar</button>
     </div>
+
+    <!-- Contenedor donde Quagga monta video y canvas -->
+    <div #scannerContainer id="scanner-container" class="scanner-container"></div>
+
+    <!-- Overlay de guía -->
+    <div class="scan-guide" *ngIf="!isLoading && !errorMessage">
+      <div class="scan-frame">
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+        <div class="scan-line"></div>
+      </div>
+      <p class="scan-instruction">Coloca el código de barras aquí</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="scanner-footer" *ngIf="!errorMessage">
+    <p class="mb-0">
+      <i class="fa-solid fa-lightbulb me-2"></i>
+      Buena iluminación y mantén el dispositivo firme
+    </p>
   </div>
 </div>
+
+<style>
+.scanner-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 600px;
+  max-height: 90vh;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.scanner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #fff;
+  border-bottom: 1px solid #dee2e6;
+  z-index: 100;
+}
+
+.scanner-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.scanner-body {
+  position: relative;
+  flex: 1;
+  background: #000;
+  overflow: hidden;
+}
+
+.scanner-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #000;
+}
+
+/* Quagga crea estos elementos */
+.scanner-container video,
+.scanner-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
+.scanner-container canvas.drawingBuffer {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.loading-overlay,
+.error-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 50;
+}
+
+.scan-guide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.scan-frame {
+  position: relative;
+  width: 300px;
+  height: 200px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+}
+
+.corner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 4px solid #00ff00;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+}
+
+.corner.tl {
+  top: -4px;
+  left: -4px;
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: 12px;
+}
+
+.corner.tr {
+  top: -4px;
+  right: -4px;
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: 12px;
+}
+
+.corner.bl {
+  bottom: -4px;
+  left: -4px;
+  border-right: none;
+  border-top: none;
+  border-bottom-left-radius: 12px;
+}
+
+.corner.br {
+  bottom: -4px;
+  right: -4px;
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: 12px;
+}
+
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #00ff00, transparent);
+  animation: scanAnimation 2s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 1);
+}
+
+@keyframes scanAnimation {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.scan-instruction {
+  margin-top: 2rem;
+  color: #fff;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 25px;
+}
+
+.scanner-footer {
+  padding: 1rem;
+  background: #fff;
+  text-align: center;
+  border-top: 1px solid #dee2e6;
+  font-size: 0.85rem;
+  color: #6c757d;
+  z-index: 100;
+}
+
+@media (max-width: 576px) {
+  .scanner-wrapper {
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .scan-frame {
+    width: 85%;
+    max-width: 320px;
+    height: 180px;
+  }
+}
+</style>
