@@ -63,35 +63,37 @@
       <span class="records-badge">{{ registrosCajaMenor.length }} registros</span>
     </div>
 
-    <div class="table-wrapper">
-      <table class="transactions-table">
-        <thead>
-          <tr>
-            <th>Fecha y hora</th>
-            <th>Valor de cierre</th>
-            <th>Restante</th>
-            <th>Usuario</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let registro of registrosCajaMenor">
-            <td>{{ formatearFecha(registro.fechaHoraCierre) }}</td>
-            <td>
-              <span class="amount-cell amount-income">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-                </svg>
-                {{ registro.valorCierre | currency : "USD" : "symbol" : "1.0-0" }}
-              </span>
-            </td>
-            <td class="amount-bold">{{ registro.restante | currency : "USD" : "symbol" : "1.0-0" }}</td>
-            <td>{{ registro.nombreUsuario }}</td>
-          </tr>
-          <tr *ngIf="registrosCajaMenor.length === 0">
-            <td colspan="4" class="empty-state">No hay registros de caja menor</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="table-container">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>Fecha y hora</th>
+              <th>Valor de cierre</th>
+              <th>Restante</th>
+              <th>Usuario</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let registro of registrosCajaMenor">
+              <td>{{ formatearFecha(registro.fechaHoraCierre) }}</td>
+              <td>
+                <span class="amount-cell amount-income">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                  </svg>
+                  {{ registro.valorCierre | currency : "USD" : "symbol" : "1.0-0" }}
+                </span>
+              </td>
+              <td class="amount-bold">{{ registro.restante | currency : "USD" : "symbol" : "1.0-0" }}</td>
+              <td>{{ registro.nombreUsuario }}</td>
+            </tr>
+            <tr *ngIf="registrosCajaMenor.length === 0">
+              <td colspan="4" class="empty-state">No hay registros de caja menor</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Paginación Caja Menor -->
@@ -124,35 +126,37 @@
       <span class="records-badge">{{ registrosCajaMayor.length }} registros</span>
     </div>
 
-    <div class="table-wrapper">
-      <table class="transactions-table">
-        <thead>
-          <tr>
-            <th>Fecha y hora</th>
-            <th>Valor de cierre</th>
-            <th>Restante</th>
-            <th>Usuario</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let registro of registrosCajaMayor">
-            <td>{{ formatearFecha(registro.fechaHoraCierre) }}</td>
-            <td>
-              <span class="amount-cell amount-income">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-                </svg>
-                {{ registro.valorCierre | currency : "USD" : "symbol" : "1.0-0" }}
-              </span>
-            </td>
-            <td class="amount-bold">{{ registro.restante | currency : "USD" : "symbol" : "1.0-0" }}</td>
-            <td>{{ registro.nombreUsuario }}</td>
-          </tr>
-          <tr *ngIf="registrosCajaMayor.length === 0">
-            <td colspan="4" class="empty-state">No hay registros de caja mayor</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="table-container">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>Fecha y hora</th>
+              <th>Valor de cierre</th>
+              <th>Restante</th>
+              <th>Usuario</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let registro of registrosCajaMayor">
+              <td>{{ formatearFecha(registro.fechaHoraCierre) }}</td>
+              <td>
+                <span class="amount-cell amount-income">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                  </svg>
+                  {{ registro.valorCierre | currency : "USD" : "symbol" : "1.0-0" }}
+                </span>
+              </td>
+              <td class="amount-bold">{{ registro.restante | currency : "USD" : "symbol" : "1.0-0" }}</td>
+              <td>{{ registro.nombreUsuario }}</td>
+            </tr>
+            <tr *ngIf="registrosCajaMayor.length === 0">
+              <td colspan="4" class="empty-state">No hay registros de caja mayor</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Paginación Caja Mayor -->
@@ -186,8 +190,7 @@
       Consultar valor del negocio
     </button>
 
-    <button class="btn-lg w-100" id="amarillo" (click)="triggerToggleCollapse()"
-      (click)="mostrarModalPasarCajaMenor()">
+    <button class="btn-lg w-100" id="amarillo" (click)="triggerToggleCollapse()" (click)="mostrarModalPasarCajaMenor()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M7 16V4M7 4L3 8M7 4l4 4" />
         <path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
@@ -270,7 +273,8 @@
       <span class="close" (click)="ocultarModal('pasarCajaMenorModal')">&times;</span>
     </div>
     <div class="modal-body">
-      <div class="info-box" style="background-color: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #2196f3;">
+      <div class="info-box"
+        style="background-color: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #2196f3;">
         <p style="margin: 0; color: #1976d2; font-size: 14px;">
           <strong>Saldo disponible en caja mayor:</strong> {{ saldo | currency : "USD" : "symbol" : "1.0-0" }}
         </p>
@@ -278,13 +282,8 @@
       <form>
         <div class="form-group">
           <label for="valorPaso">Valor a transferir:</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="valorPaso" 
-            [value]="valorPasoFormateado"
-            (input)="formatearValorPaso($event)"
-            placeholder="Ingrese el valor a transferir" />
+          <input type="text" class="form-control" id="valorPaso" [value]="valorPasoFormateado"
+            (input)="formatearValorPaso($event)" placeholder="Ingrese el valor a transferir" />
           <small class="form-text text-muted">Este valor se restará de caja mayor y se sumará a caja menor</small>
         </div>
       </form>
