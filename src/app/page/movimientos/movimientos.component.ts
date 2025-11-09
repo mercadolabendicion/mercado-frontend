@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { MenuComponent } from 'src/app/components/menu/menu.component';
 import { VentaDTO } from 'src/app/dto/venta/VentaDTO';
 import { ReporteDTO } from 'src/app/dto/reporte/ReporteDTO';
 import { CajaService } from 'src/app/services/domainServices/caja.service';
@@ -10,6 +9,7 @@ import { ReporteService } from 'src/app/services/domainServices/reporte.service'
 import { MovimientoService } from 'src/app/services/domainServices/movimiento.service';
 import { MovimientoDTO } from 'src/app/dto/movimiento/MovimientoDTO';
 import { MovimientoResponseDTO } from 'src/app/dto/movimiento/MovimientoResponseDTO';
+import { Modal } from 'bootstrap';
 import { CajaMenorService } from 'src/app/services/domainServices/cajaMenor.service';
 import { VentaService } from 'src/app/services/domainServices/venta.service';
 
@@ -50,13 +50,17 @@ export class MovimientosComponent {
   fechaFiltro: string = '';
   movimientoEnEdicion: Movimiento | null = null;
 
+  // Bootstrap modal instances
+  private ingresoModalInstance: any = null;
+  private cierreModalInstance: any = null;
+
   // Variables para el resumen de cierre de caja
   totalVentasCierre: number = 0;
   totalEgresosCierre: number = 0;
   totalIngresosCierre: number = 0;
   valorCierreFormateado: string = '';
 
-  constructor(private menuComponent: MenuComponent) {
+  constructor() {
     this.ventas = [];
   }
 
@@ -99,12 +103,6 @@ export class MovimientosComponent {
     } else {
       this.valorCierreFormateado = '';
       input.value = '';
-    }
-  }
-
-  triggerToggleCollapse() {
-    if (!this.menuComponent.estadoMenu) {
-      this.menuComponent.toggleCollapse();
     }
   }
 
@@ -273,9 +271,17 @@ export class MovimientosComponent {
     this.movimientoEnEdicion = null;
     this.modalTitle = action === 'ingreso' ? 'Agregar ingreso' : 'Agregar egreso';
     this.actionButtonText = action === 'ingreso' ? 'Registrar ingreso' : 'Registrar egreso';
-    const modal = document.getElementById('ingresoModal');
-    if (modal) {
-      modal.style.display = 'block';
+    const modalEl = document.getElementById('ingresoModal');
+    if (modalEl) {
+      // create/show bootstrap modal
+      try {
+        this.ingresoModalInstance = new Modal(modalEl);
+        this.ingresoModalInstance.show();
+      } catch (e) {
+        // fallback: toggle class if bootstrap JS not available
+        modalEl.classList.add('show');
+        (modalEl as HTMLElement).setAttribute('aria-hidden', 'false');
+      }
     }
   }
 
@@ -304,16 +310,36 @@ export class MovimientosComponent {
       }
     }, 0);
 
-    const modal = document.getElementById('cierreCajaModal');
-    if (modal) {
-      modal.style.display = 'block';
+    const modalEl = document.getElementById('cierreCajaModal');
+    if (modalEl) {
+      try {
+        this.cierreModalInstance = new Modal(modalEl);
+        this.cierreModalInstance.show();
+      } catch (e) {
+        modalEl.classList.add('show');
+        (modalEl as HTMLElement).setAttribute('aria-hidden', 'false');
+      }
     }
   }
 
   ocultarModalCierreCaja() {
-    const modal = document.getElementById('cierreCajaModal');
-    if (modal) {
-      modal.style.display = 'none';
+    if (this.cierreModalInstance) {
+      try {
+        this.cierreModalInstance.hide();
+      } catch (e) {
+        const modalEl = document.getElementById('cierreCajaModal');
+        if (modalEl) {
+          modalEl.classList.remove('show');
+          modalEl.setAttribute('aria-hidden', 'true');
+        }
+      }
+      this.cierreModalInstance = null;
+    } else {
+      const modalEl = document.getElementById('cierreCajaModal');
+      if (modalEl) {
+        modalEl.classList.remove('show');
+        modalEl.setAttribute('aria-hidden', 'true');
+      }
     }
   }
 
@@ -373,9 +399,15 @@ export class MovimientosComponent {
         motivoInput.value = movimiento.motivo;
       }
 
-      const modal = document.getElementById('ingresoModal');
-      if (modal) {
-        modal.style.display = 'block';
+      const modalEl = document.getElementById('ingresoModal');
+      if (modalEl) {
+        try {
+          this.ingresoModalInstance = new Modal(modalEl);
+          this.ingresoModalInstance.show();
+        } catch (e) {
+          modalEl.classList.add('show');
+          (modalEl as HTMLElement).setAttribute('aria-hidden', 'false');
+        }
       }
     }, 0);
   }
@@ -427,9 +459,23 @@ export class MovimientosComponent {
   }
 
   ocultarModal() {
-    const modal = document.getElementById('ingresoModal');
-    if (modal) {
-      modal.style.display = 'none';
+    if (this.ingresoModalInstance) {
+      try {
+        this.ingresoModalInstance.hide();
+      } catch (e) {
+        const modalEl = document.getElementById('ingresoModal');
+        if (modalEl) {
+          modalEl.classList.remove('show');
+          modalEl.setAttribute('aria-hidden', 'true');
+        }
+      }
+      this.ingresoModalInstance = null;
+    } else {
+      const modalEl = document.getElementById('ingresoModal');
+      if (modalEl) {
+        modalEl.classList.remove('show');
+        modalEl.setAttribute('aria-hidden', 'true');
+      }
     }
     this.movimientoEnEdicion = null;
   }
@@ -513,7 +559,7 @@ export class MovimientosComponent {
 
   actualizarTotalEfectivo() {
     // El saldoCajaMenor ahora viene del backend, no lo calculamos localmente
-    this.totalEfectivo = this.totalVentas + this.saldoCajaMenor;
+    this.totalEfectivo = this.saldoCajaMenor - this.totalVentas;
   }
 
   limpiarDatos() {
