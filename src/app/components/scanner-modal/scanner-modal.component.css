@@ -1,76 +1,150 @@
-.scanner-container {
-  position: relative;
+.scanner-wrapper {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  height: 350px;
-  margin: 0 auto;
-  background-color: #000;
+  height: 600px;
+  max-height: 90vh;
+  background: #000;
+  border-radius: 8px;
   overflow: hidden;
 }
 
-.video-container {
+.scanner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #fff;
+  border-bottom: 1px solid #dee2e6;
+  z-index: 100;
+}
+
+.scanner-body {
   position: relative;
-  width: 100%;
-  height: 100%;
+  flex: 1;
+  background: #000;
+  overflow: hidden;
 }
 
-.scanning-video {
+.scanner-container {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  position: relative;
+  background: #000;
 }
 
-.scanning-canvas {
+/* Quagga crea estos elementos */
+.scanner-container video,
+.scanner-container canvas {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
 }
 
-.scanner-overlay {
+.scanner-container canvas.drawingBuffer {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 280px;
-  height: 160px;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.5);
-  overflow: hidden;
+  top: 0;
+  left: 0;
 }
 
-.scanning-line {
+.loading-overlay,
+.error-overlay {
   position: absolute;
-  width: 100%;
-  height: 2px;
-  background-color: #007bff;
-  animation: scan 2s linear infinite;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 50;
 }
 
-@keyframes scan {
+.scan-guide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.scan-frame {
+  position: relative;
+  width: 300px;
+  height: 200px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+}
+
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #0044ff;
+  animation: scanAnimation 2s ease-in-out infinite alternate;
+  /* box-shadow: 0 0 15px rgb(38, 0, 255); */
+}
+
+@keyframes scanAnimation {
   0% {
     top: 0;
+    opacity: 0;
   }
   50% {
-    top: 100%;
+    opacity: 1;
   }
   100% {
-    top: 0;
+    top: calc(100% - 3px);
+    opacity: 0;
   }
 }
 
-.scan-status {
-  background-color: rgba(255, 255, 255, 0.9);
+.scan-instruction {
+  margin-top: 2rem;
+  color: #fff;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 25px;
+}
+
+.scanner-footer {
+  padding: 1rem;
+  background: #fff;
+  text-align: center;
   border-top: 1px solid #dee2e6;
+  font-size: 0.85rem;
+  color: #6c757d;
+  z-index: 100;
 }
 
-/* Ajustes para el modal de bootstrap */
-:host ::ng-deep .modal-dialog {
-  max-width: 500px;
-  margin: 1.75rem auto;
-}
-
-:host ::ng-deep .modal-content {
-  border-radius: 0.5rem;
-  overflow: hidden;
+@media (max-width: 576px) {
+  .scanner-wrapper {
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .scan-frame {
+    width: 85%;
+    max-width: 320px;
+    height: 180px;
+  }
 }
