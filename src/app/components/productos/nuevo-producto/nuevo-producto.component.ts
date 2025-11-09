@@ -250,10 +250,6 @@ export class NuevoProductoComponent implements OnInit {
         console.log('Código escaneado:', result);
         this.procesarResultado(result);
       }
-
-      if (!this.menuComponent.estadoMenu) {
-        this.menuComponent.abrirMenu();
-      }
     });
   }
 

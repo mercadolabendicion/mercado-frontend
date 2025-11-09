@@ -1,4 +1,11 @@
-import { Component, DoCheck, ViewChild, ElementRef, HostListener, inject } from '@angular/core';
+import {
+  Component,
+  DoCheck,
+  ViewChild,
+  ElementRef,
+  HostListener,
+  inject,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -16,11 +23,12 @@ import { VentaService } from 'src/app/services/domainServices/venta.service';
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
 import { ScaleService } from 'src/app/services/domainServices/scale.service';
 import { MenuComponent } from '../../menu/menu.component';
+import { ScannerService } from 'src/app/services/domainServices/scannerService';
 
 @Component({
   selector: 'app-venta',
   templateUrl: './venta.component.html',
-  styleUrls: ['./venta.component.css']
+  styleUrls: ['./venta.component.css'],
 })
 export class VentaComponent implements DoCheck {
   @ViewChild('inputProducto') inputProductoRef!: ElementRef<HTMLInputElement>;
@@ -28,12 +36,16 @@ export class VentaComponent implements DoCheck {
   @HostListener('document:click', ['$event'])
 
   /**
-   * Maneja los clics del documento para mantener el foco en el input de producto,  
-   * salvo cuando se hace clic en elementos interactivos, popups o modales.  
+   * Maneja los clics del documento para mantener el foco en el input de producto,
+   * salvo cuando se hace clic en elementos interactivos, popups o modales.
    */
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (this.inputProductoRef && this.inputProductoRef.nativeElement.contains(target)) return;
+    if (
+      this.inputProductoRef &&
+      this.inputProductoRef.nativeElement.contains(target)
+    )
+      return;
     const ignoreTags = ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'LABEL'];
     if (
       ignoreTags.includes(target.tagName) ||
@@ -60,7 +72,7 @@ export class VentaComponent implements DoCheck {
   protected aplicarDescuento: boolean = false;
   protected descuentoAplicado: boolean = false;
   protected valorDescuento: string | null = null;
-  valorFormateado: string = ''; // Para almacenar el valor con formato de dinero 
+  valorFormateado: string = ''; // Para almacenar el valor con formato de dinero
 
   // Clientes / Productos
   protected clientes: ClienteDTO[];
@@ -98,7 +110,8 @@ export class VentaComponent implements DoCheck {
   protected indiceProductoEnfocado: number | null = null;
 
   constructor(
-    private scaleService: ScaleService
+    private scaleService: ScaleService,
+    private scannerService: ScannerService
   ) {
     this.clientes = [];
     this.productos = [];
@@ -118,7 +131,7 @@ export class VentaComponent implements DoCheck {
     this.listarClientes();
     this.valorDescuento = null;
     this.setClientePorDefecto('222222222222');
-    this.suscribirseABalanza();// Suscribirse a los datos de la balanza
+    this.suscribirseABalanza(); // Suscribirse a los datos de la balanza
   }
 
   ngOnDestroy() {
@@ -137,8 +150,7 @@ export class VentaComponent implements DoCheck {
       numFactura: ['', [Validators.required]],
       cliente: ['', [Validators.required]],
       nombre: ['', [Validators.required]],
-      direccion: ['', [Validators.required]]
-
+      direccion: ['', [Validators.required]],
     });
 
     this.productosForm = this.formBuilder.group({
@@ -152,7 +164,7 @@ export class VentaComponent implements DoCheck {
 
   /**
    * Este metodo se encarga de validar si los campos del formulario están completos
-   * @returns 
+   * @returns
    */
   private validarFormulario(): boolean {
     if (!this.formulario.valid) {
@@ -247,10 +259,10 @@ export class VentaComponent implements DoCheck {
    * Asigna un cliente por defecto al cargar la pantalla.
    */
   private setClientePorDefecto(cedula: string): void {
-    const clientePorDefecto = this.clientes.find(c => c.cedula === cedula);
+    const clientePorDefecto = this.clientes.find((c) => c.cedula === cedula);
     if (clientePorDefecto) {
       this.formulario.patchValue({
-        cliente: clientePorDefecto.cedula
+        cliente: clientePorDefecto.cedula,
       });
       this.asignarCliente(clientePorDefecto);
     } else {
@@ -262,13 +274,16 @@ export class VentaComponent implements DoCheck {
    * Filtra los productos según el texto ingresado en el campo 'codigoProducto'.
    */
   protected filtrarProductos(): void {
-    const idProducto = this.productosForm.get('codigoProducto')?.value?.toLowerCase() || '';
+    const idProducto =
+      this.productosForm.get('codigoProducto')?.value?.toLowerCase() || '';
     if (idProducto.trim() === '') {
       this.productosFiltrados = [];
       return;
     }
-    this.productosFiltrados = this.productos.filter(producto =>
-      producto.codigo.toLowerCase().includes(idProducto) || producto.nombre.toLowerCase().includes(idProducto)
+    this.productosFiltrados = this.productos.filter(
+      (producto) =>
+        producto.codigo.toLowerCase().includes(idProducto) ||
+        producto.nombre.toLowerCase().includes(idProducto)
     );
   }
 
@@ -276,13 +291,16 @@ export class VentaComponent implements DoCheck {
    * Filtra los clientes según el texto ingresado en el campo 'cedulaCliente'.
    */
   protected filtrarClientes(): void {
-    const ccCliente = this.formulario.get('cliente')?.value?.toLowerCase() || '';
+    const ccCliente =
+      this.formulario.get('cliente')?.value?.toLowerCase() || '';
     if (ccCliente.trim() === '') {
       this.clientesFiltrados = [];
       return;
     }
-    this.clientesFiltrados = this.clientes.filter(cliente =>
-      cliente.cedula.toLowerCase().includes(ccCliente) || cliente.nombre.toLowerCase().includes(ccCliente)
+    this.clientesFiltrados = this.clientes.filter(
+      (cliente) =>
+        cliente.cedula.toLowerCase().includes(ccCliente) ||
+        cliente.nombre.toLowerCase().includes(ccCliente)
     );
   }
 
@@ -295,15 +313,13 @@ export class VentaComponent implements DoCheck {
       this.formulario.reset();
       this.generarIdFactura();
     }
-    this.ventaService.obtenerCliente(cedula).subscribe(
-      response => {
-        this.formulario.patchValue({
-          nombre: response?.nombre,
-          direccion: response?.direccion,
-          correo: response?.correo
-        });
-      }
-    )
+    this.ventaService.obtenerCliente(cedula).subscribe((response) => {
+      this.formulario.patchValue({
+        nombre: response?.nombre,
+        direccion: response?.direccion,
+        correo: response?.correo,
+      });
+    });
   }
 
   /**
@@ -337,7 +353,9 @@ export class VentaComponent implements DoCheck {
    */
   asignarProducto(producto: ProductoDTO): void {
     if (!producto) {
-      this.productosForm.get('codigoProducto')?.setErrors({ productoNoEncontrado: true });
+      this.productosForm
+        .get('codigoProducto')
+        ?.setErrors({ productoNoEncontrado: true });
       this.productoSeleccionado = null;
       return;
     }
@@ -345,8 +363,9 @@ export class VentaComponent implements DoCheck {
     this.productosForm.patchValue({
       nombreProducto: producto.nombre,
     });
-    this.productoService.obtenerFormasVentaByCodigo(producto.codigo).subscribe(
-      response => {
+    this.productoService
+      .obtenerFormasVentaByCodigo(producto.codigo)
+      .subscribe((response) => {
         this.formaVenta = [];
         this.formasVentaProductoSeleccionado = response;
         response.forEach((element) => {
@@ -356,8 +375,7 @@ export class VentaComponent implements DoCheck {
         this.productosForm.get('formaVenta')?.setValue(0); // Selecciona la primera forma por defecto
         this.cambiarPrecio();
         this.agregarProducto();
-      }
-    );
+      });
   }
 
   /**
@@ -367,14 +385,16 @@ export class VentaComponent implements DoCheck {
    */
   asignarCliente(cliente: ClienteDTO): void {
     if (!cliente) {
-      this.formulario.get('cedulaCliente')?.setErrors({ clienteNoEncontrado: true });
-      this.clienteSeleccionado = null
+      this.formulario
+        .get('cedulaCliente')
+        ?.setErrors({ clienteNoEncontrado: true });
+      this.clienteSeleccionado = null;
       return;
     }
     this.clienteSeleccionado = cliente;
     this.formulario.patchValue({
       nombre: cliente.nombre,
-      direccion: cliente.direccion
+      direccion: cliente.direccion,
     });
     this.focusInputProducto();
   }
@@ -383,20 +403,20 @@ export class VentaComponent implements DoCheck {
 
   /**
    * Este metodo devuelve un objeto de tipo CrearVentaDTO con los datos del formulario
-   * @returns 
+   * @returns
    */
   private crearVentaDTO(): CrearVentaDTO {
     let venta = new CrearVentaDTO();
     venta.cliente = this.formulario.get('cliente')!.value;
     venta.usuario = Number(localStorage.getItem('id'));
     venta.descuento = this.descuento;
-    return venta
+    return venta;
   }
 
   /**
    * Este metodo se encarga de validar si los productos de la venta están en la base de datos
-   * @param venta 
-   * @returns 
+   * @param venta
+   * @returns
    */
   private validarProductosVenta(venta: CrearVentaDTO): boolean {
     return this.ventaService.agregarProductosVenta(venta, this.listProductos);
@@ -405,12 +425,14 @@ export class VentaComponent implements DoCheck {
   /**
    * Este metodo se encarga de agregar un producto a la lista de productos de la factura
    * y calcular el subtotal, igv y total de la factura
-   * @returns 
+   * @returns
    */
   public async agregarProducto(): Promise<void> {
     // console.log(this.formasVentaProductoSeleccionado);
     if (!this.productosForm.valid) {
-      Object.values(this.productosForm.controls).forEach(control => control.markAsTouched());
+      Object.values(this.productosForm.controls).forEach((control) =>
+        control.markAsTouched()
+      );
       return;
     }
     // Extrae el índice de forma segura (default a 0 si null/undefined)
@@ -419,11 +441,20 @@ export class VentaComponent implements DoCheck {
     const codigo = this.productosForm.get('codigoProducto')?.value;
 
     try {
-      const productoEliminado = await this.productoService.verificarProductoEliminado(codigo);
-      const formaVenta = this.formasVentaProductoSeleccionado[indice]?.nombre ?? this.formasVentaProductoSeleccionado[0]?.nombre ?? '';
+      const productoEliminado =
+        await this.productoService.verificarProductoEliminado(codigo);
+      const formaVenta =
+        this.formasVentaProductoSeleccionado[indice]?.nombre ??
+        this.formasVentaProductoSeleccionado[0]?.nombre ??
+        '';
       console.log('Forma de venta seleccionada: ' + formaVenta);
 
-      const cantidadValida = await this.productoService.verificarProductoCantidad(cantidad, codigo, formaVenta);
+      const cantidadValida =
+        await this.productoService.verificarProductoCantidad(
+          cantidad,
+          codigo,
+          formaVenta
+        );
 
       if (productoEliminado || !cantidadValida) {
         this.hayStock = false;
@@ -433,23 +464,36 @@ export class VentaComponent implements DoCheck {
       const precio = this.productosForm.get('precio')?.value;
       const precioEntero = parseInt(precio.replace(/[\$,]/g, ''), 10);
       const nombre = this.productosForm.get('nombreProducto')?.value;
-      const productoExistente = this.listProductos.find(prod => prod.codigo === codigo && prod.formaVenta === formaVenta);
+      const productoExistente = this.listProductos.find(
+        (prod) => prod.codigo === codigo && prod.formaVenta === formaVenta
+      );
       if (productoExistente) {
         productoExistente.cantidad += cantidad;
         console.log(productoExistente);
       } else {
-        const producto = CarritoProductoDTO.crearProducto(codigo, nombre, precioEntero, cantidad, formaVenta);
+        const producto = CarritoProductoDTO.crearProducto(
+          codigo,
+          nombre,
+          precioEntero,
+          cantidad,
+          formaVenta
+        );
         this.listProductos.push(producto);
       }
 
       this.resetForms();
-      this.subtotal = this.listProductos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0);
+      this.subtotal = this.listProductos.reduce(
+        (total, producto) => total + producto.precio * producto.cantidad,
+        0
+      );
       this.calcularValores();
       this.focusInputProducto();
-      if (!this.productosCompletos.find(p => p.codigo === codigo)) {
-        this.productoService.obtenerProductoCompleto(codigo).subscribe(prodCompleto => {
-          this.productosCompletos.push(prodCompleto);
-        });
+      if (!this.productosCompletos.find((p) => p.codigo === codigo)) {
+        this.productoService
+          .obtenerProductoCompleto(codigo)
+          .subscribe((prodCompleto) => {
+            this.productosCompletos.push(prodCompleto);
+          });
       }
     } catch (error) {
       console.error(error);
@@ -458,7 +502,7 @@ export class VentaComponent implements DoCheck {
 
   /**
    * Este metodo se encarga de guardar la venta en la base de datos
-   * @param venta 
+   * @param venta
    */
   private async procesarVenta(venta: CrearVentaDTO): Promise<void> {
     this.calcularValores();
@@ -473,7 +517,7 @@ export class VentaComponent implements DoCheck {
         console.error('La venta no se pudo procesar correctamente.');
       }
     } catch (error) {
-      console.error("Error al procesar la venta:", error);
+      console.error('Error al procesar la venta:', error);
     }
   }
 
@@ -501,20 +545,22 @@ export class VentaComponent implements DoCheck {
    * Este metodo se encarga de obtener el id de la factura
    */
   protected generarIdFactura(): void {
-    this.ventaService.generarIdVenta().subscribe(
-      (resp: number) => {
-        this.formulario.patchValue({
-          numFactura: resp
-        })
-      }
-    )
+    this.ventaService.generarIdVenta().subscribe((resp: number) => {
+      this.formulario.patchValue({
+        numFactura: resp,
+      });
+    });
   }
 
   /**
    * Este metodo se encarga de calcular el subtotal, igv y total de la factura
    */
   private calcularValores(): void {
-    this.subtotal = this.listProductos.reduce((total: number, producto: CarritoProductoDTO) => total + (producto.precio * producto.cantidad), 0);
+    this.subtotal = this.listProductos.reduce(
+      (total: number, producto: CarritoProductoDTO) =>
+        total + producto.precio * producto.cantidad,
+      0
+    );
     this.igv = this.subtotal * (this.porcentajeIva / 100);
     this.total = this.subtotal - this.descuento;
     this.totalReal = this.total;
@@ -562,12 +608,12 @@ export class VentaComponent implements DoCheck {
         return acc;
       }, {} as { [key: string]: any });
       formulario.patchValue(valores);
-      camposValidar.forEach(campo => {
+      camposValidar.forEach((campo) => {
         formulario.get(campo)?.setValidators(Validators.required);
       });
     }
     // Actualizar el estado de validación de los campos
-    camposValidar.forEach(campo => {
+    camposValidar.forEach((campo) => {
       formulario.get(campo)?.updateValueAndValidity();
     });
   }
@@ -577,7 +623,9 @@ export class VentaComponent implements DoCheck {
    */
   onCantidadFocusCarrito(index: number): void {
     this.indiceProductoEnfocado = index;
-    console.log(`Campo cantidad del producto ${index} enfocado - esperando peso de balanza`);
+    console.log(
+      `Campo cantidad del producto ${index} enfocado - esperando peso de balanza`
+    );
   }
 
   /**
@@ -627,8 +675,8 @@ export class VentaComponent implements DoCheck {
     this.productosForm.get('cantidadProducto')?.setValue(1);
   }
 
-  /** 
-   * Método para formatear un valor con comas 
+  /**
+   * Método para formatear un valor con comas
    */
   formatearValor(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -667,7 +715,7 @@ export class VentaComponent implements DoCheck {
   cambiarFormaVenta(index: number, nuevaFormaVenta: string) {
     const producto = this.listProductos[index];
     const formas = this.getFormasVentaProducto(producto);
-    const forma = formas.find(f => f.nombre === nuevaFormaVenta);
+    const forma = formas.find((f) => f.nombre === nuevaFormaVenta);
     if (forma) {
       producto.formaVenta = forma.nombre;
       producto.precio = forma.precioVenta;
@@ -695,7 +743,7 @@ export class VentaComponent implements DoCheck {
    * Método que se aplica un descuento al total de la venta
    */
   public reducirTotal() {
-    this.total = this.totalReal
+    this.total = this.totalReal;
     if (this.total - this.descuento < 0) {
       this.ventaService.mostrarErrorTotalNegativo();
     } else {
@@ -721,9 +769,17 @@ export class VentaComponent implements DoCheck {
    */
   cambiarPrecio() {
     if (this.productoSeleccionado) {
-      let precio = this.formasVentaProductoSeleccionado[this.productosForm.get('formaVenta')!.value].precioVenta;
-      this.productosForm.get('precio')?.setValue("$" + precio.toLocaleString('en-US'));
-      this.cantidadDisponible = this.formasVentaProductoSeleccionado[this.productosForm.get('formaVenta')!.value].cantidad;
+      let precio =
+        this.formasVentaProductoSeleccionado[
+          this.productosForm.get('formaVenta')!.value
+        ].precioVenta;
+      this.productosForm
+        .get('precio')
+        ?.setValue('$' + precio.toLocaleString('en-US'));
+      this.cantidadDisponible =
+        this.formasVentaProductoSeleccionado[
+          this.productosForm.get('formaVenta')!.value
+        ].cantidad;
     }
   }
 
@@ -732,7 +788,7 @@ export class VentaComponent implements DoCheck {
    */
   patchearProducto() {
     let codigoProd = this.productosForm.get('codigoProducto')?.value;
-    let producto = this.productos.find(prod => prod.codigo == codigoProd);
+    let producto = this.productos.find((prod) => prod.codigo == codigoProd);
 
     if (producto) {
       this.productoSeleccionado = producto;
@@ -741,7 +797,7 @@ export class VentaComponent implements DoCheck {
       this.productoSeleccionado = null;
       this.productosForm.patchValue({
         nombreProducto: '',
-        precioProducto: ''
+        precioProducto: '',
       });
       this.formaVenta = [];
     }
@@ -754,7 +810,7 @@ export class VentaComponent implements DoCheck {
 
   // Obtener ProductoCompletoDTO por código
   getProductoCompleto(codigo: string): ProductoCompletoDTO | undefined {
-    return this.productosCompletos.find(p => p.codigo === codigo);
+    return this.productosCompletos.find((p) => p.codigo === codigo);
   }
 
   // Obtener formas de venta para un producto en la tabla
@@ -765,7 +821,7 @@ export class VentaComponent implements DoCheck {
   // Obtener cantidad disponible para la forma de venta actual
   getCantidadDisponible(producto: CarritoProductoDTO): number {
     const formas = this.getFormasVentaProducto(producto);
-    const forma = formas.find(f => f.nombre === producto.formaVenta);
+    const forma = formas.find((f) => f.nombre === producto.formaVenta);
     return forma ? forma.cantidad : 99999;
   }
 
@@ -787,19 +843,26 @@ export class VentaComponent implements DoCheck {
    * Se suscribe a los cambios de peso de la balanza
    */
   private suscribirseABalanza(): void {
-    this.scaleSubscription = this.scaleService.weight$.subscribe(data => {
+    this.scaleSubscription = this.scaleService.weight$.subscribe((data) => {
       this.pesoActual = data.weight;
       this.pesoEstable = data.stable;
 
       // Si el peso es estable y hay un producto del carrito enfocado
       if (data.stable && this.indiceProductoEnfocado !== null) {
-        this.actualizarCantidadCarritoDesdeBalanza(this.indiceProductoEnfocado, data.weight);
-        console.log(`Peso estable recibido de balanza: ${data.weight} ${data.unit} - Aplicado al producto ${this.indiceProductoEnfocado}`);
+        this.actualizarCantidadCarritoDesdeBalanza(
+          this.indiceProductoEnfocado,
+          data.weight
+        );
+        console.log(
+          `Peso estable recibido de balanza: ${data.weight} ${data.unit} - Aplicado al producto ${this.indiceProductoEnfocado}`
+        );
       }
       // Si el peso es estable y el campo de cantidad del formulario está enfocado
       else if (data.stable && this.campoEnfocado === 'cantidad') {
         this.actualizarCantidadDesdeBalanza(data.weight);
-        console.log(`Peso estable recibido de balanza: ${data.weight} ${data.unit}`);
+        console.log(
+          `Peso estable recibido de balanza: ${data.weight} ${data.unit}`
+        );
       }
     });
   }
@@ -807,7 +870,10 @@ export class VentaComponent implements DoCheck {
   /**
    * Actualiza la cantidad de un producto en el carrito desde el peso de la balanza
    */
-  private actualizarCantidadCarritoDesdeBalanza(index: number, peso: number): void {
+  private actualizarCantidadCarritoDesdeBalanza(
+    index: number,
+    peso: number
+  ): void {
     // Verificar que el índice sea válido
     if (index < 0 || index >= this.listProductos.length) return;
 
@@ -826,7 +892,9 @@ export class VentaComponent implements DoCheck {
     const maxDisponible = this.getCantidadDisponible(producto);
     if (cantidadFinal > maxDisponible) {
       cantidadFinal = maxDisponible;
-      console.warn(`Peso ${peso} excede el stock disponible (${maxDisponible}). Se ajustó a ${cantidadFinal}`);
+      console.warn(
+        `Peso ${peso} excede el stock disponible (${maxDisponible}). Se ajustó a ${cantidadFinal}`
+      );
     }
 
     // Actualizar la cantidad del producto
@@ -835,7 +903,9 @@ export class VentaComponent implements DoCheck {
     // Recalcular totales
     this.calcularValores();
 
-    console.log(`Cantidad del producto "${producto.nombre}" actualizada a ${cantidadFinal} kg desde balanza`);
+    console.log(
+      `Cantidad del producto "${producto.nombre}" actualizada a ${cantidadFinal} kg desde balanza`
+    );
   }
 
   /**
@@ -851,7 +921,9 @@ export class VentaComponent implements DoCheck {
       }
     } catch (error) {
       console.error('Error al conectar balanza:', error);
-      alert('Error al conectar con la balanza. Verifica que uses Chrome/Edge y que el cable esté conectado.');
+      alert(
+        'Error al conectar con la balanza. Verifica que uses Chrome/Edge y que el cable esté conectado.'
+      );
     }
   }
 
@@ -882,9 +954,33 @@ export class VentaComponent implements DoCheck {
 
     // Actualizar el formulario
     this.productosForm.patchValue({
-      cantidadProducto: cantidadFinal
+      cantidadProducto: cantidadFinal,
     });
 
     console.log(`Cantidad actualizada desde balanza: ${cantidadFinal}`);
+  }
+
+  abrirCamara(): void {
+    this.scannerService.abrirCamara().subscribe((result) => {
+      if (result) {
+        console.log('Código escaneado:', result);
+        this.procesarResultado(result);
+      }
+    });
+  }
+
+  private procesarResultado(result: string): void {
+    const buscarInput = document.getElementById('codigoProducto') as HTMLInputElement;
+    if (buscarInput) {
+      buscarInput.value = result;
+      const event = new KeyboardEvent('keyup', {
+        key: 'Enter',
+        code: 'Enter',
+        keyCode: 13,
+        which: 13,
+        bubbles: true,
+      });
+      buscarInput.dispatchEvent(event);
+    }
   }
 }
