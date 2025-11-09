@@ -5,10 +5,19 @@
       <p class="text-muted mb-2">Recuerde ingresar todos los campos</p>
     </div>
     <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <div class="col-10">
+          <p class="mt-3">Código:</p>
+        </div>
+        <div class="col-2 justify-content-end d-flex">
+          <button class="btn btn-primary bg-transparent text-primary border-0" (click)="abrirCamara()">
+            <i class="fa-solid fa-camera"></i>
+          </button>
+        </div>
+      </div>
 
-      <p class="datos">Código:</p>
       <div class="form-group">
-        <input type="text" class="form-control" pattern="[a-zA-Z0-9]*" formControlName="codigo" placeholder="Código"
+        <input type="text" id="codigo" class="form-control" pattern="[a-zA-Z0-9]*" formControlName="codigo" placeholder="Código"
           (change)="validarCodigo( $event )" (keyup)="validarCodigo( $event )">
 
         <span class="text-danger"
@@ -60,10 +69,12 @@
                   <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
                 </div>
                 <div class="col-md-3 col-sm-12">
-                  <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioCompra" placeholder="$ Compra">
+                  <input type="text" (input)="formatearValor($event)" class="form-control"
+                    formControlName="precioCompra" placeholder="$ Compra">
                 </div>
                 <div class="col-md-3 col-sm-12">
-                  <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioVenta" placeholder="$ Venta">
+                  <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioVenta"
+                    placeholder="$ Venta">
                 </div>
                 <div class="col-md-3 col-sm-12">
                   <input type="number" min="0" class="form-control" formControlName="cantidad" placeholder="Cantidad">

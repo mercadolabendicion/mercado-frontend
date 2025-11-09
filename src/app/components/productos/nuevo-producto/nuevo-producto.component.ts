@@ -9,27 +9,30 @@ import { ProductoService } from 'src/app/services/domainServices/producto.servic
 import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 import { MenuComponent } from '../../menu/menu.component';
 import { DecimalPipe } from '@angular/common';
+import { ScannerService } from 'src/app/services/domainServices/scannerService';
 
 @Component({
   selector: 'app-nuevo-producto',
   templateUrl: './nuevo-producto.component.html',
-  styleUrls: ['./nuevo-producto.component.css']
+  styleUrls: ['./nuevo-producto.component.css'],
 })
 export class NuevoProductoComponent implements OnInit {
-
   protected formulario!: FormGroup;
   existe: boolean = false;
   protected tipoImpuesto!: string[];
   protected valorNumerico: number = 0;
   protected valorFormateado: string = '';
   private formBuilder: FormBuilder = inject(FormBuilder);
-  private httpProductoService: HttpProductoService = inject(HttpProductoService);
+  private httpProductoService: HttpProductoService =
+    inject(HttpProductoService);
   private alert: AlertService = inject(AlertService);
   private productoService: ProductoService = inject(ProductoService);
-  private productoAlertService: ProductoAlertService = inject(ProductoAlertService);
+  private productoAlertService: ProductoAlertService =
+    inject(ProductoAlertService);
   private menuComponent: MenuComponent = inject(MenuComponent);
   private decimalPipe: DecimalPipe = inject(DecimalPipe);
 
+  constructor(private scannerService: ScannerService) {}
 
   ngOnInit(): void {
     this.buildForm();
@@ -43,7 +46,9 @@ export class NuevoProductoComponent implements OnInit {
    */
   private obtenerImpuesto(): void {
     this.productoService.getTipoImpuesto().subscribe({
-      next: (data) => { this.tipoImpuesto = data; }
+      next: (data) => {
+        this.tipoImpuesto = data;
+      },
     });
   }
 
@@ -53,7 +58,7 @@ export class NuevoProductoComponent implements OnInit {
         nombre: [''],
         precioCompra: [''],
         precioVenta: [''],
-        cantidad: [1]
+        cantidad: [1],
       })
     );
   }
@@ -61,7 +66,6 @@ export class NuevoProductoComponent implements OnInit {
   eliminarFila(indice: number) {
     this.formasVenta.removeAt(indice);
   }
-
 
   /**
    * Construye el formulario de productos
@@ -76,7 +80,7 @@ export class NuevoProductoComponent implements OnInit {
       stock: [''],
       impuesto: [''],
       precioCompra: [''],
-      formasVenta: this.formBuilder.array([])
+      formasVenta: this.formBuilder.array([]),
     });
   }
 
@@ -90,14 +94,30 @@ export class NuevoProductoComponent implements OnInit {
    */
   onSubmit(): void {
     if (!this.formulario.valid) {
-      Object.values(this.formulario.controls).forEach(control => { control.markAsTouched(); });
+      Object.values(this.formulario.controls).forEach((control) => {
+        control.markAsTouched();
+      });
       return;
     }
-    const { codigo, nombre, precioCompra, fecha_vencimiento, lote } = this.formulario.value;
+    const { codigo, nombre, precioCompra, fecha_vencimiento, lote } =
+      this.formulario.value;
     console.log(this.formulario.value);
-    const formasVentaEntities = this.formasVenta.controls.map(forma => FormaVenta.toEntity(forma as FormGroup));
-    let impuesto = this.tipoImpuesto[this.formulario.get('impuesto')!.value] == undefined ? '' : this.tipoImpuesto[this.formulario.get('impuesto')!.value];
-    let producto = CrearProductoDTO.crearProductoDTO(codigo, nombre, fecha_vencimiento, lote, impuesto, precioCompra, formasVentaEntities);
+    const formasVentaEntities = this.formasVenta.controls.map((forma) =>
+      FormaVenta.toEntity(forma as FormGroup)
+    );
+    let impuesto =
+      this.tipoImpuesto[this.formulario.get('impuesto')!.value] == undefined
+        ? ''
+        : this.tipoImpuesto[this.formulario.get('impuesto')!.value];
+    let producto = CrearProductoDTO.crearProductoDTO(
+      codigo,
+      nombre,
+      fecha_vencimiento,
+      lote,
+      impuesto,
+      precioCompra,
+      formasVentaEntities
+    );
     this.productoService.guardarProducto(producto).subscribe((data) => {
       if (data) {
         this.formulario.reset();
@@ -115,7 +135,8 @@ export class NuevoProductoComponent implements OnInit {
     let valorNumerico = this.obtenerValorNumerico(input.value);
 
     if (valorNumerico !== null) {
-      input.value = '$ ' + this.decimalPipe.transform(valorNumerico, '1.0-0') || '';
+      input.value =
+        '$ ' + this.decimalPipe.transform(valorNumerico, '1.0-0') || '';
     } else {
       input.value = '';
     }
@@ -128,9 +149,12 @@ export class NuevoProductoComponent implements OnInit {
    */
   private obtenerValorNumerico(valor: string): number | null {
     // Elimina caracteres no numéricos excepto el punto decimal
-  let valorSinFormato = valor.replace(/[^0-9,]/g, '').replace(',', '').replace('$', '');
-  let valorNumerico = parseFloat(valorSinFormato);
-  return isNaN(valorNumerico) ? null : valorNumerico;
+    let valorSinFormato = valor
+      .replace(/[^0-9,]/g, '')
+      .replace(',', '')
+      .replace('$', '');
+    let valorNumerico = parseFloat(valorSinFormato);
+    return isNaN(valorNumerico) ? null : valorNumerico;
   }
 
   /**
@@ -149,10 +173,10 @@ export class NuevoProductoComponent implements OnInit {
   /**
    * Este método se encarga de verificar si un código de producto existe
    * en la base de datos pero fue eliminado anteriormente
-   * @param codigo 
+   * @param codigo
    */
   private verificarCodigo(codigo: string): void {
-    this.httpProductoService.verificarExistencia(codigo).subscribe(data => {
+    this.httpProductoService.verificarExistencia(codigo).subscribe((data) => {
       if (data) {
         this.manejarCodigoExistente(codigo);
       } else {
@@ -165,17 +189,22 @@ export class NuevoProductoComponent implements OnInit {
    * Este método se encarga de manejar un código existente
    * la idea es mostrar un mensaje de confirmación para recuperar el producto
    * si el producto fue eliminado anteriormente
-   * @param codigo 
+   * @param codigo
    */
   private async manejarCodigoExistente(codigo: string): Promise<void> {
-    this.productoService.fueEliminado(codigo)
-      .pipe(switchMap(response => {
-        if (response) {
-          return from(this.productoAlertService.mostrarConfirmacionRecuperacion(codigo));
-        }
-        return of(false);
-      }))
-      .subscribe(resp => {
+    this.productoService
+      .fueEliminado(codigo)
+      .pipe(
+        switchMap((response) => {
+          if (response) {
+            return from(
+              this.productoAlertService.mostrarConfirmacionRecuperacion(codigo)
+            );
+          }
+          return of(false);
+        })
+      )
+      .subscribe((resp) => {
         if (resp) this.recuperarProducto(codigo);
       });
 
@@ -185,7 +214,7 @@ export class NuevoProductoComponent implements OnInit {
 
   /**
    * Este método se encarga de recuperar un producto eliminado
-   * @param codigo 
+   * @param codigo
    */
   private recuperarProducto(codigo: string): void {
     this.productoService.recuperarProducto(codigo).subscribe(() => {
@@ -196,13 +225,13 @@ export class NuevoProductoComponent implements OnInit {
   /**
    * Este método se encarga de establecer un error en el formulario
    * cuando un código de producto existe
-   * @param existe 
+   * @param existe
    */
   private establecerErrorFormulario(existe: boolean): void {
     const control = this.formulario.get('codigo');
     if (control) {
       if (existe) {
-        control.setErrors({ 'codigoExistente': true });
+        control.setErrors({ codigoExistente: true });
       } else {
         control.setErrors(null);
       }
@@ -213,5 +242,33 @@ export class NuevoProductoComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const valor = parseFloat(input.value);
     if (isNaN(valor) || valor < 0) input.value = '';
+  }
+
+  abrirCamara(): void {
+    this.scannerService.abrirCamara().subscribe((result) => {
+      if (result) {
+        console.log('Código escaneado:', result);
+        this.procesarResultado(result);
+      }
+
+      if (!this.menuComponent.estadoMenu) {
+        this.menuComponent.abrirMenu();
+      }
+    });
+  }
+
+  private procesarResultado(result: string): void {
+    const buscarInput = document.getElementById('codigo') as HTMLInputElement;
+    if (buscarInput) {
+      buscarInput.value = result;
+      const event = new KeyboardEvent('keyup', {
+        key: 'Enter',
+        code: 'Enter',
+        keyCode: 13,
+        which: 13,
+        bubbles: true,
+      });
+      buscarInput.dispatchEvent(event);
+    }
   }
 }
