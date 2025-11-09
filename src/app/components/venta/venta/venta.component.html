@@ -43,7 +43,9 @@
             </ul>
           </div>
         </div>
-        <span class="text-black">Disponible: {{cantidadDisponible}}</span>
+        <span *ngIf="cantidadDisponible" class="text-black">
+          Quedan: {{ cantidadDisponible }} {{productoDisponible}}
+        </span>
       </div>
     </div>
   </div>

@@ -86,6 +86,7 @@ export class VentaComponent implements DoCheck {
   // Carrito
   protected formaVenta!: string[];
   protected cantidadDisponible!: number;
+  protected productoDisponible!: string;
   protected productoSeleccionadoPrecio = 0;
   editandoFormaVentaIndex: number | null = null; // Fila que se está editando
   protected listProductos: CarritoProductoDTO[];
@@ -449,14 +450,16 @@ export class VentaComponent implements DoCheck {
         '';
       console.log('Forma de venta seleccionada: ' + formaVenta);
 
-      const cantidadValida =
-        await this.productoService.verificarProductoCantidad(
-          cantidad,
-          codigo,
-          formaVenta
-        );
+      // const cantidadValida =
+      //   await this.productoService.verificarProductoCantidad(
+      //     cantidad,
+      //     codigo,
+      //     formaVenta
+      //   );
 
-      if (productoEliminado || !cantidadValida) {
+      if (productoEliminado
+        //  || !cantidadValida
+        ) {
         this.hayStock = false;
         return;
       }
@@ -513,6 +516,7 @@ export class VentaComponent implements DoCheck {
       if (ventaCreada) {
         this.finalizarVenta();
         this.menuComponent.listarVentas();
+        this.cantidadDisponible = 0;
       } else {
         console.error('La venta no se pudo procesar correctamente.');
       }
@@ -780,6 +784,9 @@ export class VentaComponent implements DoCheck {
         this.formasVentaProductoSeleccionado[
           this.productosForm.get('formaVenta')!.value
         ].cantidad;
+      this.productoDisponible = this.formasVentaProductoSeleccionado[
+          this.productosForm.get('formaVenta')!.value
+        ].nombre + " de " + this.productoSeleccionado.nombre;
     }
   }
 
