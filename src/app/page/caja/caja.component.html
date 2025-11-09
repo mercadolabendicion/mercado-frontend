@@ -179,41 +179,42 @@
       </div>
     </div>
 
-<!-- Paginación Caja Mayor -->
-<div class="d-flex justify-content-center align-items-center mt-3 flex-wrap" *ngIf="registrosCajaMayor.length > 0">
-  <nav aria-label="Page navigation" class="w-100">
-    <ul class="pagination justify-content-center mt-3 flex-wrap">
-      
-      <!-- Botón Anterior -->
-      <li class="page-item" [class.disabled]="paginaActualMayor === 0">
-        <button class="page-link d-flex align-items-center gap-1" (click)="paginaAnteriorMayor()" tabindex="-1" aria-disabled="true">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-          Anterior
-        </button>
-      </li>
+    <!-- Paginación Caja Mayor -->
+    <div class="d-flex justify-content-center align-items-center mt-3 flex-wrap" *ngIf="registrosCajaMayor.length > 0">
+      <nav aria-label="Page navigation" class="w-100">
+        <ul class="pagination justify-content-center mt-3 flex-wrap">
 
-      <!-- Indicador de página -->
-      <li class="page-item active">
-        <button class="page-link">
-          {{ paginaActualMayor + 1 }}
-        </button>
-      </li>
+          <!-- Botón Anterior -->
+          <li class="page-item" [class.disabled]="paginaActualMayor === 0">
+            <button class="page-link d-flex align-items-center gap-1" (click)="paginaAnteriorMayor()" tabindex="-1"
+              aria-disabled="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+              Anterior
+            </button>
+          </li>
 
-      <!-- Botón Siguiente -->
-      <li class="page-item" [class.disabled]="!tieneMasRegistrosMayor">
-        <button class="page-link d-flex align-items-center gap-1" (click)="paginaSiguienteMayor()">
-          Siguiente
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 18l6-6-6-6" />
-          </svg>
-        </button>
-      </li>
+          <!-- Indicador de página -->
+          <li class="page-item active">
+            <button class="page-link">
+              {{ paginaActualMayor + 1 }}
+            </button>
+          </li>
 
-    </ul>
-  </nav>
-</div>
+          <!-- Botón Siguiente -->
+          <li class="page-item" [class.disabled]="!tieneMasRegistrosMayor">
+            <button class="page-link d-flex align-items-center gap-1" (click)="paginaSiguienteMayor()">
+              Siguiente
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          </li>
+
+        </ul>
+      </nav>
+    </div>
 
   </div>
 
@@ -228,7 +229,7 @@
       Consultar valor del negocio
     </button>
 
-    <button class="btn-lg w-100" id="amarillo" (click)="triggerToggleCollapse()" (click)="mostrarModalPasarCajaMenor()">
+    <button class="btn-lg w-100" id="amarillo" (click)="mostrarModalPasarCajaMenor()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M7 16V4M7 4L3 8M7 4l4 4" />
         <path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
@@ -236,7 +237,7 @@
       Pasar a caja menor
     </button>
 
-    <button class="btn-lg w-100" id="rojo" (click)="triggerToggleCollapse()" (click)="mostrarModalCerrarCaja()">
+    <button class="btn-lg w-100" id="rojo" (click)="mostrarModalCerrarCaja()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M18 6L6 18M6 6l12 12" />
       </svg>
@@ -245,94 +246,81 @@
   </div>
 </div>
 
-<!-- Modal Cerrar Caja Mayor -->
-<div class="modal" id="cerrarCajaModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Cerrar caja mayor</h5>
-      <span class="close" (click)="ocultarModal('cerrarCajaModal')">&times;</span>
-    </div>
-    <div class="modal-body">
-      <form>
-        <div class="form-group">
-          <label for="valorCierre">Valor de cierre de caja mayor:</label>
-          <input type="text" class="form-control" id="valorCierre" [value]="valorCierreFormateado"
-            (input)="formatearValorCierre($event)" placeholder="Ingrese el valor de cierre" />
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="ocultarModal('cerrarCajaModal')">
-        Cancelar
-      </button>
-      <button type="button" class="btn btn-primary" (click)="cerrarCaja()">
-        Cerrar caja mayor
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Egreso -->
-<div class="modal" id="egresoModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Registrar Egreso</h5>
-      <span class="close" (click)="ocultarModal('egresoModal')">&times;</span>
-    </div>
-    <div class="modal-body">
-      <form>
-        <div class="form-group">
-          <label for="valorEgreso">Valor:</label>
-          <input type="text" class="form-control" id="valorEgreso" (input)="formatearValor($event)" />
-        </div>
-
-        <div class="form-group">
-          <label for="motivoEgreso">Motivo:</label>
-          <textarea class="form-control" id="motivoEgreso"></textarea>
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="ocultarModal('egresoModal')">
-        Cerrar
-      </button>
-      <button type="button" class="btn btn-primary" (click)="registrarEgreso()">
-        Registrar Egreso
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Pasar a Caja Menor -->
-<div class="modal" id="pasarCajaMenorModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Pasar a caja menor</h5>
-      <span class="close" (click)="ocultarModal('pasarCajaMenorModal')">&times;</span>
-    </div>
-    <div class="modal-body">
-      <div class="info-box"
-        style="background-color: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #2196f3;">
-        <p style="margin: 0; color: #1976d2; font-size: 14px;">
-          <strong>Saldo disponible en caja mayor:</strong> {{ saldo | currency : "USD" : "symbol" : "1.0-0" }}
+<!-- Modal Cerrar Caja Mayor (Bootstrap markup, vertically centered) -->
+<div class="modal fade" id="cerrarCajaModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cerrar caja mayor</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="ocultarModal('cerrarCajaModal')"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <div class="cierre-valor-input">
+              <label for="valorCierre" class="cierre-input-label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="14" x="2" y="5" rx="2" />
+                  <line x1="2" x2="22" y1="10" y2="10" />
+                </svg>
+                Valor de cierre de caja mayor:
+              </label>
+              <input type="text" class="form-control" id="valorCierre" [value]="valorCierreFormateado"
+                (input)="formatearValorCierre($event)" placeholder="Ingrese el valor de cierre" />
+            </div>
+          </div>
+        </form>
+        <p class="cierre-warning">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+            <line x1="12" x2="12" y1="9" y2="13" />
+            <line x1="12" x2="12.01" y1="17" y2="17" />
+          </svg>
+          Al confirmar, se cerrará la caja mayor. Recuerde que esta opción solo se usa
+          cuando el dinero sale por completo del negocio. Esta acción no se puede deshacer.
         </p>
       </div>
-      <form>
-        <div class="form-group">
-          <label for="valorPaso">Valor a transferir:</label>
-          <input type="text" class="form-control" id="valorPaso" [value]="valorPasoFormateado"
-            (input)="formatearValorPaso($event)" placeholder="Ingrese el valor a transferir" />
-          <small class="form-text text-muted">Este valor se restará de caja mayor y se sumará a caja menor</small>
-        </div>
-      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="cerrarCaja()">
+          Cerrar caja mayor
+        </button>
+      </div>
     </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="ocultarModal('pasarCajaMenorModal')">
-        Cancelar
-      </button>
-      <button type="button" class="btn btn-primary" (click)="pasarACajaMenor()">
-        Transferir a caja menor
-      </button>
+  </div>
+</div>
+
+<!-- Modal Pasar a Caja Menor (Bootstrap markup, vertically centered) -->
+<div class="modal fade" id="pasarCajaMenorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Pasar a caja menor</h5>
+        <button type="button" class="btn-close" aria-label="Close"
+          (click)="ocultarModal('pasarCajaMenorModal')"></button>
+      </div>
+      <div class="modal-body">
+        <div class="info-box"
+          style="background-color: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+          <p style="margin: 0; color: #1976d2; font-size: 14px;">
+            <strong>Saldo disponible en caja mayor:</strong> {{ saldo | currency : "USD" : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+        <form>
+          <div class="form-group">
+            <label for="valorPaso">Valor a transferir:</label>
+            <input type="text" class="form-control" id="valorPaso" [value]="valorPasoFormateado"
+              (input)="formatearValorPaso($event)" placeholder="Ingrese el valor a transferir" />
+            <small class="form-text text-muted">Este valor se restará de caja mayor y se sumará a caja menor</small>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="pasarACajaMenor()">
+          Transferir a caja menor
+        </button>
+      </div>
     </div>
   </div>
 </div>

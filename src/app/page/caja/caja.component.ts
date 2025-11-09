@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { MenuComponent } from 'src/app/components/menu/menu.component';
+import { Modal } from 'bootstrap';
 import { VentaDTO } from 'src/app/dto/venta/VentaDTO';
 import { ReporteDTO } from 'src/app/dto/reporte/ReporteDTO';
 import { CajaService } from 'src/app/services/domainServices/caja.service';
@@ -48,15 +48,49 @@ export class CajaComponent {
   private ventaService: VentaService = inject(VentaService);
   private cajaMenorService: CajaMenorService = inject(CajaMenorService);
   private cajaMayorService: CajaMayorService = inject(CajaMayorService);
+  // Store created bootstrap Modal instances so we can hide/show programmatically
+  private modalInstances: { [id: string]: any } = {};
 
-  constructor(private menuComponent: MenuComponent) {
-    this.ventas = [];
+  private showModal(modalId: string) {
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl) return;
+    try {
+      let instance = this.modalInstances[modalId];
+      if (!instance) {
+        instance = new Modal(modalEl);
+        this.modalInstances[modalId] = instance;
+      }
+      instance.show();
+    } catch (err) {
+      // Fallback if bootstrap JS not available: toggle classes and backdrop
+      modalEl.classList.add('show');
+      modalEl.style.display = 'block';
+      modalEl.setAttribute('aria-hidden', 'false');
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      document.body.appendChild(backdrop);
+      document.body.classList.add('modal-open');
+    }
   }
 
-  triggerToggleCollapse() {
-    if (!this.menuComponent.estadoMenu) {
-      this.menuComponent.toggleCollapse();
+  private hideModal(modalId: string) {
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl) return;
+    try {
+      const instance = this.modalInstances[modalId] || (Modal as any).getInstance?.(modalEl) || new Modal(modalEl);
+      instance.hide();
+    } catch (err) {
+      modalEl.classList.remove('show');
+      modalEl.setAttribute('aria-hidden', 'true');
+      modalEl.style.display = 'none';
+      const backdrop = document.querySelector('.modal-backdrop');
+      if (backdrop && backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+      document.body.classList.remove('modal-open');
     }
+  }
+
+  constructor() {
+    this.ventas = [];
   }
 
   async ngOnInit() {
@@ -238,24 +272,15 @@ export class CajaComponent {
     // Limpiar el valor del cierre
     this.valorCierreCajaMayor = 0;
 
-    const modal = document.getElementById('cerrarCajaModal');
-    if (modal) {
-      modal.style.display = 'block';
-    }
+    this.showModal('cerrarCajaModal');
   }
 
   mostrarModalEgreso() {
-    const modal = document.getElementById('egresoModal');
-    if (modal) {
-      modal.style.display = 'block';
-    }
+    this.showModal('egresoModal');
   }
 
   ocultarModal(modalId: string) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.style.display = 'none';
-    }
+    this.hideModal(modalId);
   }
 
   obtenerFechaHoraActual(): string {
@@ -409,10 +434,7 @@ export class CajaComponent {
     this.valorPasoCajaMenor = 0;
     this.valorPasoFormateado = '';
 
-    const modal = document.getElementById('pasarCajaMenorModal');
-    if (modal) {
-      modal.style.display = 'block';
-    }
+    this.showModal('pasarCajaMenorModal');
   }
 
   // Añadir este método después de cerrarCaja

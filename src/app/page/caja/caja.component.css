@@ -60,7 +60,6 @@
   /* sd-size: 14px;
   sd-weight: 500; */
   color: #6b7280;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
@@ -278,144 +277,13 @@
 }
 
 /* Modal Styles */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal-content {
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
-  margin: 5% auto;
-  padding: 0;
-  animation: modalSlideIn 0.3s ease;
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.modal-title {
-  /* sd-size: 18px;
-  sd-weight: 600; */
-  color: #1a1a1a;
-  margin: 0;
-}
-
-.close {
-  cursor: pointer;
-  font-size: 28px;
-  color: #9ca3af;
-  line-height: 1;
-  transition: color 0.2s ease;
-}
-
-.close:hover {
-  color: #374151;
-}
-
-.modal-body {
-  padding: 24px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  /* sd-size: 14px;
-  sd-weight: 500; */
-  color: #374151;
-  margin-bottom: 8px;
-}
-
-.form-control {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  /* sd-size: 14px; */
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.form-control[readonly] {
-  background: #f9fafb;
-  color: #6b7280;
-}
-
-textarea.form-control {
-  min-height: 80px;
-  resize: vertical;
-}
-
-.modal-footer {
-  display: flex;
-  gap: 12px;
-  padding: 20px 24px;
-  border-top: 1px solid #e5e7eb;
-  justify-content: flex-end;
-}
-
-.modal-footer button {
-  padding: 10px 20px;
-  border-radius: 6px;
-  /* sd-size: 14px;
-  sd-weight: 500; */
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.modal-footer .btn-secondary {
-  background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
-}
-
-.modal-footer .btn-secondary:hover {
-  background: #f9fafb;
-}
-
-.modal-footer .btn-primary {
-  background: #2563eb;
-  color: white;
-}
-
-.modal-footer .btn-primary:hover {
-  background: #1d4ed8;
-}
+/* Modal styles removed to rely on Bootstrap defaults.
+   The original custom modal CSS conflicted with Bootstrap's
+   modal positioning and prevented vertical centering. Using
+   Bootstrap's markup + `modal-dialog-centered` will center
+   dialogs. If you still want custom tweaks, add minimal
+   overrides here that do not change `.modal` or `.modal-content`
+   display/positioning semantics. */
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -512,4 +380,67 @@ textarea.form-control {
   padding: 2rem;
   color: #9ca3af;
   font-style: italic;
+}
+
+.cierre-valor-input {
+  margin-top: 10px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #007bff;
+}
+
+.cierre-input-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 12px;
+  font-size: 1.05em;
+}
+
+.cierre-input-label svg {
+  color: #007bff;
+}
+
+.cierre-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1.1em;
+  font-weight: 600;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.cierre-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.cierre-input::placeholder {
+  color: #adb5bd;
+  font-weight: 400;
+}
+
+
+.cierre-warning {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  margin-top: 20px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  color: #856404;
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+.cierre-warning svg {
+  flex-shrink: 0;
+  color: #ffc107;
 }
