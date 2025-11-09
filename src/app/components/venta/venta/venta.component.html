@@ -6,7 +6,8 @@
 
     <!-- Botones de control de balanza -->
     <div class="col-4 d-flex gap-2 mb-2 align-items-center justify-content-end">
-      <button *ngIf="!balanzaConectada" class="btn-md px-2 d-none d-md-flex" id="verde" (click)="conectarBalanza()" type="button">
+      <button *ngIf="!balanzaConectada" class="btn-md px-2 d-none d-md-flex" id="verde" (click)="conectarBalanza()"
+        type="button">
         <i class="fa-solid fa-weight-scale me-1"></i> Conectar Balanza
       </button>
 
@@ -56,79 +57,76 @@
       <div class="card">
         <h5 class="mb-4" style="font-weight: bold;">Artículos escaneados</h5>
         <div class="table-container">
-          <div class="table-separator">
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover venta-table">
-                <thead>
-                  <tr>
-                    <th class="align-middle">Producto</th>
-                    <th class="align-middle text-center">Forma de venta</th>
-                    <th class="align-middle text-center">Cantidad</th>
-                    <th class="align-middle text-center">Precio</th>
-                    <th class="align-middle text-center"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let producto of listProductos; let i = index; trackBy: trackByCodigo"
-                    class="align-middle">
-                    <td class="venta-nombre align-middle">
-                      <strong>{{ producto.nombre }}</strong><br>
-                      <span class="venta-codigo">{{ producto.codigo }}</span>
-                    </td>
-                    <td class="align-middle">
-                      <div class="venta-forma-venta" *ngIf="editandoFormaVentaIndex !== i; else editCombo">
-                        <span (click)="activarEdicionFormaVenta(i)" class="venta-forma-venta-badge">
-                          {{ producto.formaVenta }}
-                          <i class="bi bi-pencil ms-1"></i>
-                        </span>
-                      </div>
-                      <ng-template #editCombo>
-                        <select class="form-select form-select-sm w-100" [ngModel]="producto.formaVenta"
-                          (ngModelChange)="cambiarFormaVenta(i, $event)">
-                          <option *ngFor="let forma of getFormasVentaProducto(producto)" [value]="forma.nombre">
-                            {{ forma.nombre }}
-                          </option>
-                        </select>
-                        <button class="btn btn-link btn-sm" (click)="desactivarEdicionFormaVenta()"><i
-                            class="fa-solid fa-check"></i></button>
-                      </ng-template>
-                    </td>
-                    <td class="align-middle">
-                      <div class="d-flex align-items-center justify-content-center">
-                        <button class="btn-md me-1 px-2" id="blanco" (click)="cambiarCantidad(i, producto.cantidad - 1)"
-                          *ngIf="producto.cantidad > 1">
-                          <i class="fa-solid fa-minus"></i>
-                        </button>
-                        <input type="number" class="form-control form-control-sm text-center venta-cantidad-input mx-2"
-                          [value]="producto.cantidad" (input)="cambiarCantidad(i, obtenerValorInputNumber($event))"
-                          (focus)="onCantidadFocusCarrito(i)" (blur)="onCantidadBlurCarrito()" min="0" step="0.001"
-                          [max]="getCantidadDisponible(producto)" placeholder="0.000">
-
-                        <button class="btn-md me-1 px-2" id="blanco" (click)="cambiarCantidad(i, producto.cantidad + 1)"
-                          *ngIf="producto.cantidad < getCantidadDisponible(producto)">
-                          <i class="fa-solid fa-plus"></i>
-                        </button>
-                      </div>
-                      <div *ngIf="producto.cantidad > getCantidadDisponible(producto)"
-                        class="text-danger small text-center mt-1">
-                        *Valor mayor al stock disponible
-                      </div>
-                    </td>
-                    <td class="align-middle text-center">${{ producto.precio | number:'1.0-0' }}</td>
-                    <td class="align-middle text-center">
-                      <button class="btn btn-danger venta-btn-eliminar" (click)="eliminarPorId(producto)">
-                        <i class="fa-solid fa-trash"></i>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th class="align-middle">Producto</th>
+                  <th class="align-middle text-center">Forma de venta</th>
+                  <th class="align-middle text-center">Cantidad</th>
+                  <th class="align-middle text-center">Precio</th>
+                  <th class="align-middle text-center"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let producto of listProductos; let i = index; trackBy: trackByCodigo" class="align-middle">
+                  <td class="venta-nombre align-middle">
+                    <strong>{{ producto.nombre }}</strong><br>
+                    <span class="venta-codigo">{{ producto.codigo }}</span>
+                  </td>
+                  <td class="align-middle">
+                    <div class="venta-forma-venta" *ngIf="editandoFormaVentaIndex !== i; else editCombo">
+                      <span (click)="activarEdicionFormaVenta(i)" class="venta-forma-venta-badge">
+                        {{ producto.formaVenta }}
+                        <i class="bi bi-pencil ms-1"></i>
+                      </span>
+                    </div>
+                    <ng-template #editCombo>
+                      <select class="form-select form-select-sm w-100" [ngModel]="producto.formaVenta"
+                        (ngModelChange)="cambiarFormaVenta(i, $event)">
+                        <option *ngFor="let forma of getFormasVentaProducto(producto)" [value]="forma.nombre">
+                          {{ forma.nombre }}
+                        </option>
+                      </select>
+                      <button class="btn btn-link btn-sm" (click)="desactivarEdicionFormaVenta()"><i
+                          class="fa-solid fa-check"></i></button>
+                    </ng-template>
+                  </td>
+                  <td class="align-middle">
+                    <div class="d-flex align-items-center justify-content-center">
+                      <button class="btn-md me-1 px-2" id="blanco" (click)="cambiarCantidad(i, producto.cantidad - 1)"
+                        *ngIf="producto.cantidad > 1">
+                        <i class="fa-solid fa-minus"></i>
                       </button>
-                    </td>
-                  </tr>
-                  <tr class="sin-datos-tabla" *ngIf="listProductos.length === 0">
-                    <td colspan="6">
-                      <div class="sin-datos-mensaje">No se han agregado productos</div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                      <input type="number" class="form-control form-control-sm text-center venta-cantidad-input mx-2"
+                        [value]="producto.cantidad" (input)="cambiarCantidad(i, obtenerValorInputNumber($event))"
+                        (focus)="onCantidadFocusCarrito(i)" (blur)="onCantidadBlurCarrito()" min="0" step="0.001"
+                        [max]="getCantidadDisponible(producto)" placeholder="0.000">
+
+                      <button class="btn-md me-1 px-2" id="blanco" (click)="cambiarCantidad(i, producto.cantidad + 1)"
+                        *ngIf="producto.cantidad < getCantidadDisponible(producto)">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </div>
+                    <div *ngIf="producto.cantidad > getCantidadDisponible(producto)"
+                      class="text-danger small text-center mt-1">
+                      *Valor mayor al stock disponible
+                    </div>
+                  </td>
+                  <td class="align-middle text-center">${{ producto.precio | number:'1.0-0' }}</td>
+                  <td class="align-middle text-center">
+                    <button class="btn btn-danger venta-btn-eliminar" (click)="eliminarPorId(producto)">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="sin-datos-tabla" *ngIf="listProductos.length === 0">
+                  <td colspan="6">
+                    <div class="sin-datos-mensaje">No se han agregado productos</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
