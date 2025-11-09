@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-*{
+* {
   font-family: sans-serif;
   padding: 0;
   margin: 0;
@@ -11,10 +11,10 @@
   width: 100%;
 }
 
-app-menu{
+app-menu {
   background-color: rgb(235, 235, 235);
   /* border: 10px solid teal; */
-/*
+  /*
   display: grid;
   
   grid-template-columns: 200px  0  1fr;
@@ -23,8 +23,15 @@ app-menu{
 }
 
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 /* Estilos para el modal del scanner */
 .scanner-modal {
@@ -88,6 +95,7 @@ button:hover {
 button#azul {
   background-color: rgb(67, 164, 255);
 }
+
 button#azul:hover {
   background-color: #007bff;
 }
@@ -95,6 +103,7 @@ button#azul:hover {
 button#verde {
   background-color: #28a745;
 }
+
 button#verde:hover {
   background-color: #218838;
 }
@@ -102,6 +111,7 @@ button#verde:hover {
 button#gris {
   background-color: #6c757d;
 }
+
 button#gris:hover {
   background-color: #5a6268;
 }
@@ -109,6 +119,7 @@ button#gris:hover {
 button#naranja {
   background-color: #fd7e14;
 }
+
 button#naranja:hover {
   background-color: #e96b00;
 }
@@ -116,6 +127,7 @@ button#naranja:hover {
 button#rojo {
   background-color: #dc3545;
 }
+
 button#rojo:hover {
   background-color: #c82333;
 }
@@ -124,6 +136,7 @@ button#amarillo {
   background-color: #ffc107;
   color: #212529;
 }
+
 button#amarillo:hover {
   background-color: #e0a800;
 }
@@ -133,7 +146,43 @@ button#blanco {
   color: #212529;
   border: 1px solid #ced4da;
 }
+
 button#blanco:hover {
   border: 1px solid rgb(67, 164, 255);
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+/*Tables*/
+
+.table-container {
+  width: 100%; 
+  height: 100%;
+  background-color: rgb(67, 164, 255);
+  border-radius: 10px;
+}
+
+.table-container .table-responsive {
+  width: 100%;
+  border-radius: 10px;
+}
+
+table {
+  background-color: rgb(67, 164, 255);
+  width: 100%; 
+  border-radius: 10px;
+}
+
+.table-container .pup-up.oculto {
+  display: none;
+}
+
+th, td {
+  border: none; 
+  padding: 8px; 
+  text-align: left; 
+}
+
+th {
+  background-color: #fff;
+  color: rgb(97, 97, 97)!important; 
 }

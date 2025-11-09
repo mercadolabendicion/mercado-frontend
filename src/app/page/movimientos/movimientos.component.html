@@ -1,10 +1,10 @@
 <div class="contenedor">
   <div class="row">
-    <div class="col-6">
+    <div class="col-12 col-md-6">
       <h1>Gestión de movimientos</h1>
       <p>Administre aquí los ingresos y egresos del negocio</p>
     </div>
-    <div class="col-6">
+    <div class="col-12 col-md-6">
       <div class="row">
         <!-- Tarjetas de resumen con diseño moderno -->
         <div class="summary-cards">
@@ -57,7 +57,7 @@
   <div class="row align-items-center">
     <div class="col-12 col-md-6">
       <div class="row">
-        <div class="col-12 col-md-6 col-lg-6">
+        <div class="col-12 col-md-6 mt-2">
           <button class="btn-lg w-100" id="verde" (click)="triggerToggleCollapse()" (click)="mostrarModal('ingreso')">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -66,7 +66,7 @@
             Agregar ingreso
           </button>
         </div>
-        <div class="col-12 col-md-6 col-lg-6">
+        <div class="col-12 col-md-6 col-lg-6 mt-2">
           <button class="btn-lg w-100" id="naranja" (click)="triggerToggleCollapse()" (click)="mostrarModal('egreso')">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -79,7 +79,7 @@
     </div>
     <div class="col-12 col-md-6">
       <div class="d-flex justify-content-end w-100">
-        <div class="filter-input-group d-flex align-items-center">
+        <div class="filter-input-group d-flex align-items-center mt-4">
           <label for="fechaFiltro" class="filter-label mb-0">
             Filtrar por fecha:
           </label>
@@ -92,10 +92,9 @@
 
   <p class="filter-info">Mostrando movimientos del: <strong>{{ fechaFiltro | date: 'dd/MM/yyyy' }}</strong></p>
 
-
-  <div class="table-wrapper">
-    <div class="table-container">
-      <table class="modern-table">
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
         <thead>
           <tr>
             <th>Fecha y Hora</th>
@@ -149,21 +148,19 @@
   </div>
 
   <div class="row align-items-center">
-    <div class="row">
-      <div class="col-12 col-md-3 col-lg-3">
-        <button class="btn-lg w-100" id="gris" (click)="generarReporte()">
-          Generar reporte
-        </button>
-      </div>
-      <div class="col-12 col-md-3 col-lg-3">
-      </div>
-      <div class="col-12 col-md-3 col-lg-3">
-      </div>
-      <div class="col-12 col-md-3 col-lg-3">
-        <button class="btn-lg w-100" id="rojo" (click)="mostrarModalCierreCaja()">
-          Cerrar caja menor
-        </button>
-      </div>
+    <div class="col-12 col-md-3 mt-2">
+      <button class="btn-lg w-100" id="gris" (click)="generarReporte()">
+        Generar reporte
+      </button>
+    </div>
+    <div class="col-12 col-md-3">
+    </div>
+    <div class="col-12 col-md-3">
+    </div>
+    <div class="col-12 col-md-3 mt-2">
+      <button class="btn-lg w-100" id="rojo" (click)="mostrarModalCierreCaja()">
+        Cerrar caja menor
+      </button>
     </div>
   </div>
 </div>
