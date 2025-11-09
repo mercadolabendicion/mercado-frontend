@@ -97,24 +97,44 @@
     </div>
 
     <!-- Paginación Caja Menor -->
-    <div class="pagination-controls" *ngIf="registrosCajaMenor.length > 0">
-      <button class="btn-pagination" [disabled]="paginaActualMenor === 0" (click)="paginaAnteriorMenor()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-        Anterior
-      </button>
+    <div class="d-flex justify-content-center align-items-center mt-3 flex-wrap" *ngIf="registrosCajaMenor.length > 0">
+      <nav aria-label="Page navigation" class="w-100">
+        <ul class="pagination justify-content-center mt-3 flex-wrap">
 
-      <span class="pagination-info">Página {{ paginaActualMenor + 1 }}</span>
+          <!-- Botón Anterior -->
+          <li class="page-item" [class.disabled]="paginaActualMenor === 0">
+            <button class="page-link d-flex align-items-center gap-1" (click)="paginaAnteriorMenor()" tabindex="-1"
+              aria-disabled="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+              Anterior
+            </button>
+          </li>
 
-      <button class="btn-pagination" [disabled]="!tieneMasRegistrosMenor" (click)="paginaSiguienteMenor()">
-        Siguiente
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 18l6-6-6-6" />
-        </svg>
-      </button>
+          <!-- Indicador de página -->
+          <li class="page-item active">
+            <button class="page-link">
+              {{ paginaActualMenor + 1 }}
+            </button>
+          </li>
+
+          <!-- Botón Siguiente -->
+          <li class="page-item" [class.disabled]="!tieneMasRegistrosMenor">
+            <button class="page-link d-flex align-items-center gap-1" (click)="paginaSiguienteMenor()">
+              Siguiente
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          </li>
+
+        </ul>
+      </nav>
     </div>
+
   </div>
+
 
   <!-- Historial Caja Mayor -->
   <div class="transactions-section">
@@ -159,24 +179,42 @@
       </div>
     </div>
 
-    <!-- Paginación Caja Mayor -->
-    <div class="pagination-controls" *ngIf="registrosCajaMayor.length > 0">
-      <button class="btn-pagination" [disabled]="paginaActualMayor === 0" (click)="paginaAnteriorMayor()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-        Anterior
-      </button>
+<!-- Paginación Caja Mayor -->
+<div class="d-flex justify-content-center align-items-center mt-3 flex-wrap" *ngIf="registrosCajaMayor.length > 0">
+  <nav aria-label="Page navigation" class="w-100">
+    <ul class="pagination justify-content-center mt-3 flex-wrap">
+      
+      <!-- Botón Anterior -->
+      <li class="page-item" [class.disabled]="paginaActualMayor === 0">
+        <button class="page-link d-flex align-items-center gap-1" (click)="paginaAnteriorMayor()" tabindex="-1" aria-disabled="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          Anterior
+        </button>
+      </li>
 
-      <span class="pagination-info">Página {{ paginaActualMayor + 1 }}</span>
+      <!-- Indicador de página -->
+      <li class="page-item active">
+        <button class="page-link">
+          {{ paginaActualMayor + 1 }}
+        </button>
+      </li>
 
-      <button class="btn-pagination" [disabled]="!tieneMasRegistrosMayor" (click)="paginaSiguienteMayor()">
-        Siguiente
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 18l6-6-6-6" />
-        </svg>
-      </button>
-    </div>
+      <!-- Botón Siguiente -->
+      <li class="page-item" [class.disabled]="!tieneMasRegistrosMayor">
+        <button class="page-link d-flex align-items-center gap-1" (click)="paginaSiguienteMayor()">
+          Siguiente
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </li>
+
+    </ul>
+  </nav>
+</div>
+
   </div>
 
   <!-- Action Buttons -->
