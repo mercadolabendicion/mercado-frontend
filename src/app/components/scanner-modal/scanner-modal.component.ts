@@ -18,47 +18,34 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private dialogRef: MatDialogRef<ScannerModalComponent>,
     private ngZone: NgZone
-  ) {
-    console.log('[SCANNER] 🚀 Constructor iniciado');
-  }
+  ) {}
 
-  ngOnInit(): void {
-    console.log('[SCANNER] 📱 ngOnInit llamado');
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
-    console.log('[SCANNER] 🎬 ngAfterViewInit llamado');
-    
     if (!this.scannerContainer || !this.scannerContainer.nativeElement) {
-      console.error('[SCANNER] ❌ Elemento scannerContainer no encontrado');
       this.handleError(new Error('Contenedor del scanner no disponible'));
       return;
     }
     
-    console.log('[SCANNER] 📹 Elemento scanner container disponible:', !!this.scannerContainer);
-    
     // Dar tiempo para que el DOM esté listo
     setTimeout(() => {
-      console.log('[SCANNER] ⏰ Timeout completado, iniciando scanner');
       this.startScanner();
     }, 500);
   }
 
   async startScanner(): Promise<void> {
     if (this.scannerInitialized) {
-      console.log('[SCANNER] ⚠️ Scanner ya iniciado, abortando');
       return;
     }
 
     this.scannerInitialized = true;
-    console.log('[SCANNER] 🔄 ====== INICIANDO SCANNER ======');
 
     try {
       this.isLoading = true;
       this.errorMessage = '';
 
       // Verificar soporte del navegador
-      console.log('[SCANNER] 🌐 Verificando soporte...');
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error('Tu navegador no soporta acceso a la cámara');
       }
@@ -68,18 +55,15 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!this.scannerContainer?.nativeElement) {
         throw new Error('Contenedor del scanner no disponible');
       }
-      console.log('[SCANNER] ✅ Contenedor encontrado:', this.scannerContainer.nativeElement.id);
-
+      
       // Detener instancias previas
       try {
         Quagga.stop();
-        console.log('[SCANNER] 🛑 Instancias previas detenidas');
+        console.log('[SCANNER] Instancias previas detenidas');
       } catch (e) {
-        console.log('[SCANNER] ℹ️ No había instancias previas');
+        console.log('[SCANNER] No había instancias previas');
       }
 
-      // Configuración de Quagga
-      console.log('[SCANNER] 🔧 Configurando Quagga2...');
       const config: any = {
         inputStream: {
           name: "Live",
@@ -121,11 +105,6 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
         locate: true,
         frequency: 10
       };
-
-      console.log('[SCANNER] 📋 Config:', JSON.stringify(config, null, 2));
-
-      // Inicializar Quagga
-      console.log('[SCANNER] 🚀 Llamando a Quagga.init()...');
       
       await new Promise<void>((resolve, reject) => {
         Quagga.init(config, (err: any) => {
@@ -135,17 +114,11 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
           }
 
-          console.log('[SCANNER] ✅ Quagga.init exitoso');
-          
-          // Iniciar scanner
-          console.log('[SCANNER] 📸 Llamando a Quagga.start()...');
           try {
             Quagga.start();
-            console.log('[SCANNER] ✅ Quagga.start exitoso');
             
             this.ngZone.run(() => {
               this.isLoading = false;
-              console.log('[SCANNER] ✅ Loading desactivado');
             });
             
             resolve();
@@ -156,16 +129,12 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       });
 
-      // Configurar listener DESPUÉS de inicializar
-      console.log('[SCANNER] 👂 Configurando listener onDetected...');
       let detectionCount = 0;
       
       Quagga.onDetected((result: any) => {
         detectionCount++;
-        console.log(`[SCANNER] 🔍 ===== DETECCIÓN #${detectionCount} =====`);
         
         if (!this.scanningActive) {
-          console.log('[SCANNER] ⏸️ Scanner desactivado, ignorando');
           return;
         }
 
@@ -174,10 +143,8 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
         
         console.log('[SCANNER] 📊 Código RAW:', code);
         console.log('[SCANNER] 📊 Formato:', format);
-        console.log('[SCANNER] 📊 Result completo:', JSON.stringify(result, null, 2));
 
         if (!code) {
-          console.log('[SCANNER] ⚠️ Código vacío, ignorando');
           return;
         }
 
@@ -185,14 +152,12 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('[SCANNER] 🧹 Código limpio:', cleanCode);
 
         if (this.isValidBarcode(cleanCode, format)) {
-          console.log('[SCANNER] ✅ ===== CÓDIGO VÁLIDO =====');
           console.log('[SCANNER] 🎯 Código final:', cleanCode);
           
           this.scanningActive = false;
           this.playBeep();
           
           this.ngZone.run(() => {
-            console.log('[SCANNER] 🚪 Cerrando modal con código:', cleanCode);
             this.stopScanner();
             this.dialogRef.close(cleanCode);
           });
@@ -202,7 +167,6 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
       console.log('[SCANNER] ✅ ====== SCANNER LISTO ======');
-      console.log('[SCANNER] 👀 Esperando detección de códigos...');
 
     } catch (error: any) {
       console.error('[SCANNER] ❌❌❌ ERROR CRÍTICO ❌❌❌');
@@ -236,8 +200,6 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('[SCANNER] ❌ Caracteres inválidos');
       return false;
     }
-
-    console.log('[SCANNER] ✅ Validación OK');
     return true;
   }
 
@@ -261,7 +223,6 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private playBeep(): void {
-    console.log('[SCANNER] 🔊 Reproduciendo beep...');
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const osc = ctx.createOscillator();
@@ -276,14 +237,11 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
       
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.1);
-      console.log('[SCANNER] ✅ Beep reproducido');
     } catch (e) {
-      console.log('[SCANNER] ⚠️ No se pudo reproducir beep');
     }
   }
 
   private stopScanner(): void {
-    console.log('[SCANNER] 🛑 Deteniendo scanner...');
     try {
       if (this.scannerInitialized) {
         Quagga.offDetected();

@@ -10,6 +10,7 @@ import { ActualizarProductoDTO } from 'src/app/dto/producto/ActualizarProductoDT
 import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 import { EditarProductoComponent } from '../editar-producto/editar-producto.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ScannerService } from 'src/app/services/domainServices/scannerService';
 
 @Component({
   selector: 'app-home-producto',
@@ -45,7 +46,7 @@ export class HomeProductoComponent {
   rangoVisible: number = 5; // Número de paginas que se van a mostrar en el paginador
   protected buscarInput: HTMLInputElement | null = null;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private scannerService: ScannerService, private fb: FormBuilder) {
     this.productos = [];
     this.filtroProductos = [];
     this.formasVentaEditar = [];
@@ -399,41 +400,31 @@ export class HomeProductoComponent {
     }
   }
 
-  /**
-   * Este método abre un modal con el escáner de la cámara.
-   * Cuando se detecta un código de barras, se cierra automáticamente
-   * y se coloca el código en el campo de búsqueda.
-   */
   abrirCamara(): void {
-    const dialogRef = this.dialog.open(ScannerModalComponent, {
-      width: '100%',
-      maxWidth: '450px',
-      panelClass: ['scanner-modal', 'modal-fullscreen-sm-down'],
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+    this.scannerService.abrirCamara().subscribe(result => {
       if (result) {
         console.log('Código escaneado:', result);
-        // Buscar el input y actualizar su valor
-        const buscarInput = document.getElementById('buscar') as HTMLInputElement;
-        if (buscarInput) {
-          buscarInput.value = result;
-          // Crear y disparar un evento keyup para activar la búsqueda
-          const event = new KeyboardEvent('keyup', {
-            key: 'Enter',
-            code: 'Enter',
-            keyCode: 13,
-            which: 13,
-            bubbles: true
-          });
-          buscarInput.dispatchEvent(event);
-        }
+        this.procesarResultado(result);
       }
 
       if (!this.menuComponent.estadoMenu) {
         this.menuComponent.abrirMenu();
       }
     });
+  }
+
+  private procesarResultado(result: string): void {
+    const buscarInput = document.getElementById('buscar') as HTMLInputElement;
+    if (buscarInput) {
+      buscarInput.value = result;
+      const event = new KeyboardEvent('keyup', {
+        key: 'Enter',
+        code: 'Enter',
+        keyCode: 13,
+        which: 13,
+        bubbles: true
+      });
+      buscarInput.dispatchEvent(event);
+    }
   }
 }
