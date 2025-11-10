@@ -11,6 +11,7 @@ import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 import { EditarProductoComponent } from '../editar-producto/editar-producto.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ScannerService } from 'src/app/services/domainServices/scannerService';
+import { PaginationService } from 'src/app/services/shared/pagination.service';
 
 @Component({
   selector: 'app-home-producto',
@@ -43,6 +44,7 @@ export class HomeProductoComponent {
   protected formasVentaEditar: FormaVenta[];
   protected idProductoSeleccionado: string = '';
   private dialog: MatDialog = inject(MatDialog);
+  private paginationService = inject(PaginationService);
   rangoVisible: number = 5; // Número de paginas que se van a mostrar en el paginador
   protected buscarInput: HTMLInputElement | null = null;
 
@@ -55,7 +57,7 @@ export class HomeProductoComponent {
 
   ngOnInit() {
     this.obtenerProductosTodos();
-    this.ajustarRangoVisible(); 
+    this.rangoVisible = this.paginationService.calcularRangoVisible();
     this.obtenerProductos(0);
     this.updateProductoCount();
     this.buscarInput = document.getElementById('buscar') as HTMLInputElement;
@@ -66,25 +68,6 @@ export class HomeProductoComponent {
       fechaCreacion: ['', Validators.required],
       formasVentas: this.fb.array([])
     });
-  }
-
-  /**
-   * Este método ajusta dinámicamente el número de páginas visibles en la paginación
-   * (`rangoVisible`) según el ancho de la pantalla. Utiliza los puntos de corte de Bootstrap:
-   * 
-   * - Para pantallas pequeñas (<576px), muestra 3 páginas.
-   * - Para pantallas medianas (>=576px y <768px), muestra 5 páginas.
-   * - Para pantallas grandes (>=768px), muestra 7 páginas.
-   */
-  ajustarRangoVisible(): void {
-    const anchoPantalla = window.innerWidth;
-    if (anchoPantalla < 576) { // Bootstrap 'sm' breakpoint
-      this.rangoVisible = 3;
-    } else if (anchoPantalla >= 768) {
-      this.rangoVisible = 7;
-    } else {
-      this.rangoVisible = 5; // Para pantallas medianas
-    }
   }
 
 
@@ -182,7 +165,7 @@ export class HomeProductoComponent {
    * y luego recarga los datos correspondientes a la nueva página.
    */
   paginaAnterior() {
-    if (this.paginaActual > 0) {
+    if (this.paginationService.puedeRetroceder(this.paginaActual)) {
       this.paginaActual--;
       this.cargarVentas();
     }
@@ -194,7 +177,7 @@ export class HomeProductoComponent {
    * y luego recarga los datos correspondientes a la nueva página.
    */
   paginaSiguiente() {
-    if (this.paginaActual < this.totalPaginas - 1) {
+    if (this.paginationService.puedeAvanzar(this.paginaActual, this.totalPaginas)) {
       this.paginaActual++;
       this.cargarVentas();
     }
@@ -208,15 +191,11 @@ export class HomeProductoComponent {
    * @returns un arreglo de números que representa las páginas visibles
    */
   get paginasVisibles(): number[] {
-    const mitad = Math.floor(this.rangoVisible / 2);
-    let inicio = Math.max(this.paginaActual - mitad, 0);
-    let fin = Math.min(inicio + this.rangoVisible, this.totalPaginas);
-  
-    if (fin - inicio < this.rangoVisible) {
-      inicio = Math.max(fin - this.rangoVisible, 0);
-    }
-  
-    return Array.from({ length: fin - inicio }, (_, i) => i + inicio);
+    return this.paginationService.obtenerPaginasVisibles(
+      this.paginaActual, 
+      this.totalPaginas, 
+      this.rangoVisible
+    );
   }
 
   /**
@@ -232,7 +211,7 @@ export class HomeProductoComponent {
    * basado en el total de páginas. Este arreglo se utiliza para construir la paginación.
    */
   generarPaginas() {
-    this.paginas = Array.from({ length: this.totalPaginas }, (_, index) => index);
+    this.paginas = this.paginationService.generarPaginas(this.totalPaginas);
   }
 
   /**
