@@ -15,7 +15,7 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
   protected isLoading: boolean = true;
     // Evita procesar detecciones hasta pasados unos milisegundos desde que el video arranca
   private allowDetection: boolean = false;
-  private detectionDelayMs: number = 3000; // esperar 3 segundos
+  private detectionDelayMs: number = 2000; // esperar 2 segundos
   private scannerInitialized = false;
 
   constructor(
