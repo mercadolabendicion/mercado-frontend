@@ -38,7 +38,6 @@ export class ClienteService {
     this.clienteService.getTodosLosClientes().subscribe({
       next: (resp) => {
         localStorage.setItem('clientes', JSON.stringify(resp));
-        console.log('Clientes totales cargados:', resp.length);
       },
     });
   }
