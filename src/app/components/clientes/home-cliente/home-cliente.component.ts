@@ -4,6 +4,7 @@ import { ClienteAlertService } from 'src/app/utils/cliente-alert/clienteAlert.se
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
 import { MenuComponent } from '../../menu/menu.component';
 import { PaginationService } from 'src/app/services/shared/pagination.service';
+import { LocalStorageService } from 'src/app/services/shared/local-storage.service';
 
 @Component({
   selector: 'app-home-cliente',
@@ -24,6 +25,7 @@ export class HomeClienteComponent {
   private clienteService: ClienteService = inject(ClienteService);
   private menuComponent: MenuComponent = inject(MenuComponent);
   private paginationService = inject(PaginationService);
+  private localStorageService = inject(LocalStorageService);
   protected paginaActual: number = 0;
   protected totalPaginas!: number;
   protected paginas: number[] = [];
@@ -58,7 +60,7 @@ export class HomeClienteComponent {
    * todos los clientes que se encuentran en LocalStorage con la variable clientes
    */
   obtenerClientesTodos() {
-    this.clientesTodos = JSON.parse(localStorage.getItem('clientes') || '[]');
+    this.clientesTodos = this.localStorageService.getItemOrDefault<ClienteDTO[]>('clientes', []);
   }
 
   /**
