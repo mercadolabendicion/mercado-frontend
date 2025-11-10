@@ -2,9 +2,9 @@ export const environment = {
 
 
   // Esta es la URL de la API que se va a consumir en el proyecto
-  //ApiUrl: 'https://back-drogueria-amd64.onrender.com',
+  ApiUrl: 'https://back-drogueria-amd64.onrender.com',
   //obtengo el valor de la variable de entorno
-  ApiUrl: 'http://localhost:8086',
+  //ApiUrl: 'http://localhost:8086',
 
   // Este es el IVA que se va a aplicar a los productos
   IVA: 0.19,
