@@ -13,6 +13,9 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
   protected scanningActive = true;
   protected errorMessage: string = '';
   protected isLoading: boolean = true;
+    // Evita procesar detecciones hasta pasados unos milisegundos desde que el video arranca
+  private allowDetection: boolean = false;
+  private detectionDelayMs: number = 3000; // esperar 3 segundos
   private scannerInitialized = false;
 
   constructor(
@@ -116,11 +119,17 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
           try {
             Quagga.start();
-            
+            // Esperamos a que el stream esté corriendo y el DOM muestre el video
             this.ngZone.run(() => {
               this.isLoading = false;
             });
-            
+
+            // Activar detección después de un pequeño retardo para dar tiempo al autofocus y estabilizar el video
+            setTimeout(() => {
+              this.allowDetection = true;
+              console.log('[SCANNER] ⏱️ Detección habilitada después de', this.detectionDelayMs, 'ms');
+            }, this.detectionDelayMs);
+
             resolve();
           } catch (startError) {
             console.error('[SCANNER] ❌ Error en Quagga.start:', startError);
@@ -133,7 +142,14 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
       
       Quagga.onDetected((result: any) => {
         detectionCount++;
-        
+        // Si aún no permitimos detección (periodo de estabilización), ignoramos
+        if (!this.allowDetection) {
+          // Opcional: log cada cierto número de detecciones para depuración
+          if (detectionCount % 30 === 0) {
+            console.log('[SCANNER] esperando a estabilizar video antes de procesar detecciones...');
+          }
+          return;
+        }
         if (!this.scanningActive) {
           return;
         }
