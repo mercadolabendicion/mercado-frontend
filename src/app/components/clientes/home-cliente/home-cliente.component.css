@@ -1,21 +1,21 @@
 .contenedor{
-  border-radius: 8px;
-  margin: 20px 5%;
+  border-radius: var(--radius-md);
+  margin: var(--spacing-md) 5%;
 }
 
 .table-container {
   width: 100%; 
   height: 100%;
-  background-color: rgb(67, 164, 255);
-  border-radius: 10px;
+  background-color: var(--primary-color);
+  border-radius: var(--radius-lg);
 }
 
 .table-container .separador{
-  margin-top: 10px;
+  margin-top: var(--spacing-sm);
 }
 
 .totalClientes{
-  margin-top: 10px;
+  margin-top: var(--spacing-sm);
 }
 
 .separador div{
@@ -23,14 +23,14 @@
   display: flex;
   /*justify-content: center;*/
   /*border: 1px solid rgb(182, 182, 182) ;*/
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
 }
 
 table {
-  background-color: rgb(67, 164, 255);
+  background-color: var(--primary-color);
   width: 100%; 
   /*border-collapse: collapse;*/
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
 }
 
 th, td {
@@ -40,16 +40,16 @@ th, td {
 }
 
 th {
-  background-color: #fff;
-  color: rgb(97, 97, 97); 
+  background-color: var(--bg-white);
+  color: var(--text-light); 
 }
 
 tr:nth-child(odd) { 
-  background-color: #f2f8ff; 
+  background-color: var(--bg-table-odd); 
 }
 
 tr:nth-child(even) {
-  background-color: #ffffff; 
+  background-color: var(--bg-table-even); 
 }
 
 td.eliminar, th.eliminar{
@@ -61,7 +61,7 @@ td.eliminar, th.eliminar{
 td button{
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   text-align: center;
   cursor: pointer;
   margin: 0;
@@ -80,18 +80,18 @@ td button.editar, td button.check{
   width: 100%;
   height: 30px;
   border: none;
-  border: 1px solid rgb(182, 182, 182);
-  border-radius: 10px;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  border: 1px solid var(--gray-400);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .buscar input:hover {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
 }
 
 .buscar {
-  margin-top: 5px;
+  margin-top: var(--spacing-xs);
 }
 
 .buscar label {
@@ -100,11 +100,11 @@ td button.editar, td button.check{
 
 
 p.rojo{
-  color: #000000;
+  color: var(--text-primary);
   width: 100%;
   height: 50px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
   display: flex;
   justify-content: left;
   align-items: center;
@@ -119,7 +119,7 @@ div.pup-up{
   left: 0;
   right: 0;
   z-index: 1;
-  background-color: #a3a3a371;
+  background-color: var(--bg-overlay);
   width: 100%;
   height: 100%;
   display: flex;
@@ -135,9 +135,9 @@ div.pup-up span{
   position: absolute;
   top: -10px;
   right: -7px;
-  background: #fff;
-  border-radius: 100px;
-  border: 1px solid #a2a2a2;
+  background: var(--bg-white);
+  border-radius: var(--radius-round);
+  border: 1px solid var(--gray-500);
   padding: 2px;
   cursor: pointer;
 }
@@ -148,25 +148,25 @@ div.pup-up span{
 }
 
 button#nuevo {
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   width: 100%;
   height: 30px;
-  background-color: rgb(67, 164, 255);
-  color: #fff;
+  background-color: var(--primary-color);
+  color: var(--bg-white);
   font-weight: 600;
   font-size: 16px;
   padding: 5px 30px;
   border: none;
   cursor: pointer;
-  margin-top: 5px;
+  margin-top: var(--spacing-xs);
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: background-color var(--transition-normal), transform var(--transition-fast);
 }
 
 button#nuevo:hover {
-  background-color: #007bff;
+  background-color: var(--primary-hover);
   transform: scale(1.02); /* Pequeña animación de escala */
 }
 

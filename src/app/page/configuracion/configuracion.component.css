@@ -1,17 +1,17 @@
 .formulario {
-  border-radius: 8px;
-  margin: 20px 5%;
+  border-radius: var(--radius-md);
+  margin: var(--spacing-md) 5%;
 }
 
 .formulario .nota {
-  color: #000000;
+  color: var(--text-primary);
   width: 100%;
   display: flex;
   justify-content: left;
 }
 
 .encabezado{
-  padding-bottom: 20px;
+  padding-bottom: var(--spacing-md);
 }
 
 .formulario p {
@@ -23,11 +23,11 @@
 }
 
 .formulario .form-control {
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
 }
 
 .formulario button {
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
 }
 
 @media (max-width: 576px) {

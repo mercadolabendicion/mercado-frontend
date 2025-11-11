@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--bg-overlay);
   padding: 1rem; /* Espacio en pantallas pequeñas */
   position: fixed;
   inset: 0;
@@ -21,8 +21,8 @@
 
 /* === CONTENIDO DEL MODAL === */
 .modal-content {
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   width: 100%;
   max-height: 90vh; /* Evita que sea más alto que la pantalla */
   display: flex;
@@ -49,9 +49,9 @@
 .modal-body .table-container2 {
   max-height: 40vh;
   overflow-y: auto;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background-color: #ffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-400);
+  background-color: var(--bg-white);
   position: relative;
 }
 
@@ -75,12 +75,12 @@
   white-space: nowrap;
   padding: 0.75rem;
   font-size: 0.9rem;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--gray-300);
 }
 
 .modal-body .table thead {
-  background-color: #f8f9fa;
-  color: rgb(97, 97, 97);
+  background-color: var(--bg-light);
+  color: var(--text-light);
   font-weight: 600;
   position: sticky;
   top: 0;
@@ -88,9 +88,9 @@
 }
 
 .modal-body .table thead th {
-  background-color: #f8f9fa;
-  color: rgb(97, 97, 97);
-  border-bottom: 2px solid #dee2e6;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  border-bottom: 2px solid var(--gray-300);
 }
 
 .modal-body .table-hover tbody tr:hover {
@@ -98,7 +98,7 @@
 }
 
 .modal-body .table tbody tr {
-  background-color: #ffffff;
+  background-color: var(--bg-white);
 }
 
 
@@ -107,22 +107,22 @@
 /* === FORMULARIOS === */
 .form-control,
 .form-select {
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  transition: all 0.3s ease-in-out;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-400);
+  transition: all var(--transition-normal) ease-in-out;
   font-size: 1rem;
   /* padding: 0.5rem 0.75rem; */
 }
 
 .form-control:focus,
 .form-select:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
   outline: none;
 }
 
 .form-control.readonly {
-  background-color: #f8f9fa;
+  background-color: var(--bg-light);
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -138,10 +138,10 @@
 }
 
 .btn-primary {
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  transition: all 0.3s;
+  transition: all var(--transition-normal);
   white-space: nowrap;
 }
 
@@ -150,9 +150,9 @@
 }
 
 .btnAggFormas:hover {
-  background-color: rgb(255, 255, 255);
-  border-color: rgb(67, 164, 255);
-  color: rgb(67, 164, 255);
+  background-color: var(--bg-white);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 /* === RESPONSIVE BREAKPOINTS === */

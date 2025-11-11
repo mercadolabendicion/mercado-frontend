@@ -3,14 +3,14 @@
   margin: 0 auto;
   margin-top: 50px;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
 }
 
 .finFormulario{
   max-width: 500px;
   margin: 0 auto;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
 }
 
 .formasVenta {
@@ -18,7 +18,7 @@
   margin: 0 auto;
   padding: 10px;
   padding-left: 150px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
 }
 
 /* Media query para pantallas pequeñas */
@@ -31,13 +31,13 @@
 }
 
 input:hover {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
 }
 
 select:hover {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
 }
 
 
@@ -46,14 +46,14 @@ select:hover {
 }
 
 .formulario .nota {
-  color: #000000;
+  color: var(--text-primary);
   width: 100%;
   display: flex;
   justify-content: left;
 }
 
 .encabezado{
-  padding-bottom: 10px;
+  padding-bottom: var(--spacing-sm);
 }
 
 .formulario p {
@@ -65,33 +65,33 @@ select:hover {
 }
 
 .formulario .form-control {
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
 }
 
 .formulario button {
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
 }
 
 .btnAggFormas{
   background-color: transparent;
   border-style: solid;
-  border-color: rgb(195, 205, 214);
+  border-color: var(--gray-400);
   border-width: 1px;
   color: black;
 }
 
 .btnAggFormas:hover{
-  background-color: rgb(255, 255, 255);
-  border-color: rgb(67, 164, 255);
+  background-color: var(--bg-white);
+  border-color: var(--primary-color);
   border-width: 3px;
 }
 
 .quitarFila{
-  background-color: rgb(255, 255, 255);
+  background-color: var(--bg-white);
 }
 
 .quitarFila:hover{
-  background-color: rgb(255, 255, 255);
+  background-color: var(--bg-white);
   transform: scale(1.5); /* Pequeña animación de escala */
 }
 

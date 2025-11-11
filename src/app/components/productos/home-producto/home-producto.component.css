@@ -1,23 +1,23 @@
 /*home-producto*/
 
 .contenedor{
-  border-radius: 8px;
-  margin: 20px 5%;
+  border-radius: var(--radius-md);
+  margin: var(--spacing-md) 5%;
 }
 
 .table-container {
   width: 100%; 
   height: 100%;
-  background-color: rgb(67, 164, 255);
-  border-radius: 10px;
+  background-color: var(--primary-color);
+  border-radius: var(--radius-lg);
 }
 
 .table-container .separador{
-  margin-top: 10px;
+  margin-top: var(--spacing-sm);
 }
 
 .totalProductos{
-  margin-top: 10px;
+  margin-top: var(--spacing-sm);
 }
 
 .table-responsive {
@@ -27,13 +27,13 @@
 .separador div{
   width: 100%;
   display: flex;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
 }
 
 table {
-  background-color: rgb(67, 164, 255);
+  background-color: var(--primary-color);
   width: 100%; 
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   table-layout: fixed;
 }
 
@@ -43,8 +43,8 @@ th, td {
 }
 
 th {
-  background-color: #fff;
-  color: rgb(97, 97, 97); 
+  background-color: var(--bg-white);
+  color: var(--text-light); 
   justify-content: center;
   align-items: center;
   height: 100%;
@@ -77,11 +77,11 @@ th.nombre, td.nombre {
 }
 
 tr:nth-child(odd) {
-  background-color: #f2f8ff; 
+  background-color: var(--bg-table-odd); 
 }
 
 tr:nth-child(even) {
-  background-color: #ffffff; 
+  background-color: var(--bg-table-even); 
 }
 
 td.acciones, th.acciones {
@@ -119,14 +119,14 @@ td button.editar, td button.check{
   width: 100%;
   height: 30px;
   border: none;
-  border: 1px solid rgb(182, 182, 182);
-  border-radius: 10px;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  border: 1px solid var(--gray-400);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .buscar input:hover {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
 }
 
 .buscar {
@@ -138,11 +138,11 @@ td button.editar, td button.check{
 }
 
 p.rojo{
-  color: #000000;
+  color: var(--text-primary);
   width: 100%;
   height: 50px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
   display: flex;
   justify-content: left;
   align-items: center;
@@ -155,7 +155,7 @@ div.pup-up{
   left: 0;
   right: 0;
   z-index: 1;
-  background-color: #a3a3a371;
+  background-color: var(--bg-overlay);
   width: 100%;
   height: 100%;
   display: flex;
@@ -171,9 +171,9 @@ div.pup-up span{
   position: absolute;
   top: -10px;
   right: -7px;
-  background: #fff;
-  border-radius: 100px;
-  border: 1px solid #a2a2a2;
+  background: var(--bg-white);
+  border-radius: var(--radius-round);
+  border: 1px solid var(--gray-500);
   padding: 2px;
   cursor: pointer;
 }
@@ -183,25 +183,25 @@ div.pup-up span{
 }
 
 button#nuevo {
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   width: 100%;
   height: 30px;
-  background-color: rgb(67, 164, 255);
-  color: #fff;
+  background-color: var(--primary-color);
+  color: var(--bg-white);
   font-weight: 600;
   font-size: 16px;
   padding: 5px 30px;
   border: none;
   cursor: pointer;
-  margin-top: 5px;
+  margin-top: var(--spacing-xs);
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: background-color var(--transition-normal), transform var(--transition-fast);
 }
 
 button#nuevo:hover {
-  background-color: #007bff;
+  background-color: var(--primary-hover);
   transform: scale(1.05);
 }
 
@@ -240,7 +240,7 @@ button#nuevo:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--bg-overlay);
   z-index: 1050;
   overflow-y: auto;
   padding: 1rem;
@@ -261,9 +261,9 @@ button#nuevo:hover {
 
 /* === CONTENIDO DEL MODAL === */
 .modal-content {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  background-color: var(--bg-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   width: 100%;
   max-height: 90vh;
   display: flex;
@@ -277,7 +277,7 @@ button#nuevo:hover {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--gray-300);
 }
 
 .modal-footer {
@@ -285,7 +285,7 @@ button#nuevo:hover {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid var(--gray-300);
 }
 
 /* === BODY === */
@@ -300,9 +300,9 @@ button#nuevo:hover {
 .modal-body .table-container2 {
   max-height: 40vh;
   overflow-y: auto;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background-color: #ffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-400);
+  background-color: var(--bg-white);
   position: relative;
 }
 
@@ -326,12 +326,12 @@ button#nuevo:hover {
   white-space: nowrap;
   padding: 0.75rem;
   font-size: 0.9rem;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--gray-300);
 }
 
 .modal-body .table thead {
-  background-color: #f8f9fa;
-  color: rgb(97, 97, 97);
+  background-color: var(--bg-light);
+  color: var(--text-light);
   font-weight: 600;
   position: sticky;
   top: 0;
@@ -339,9 +339,9 @@ button#nuevo:hover {
 }
 
 .modal-body .table thead th {
-  background-color: #f8f9fa;
-  color: rgb(97, 97, 97);
-  border-bottom: 2px solid #dee2e6;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  border-bottom: 2px solid var(--gray-300);
 }
 
 .modal-body .table-hover tbody tr:hover {
@@ -349,27 +349,27 @@ button#nuevo:hover {
 }
 
 .modal-body .table tbody tr {
-  background-color: #ffffff;
+  background-color: var(--bg-white);
 }
 
 /* === FORMULARIOS DEL MODAL === */
 .modal-body .form-control,
 .modal-body .form-select {
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  transition: all 0.3s ease-in-out;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-400);
+  transition: all var(--transition-normal) ease-in-out;
   font-size: 1rem;
 }
 
 .modal-body .form-control:focus,
 .modal-body .form-select:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
   outline: none;
 }
 
 .modal-body .form-control.readonly {
-  background-color: #f8f9fa;
+  background-color: var(--bg-light);
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -385,10 +385,10 @@ button#nuevo:hover {
 }
 
 .modal .btn-primary {
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  transition: all 0.3s;
+  transition: all var(--transition-normal);
   white-space: nowrap;
 }
 
