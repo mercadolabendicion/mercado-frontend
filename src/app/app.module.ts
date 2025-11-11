@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ScannerModalComponent } from './components/scanner-modal/scanner-modal.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -29,6 +29,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { AutofocusDirective } from './directives/autofocus.directive';
 import { DecimalPipe } from '@angular/common';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 
 @NgModule({
@@ -72,7 +73,12 @@ import { DecimalPipe } from '@angular/common';
     },
     { provide: MAT_DIALOG_DATA, useValue: {} },
     MenuComponent,
-    DecimalPipe
+    DecimalPipe,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
 ],
   exports:[CardComponent],
   bootstrap: [AppComponent]
