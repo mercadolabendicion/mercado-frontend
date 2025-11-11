@@ -143,14 +143,14 @@ button.salir {
 }
 
 .sidebar-link:hover {
-    margin-right: 20px;
-    border-radius: 10px;
-    background-color: #f5f5f5;
+    margin-right: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    background-color: var(--gray-100);
 }
 
 .sidebar-item-red:hover {
-    margin-right: 20px;
-    border-radius: 10px;
+    margin-right: var(--spacing-md);
+    border-radius: var(--radius-lg);
     background-color: #ffc4c4;
 }
 

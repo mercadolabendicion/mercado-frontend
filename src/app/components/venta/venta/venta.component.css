@@ -1,12 +1,12 @@
 /* Estilo del formulario */
 .formulario {
-  border-radius: 8px;
-  margin: 20px 5%;
+  border-radius: var(--radius-md);
+  margin: var(--spacing-md) 5%;
 }
 
 label {
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: var(--spacing-sm);
   display: block;
 }
 
@@ -18,40 +18,40 @@ input[list] {
   height: 35px;
   padding: 10px;
   margin: 0;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  border: 1px solid var(--gray-400);
+  border-radius: var(--radius-lg);
   box-sizing: border-box;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 input:hover {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
 }
 
 select{
   width: 100%;
   height: 35px;
   padding: 10px;
-  margin: 5px 0 20px 0;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  margin: var(--spacing-xs) 0 var(--spacing-md) 0;
+  border: 1px solid var(--gray-400);
+  border-radius: var(--radius-lg);
   box-sizing: border-box;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 select:hover {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-sm);
 }
 
 input.disabled-input {
-  background-color: #e9ecef;
+  background-color: var(--gray-200);
   cursor: not-allowed;
 }
 
 button:disabled {
-  background-color: #6c757d;
+  background-color: var(--gray-600);
   cursor: not-allowed;
 }
 
@@ -63,13 +63,13 @@ button:disabled {
 /* Tabla de productos escaneados */
 .table-container {
   width: 100%;
-  border-radius: 12px;
-  margin-bottom: 24px;
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .table thead {
-  background-color: #f8f9fa;
-  color: rgb(97, 97, 97);
+  background-color: var(--bg-light);
+  color: var(--text-light);
   font-weight: 600;
   position: sticky;
   top: 0;
@@ -77,18 +77,18 @@ button:disabled {
 }
 
 .table thead th {
-  background-color: #f8f9fa;
-  color: rgb(97, 97, 97);
-  border-bottom: 2px solid #dee2e6;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  border-bottom: 2px solid var(--gray-300);
 }
 
 .table-separator {
-  margin-top: 10px;
+  margin-top: var(--spacing-sm);
 }
 
 .venta-table {
-  background-color: #fff;
-  border-radius: 10px;
+  background-color: var(--bg-white);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -160,17 +160,17 @@ button:disabled {
 }
 
 .venta-btn-eliminar {
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: #f44336;
-  color: #fff;
+  color: var(--bg-white);
   border: none;
   padding: 6px 12px;
-  transition: background 0.2s;
+  transition: background var(--transition-fast);
 }
 
 .venta-btn-eliminar:hover {
-  background: #c82333;
-  color: #fff;
+  background: var(--danger-hover);
+  color: var(--bg-white);
 }
 
 .venta-sin-datos {
@@ -218,15 +218,15 @@ button:disabled {
 
 /* Limpieza de bordes y colores */
 .venta-table tr:nth-child(even) {
-  background-color: #fff;
+  background-color: var(--bg-white);
 }
 .venta-table tr:nth-child(odd) {
-  background-color: #f8f9fa;
+  background-color: var(--bg-light);
 }
 
 /* Botones de cantidad */
 .btn-outline-secondary {
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 
 /* Ajuste para responsive */
@@ -243,7 +243,7 @@ button:disabled {
 
 /* Estilo de las notificaciones y mensajes */
 span {
-  color: #dc3545;
+  color: var(--danger-color);
   font-size: 0.9em;
 }
 
@@ -295,9 +295,9 @@ p.impuesto-usado {
 }
 
 .card {
-  border-radius: 16px;
-  padding: 24px 24px 16px 24px;
-  margin-bottom: 24px;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg) var(--spacing-lg) 16px var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
 }
 
 .alinear-derecha {
@@ -354,10 +354,10 @@ p.impuesto-usado {
   padding: 4px 8px;
   line-height: 1.2;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   box-shadow: none;
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: var(--bg-white);
+  border: 1px solid var(--gray-400);
 }
 
 /* Opcional: mejora el menú desplegable */
