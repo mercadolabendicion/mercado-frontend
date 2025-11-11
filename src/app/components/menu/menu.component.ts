@@ -7,6 +7,7 @@ import { ProductoService } from 'src/app/services/domainServices/producto.servic
 import { ClienteDTO } from 'src/app/dto/cliente/ClienteDTO';
 import { VentaDTO } from 'src/app/dto/venta/VentaDTO';
 import { VentaService } from 'src/app/services/domainServices/venta.service';
+import { AuthService } from 'src/app/services/shared/auth.service';
 
 @Component({
   selector: 'app-menu',
@@ -24,6 +25,7 @@ export class MenuComponent {
   private productoService: ProductoService = inject(ProductoService);
   private clienteService: ClienteService= inject(ClienteService);
   private ventaService: VentaService= inject(VentaService);
+  private authService: AuthService = inject(AuthService);
 
   /**
    * Metodo que se encarga de colapsar el menu
@@ -47,10 +49,11 @@ export class MenuComponent {
 
   /**
    * Metodo que se encarga de cerrar la sesion
-   * eliminando el token del localstorage
+   * eliminando el token del localstorage y la cookie JWT
    */
   protected salir() {
     localStorage.removeItem('id');
+    this.authService.clearToken();
     this.router.navigate(['/login']);
   }
 

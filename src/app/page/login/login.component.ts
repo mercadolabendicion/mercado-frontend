@@ -5,6 +5,7 @@ import { UsuarioLoginDTO } from 'src/app/dto/usuario/UsuarioLoginDTO';
 import { environment } from 'src/app/env/env';
 import { HttpLoginService} from 'src/app/services/http-services/httpLogin.service';
 import { AlertService } from 'src/app/utils/alert.service';
+import { AuthService } from 'src/app/services/shared/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -19,11 +20,12 @@ export class LoginComponent {
   private httploginService: HttpLoginService = inject(HttpLoginService);
   private router: Router = inject(Router);
   private alert: AlertService = inject(AlertService);
+  private authService: AuthService = inject(AuthService);
   public nombreNegocio: string = environment.nombreNegocio;
 
   ngOnInit(): void {
     this.buildForm();
-    if(localStorage.getItem('id') != null){
+    if(this.authService.isAuthenticated()){
       this.router.navigate(['/app/principal']);
     }
   }
@@ -56,6 +58,11 @@ export class LoginComponent {
     this.httploginService.login(usuarioLogin)
       .subscribe({
         next: response => {
+          // Store JWT token as cookie
+          if (response.token) {
+            this.authService.setToken(response.token);
+          }
+          // Keep id in localStorage for backward compatibility if needed
           localStorage.setItem('id', response.id+""); 
           this.mensajeLogin = response+"";
           this.router.navigate(['/app/principal']);
