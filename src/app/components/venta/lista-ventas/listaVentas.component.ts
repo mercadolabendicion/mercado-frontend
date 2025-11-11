@@ -7,6 +7,7 @@ import { VentaService } from 'src/app/services/domainServices/venta.service';
 import { CrearFacturaDTO } from 'src/app/dto/factura/CrearFacturaDTO';
 import { MenuComponent } from '../../menu/menu.component';
 import { CrearEFacturaDTO } from 'src/app/dto/efactura/CrearEFacturaDTO';
+import { PaginationService } from 'src/app/services/shared/pagination.service';
 
 @Component({
   selector: 'app-lista-ventas',
@@ -26,6 +27,7 @@ export class ListaVentasComponent {
   private facturaService: FacturaService = inject(FacturaService);
   private ventaService: VentaService = inject(VentaService);
   private menuComponent: MenuComponent = inject(MenuComponent);
+  private paginationService = inject(PaginationService);
   protected paginaActual: number = 0;
   protected totalPaginas!: number;
   protected paginas: number[] = [];
@@ -38,28 +40,9 @@ export class ListaVentasComponent {
 
   ngOnInit() {
     this.obtenerVentas(0);
-    this.ajustarRangoVisible();
+    this.rangoVisible = this.paginationService.calcularRangoVisible();
     this.buildForm();
   }
-
-    /**
-   * Este método ajusta dinámicamente el número de páginas visibles en la paginación
-   * (`rangoVisible`) según el ancho de la pantalla. Utiliza los puntos de corte de Bootstrap:
-   * 
-   * - Para pantallas pequeñas (<576px), muestra 3 páginas.
-   * - Para pantallas medianas (>=576px y <768px), muestra 5 páginas.
-   * - Para pantallas grandes (>=768px), muestra 7 páginas.
-   */
-    ajustarRangoVisible(): void {
-      const anchoPantalla = window.innerWidth;
-      if (anchoPantalla < 576) { // Bootstrap 'sm' breakpoint
-        this.rangoVisible = 3;
-      } else if (anchoPantalla >= 768) {
-        this.rangoVisible = 7;
-      } else {
-        this.rangoVisible = 5; // Para pantallas medianas
-      }
-    }
 
   /**
    * Método para construir el formulario
@@ -201,7 +184,7 @@ export class ListaVentasComponent {
    * y luego recarga los datos correspondientes a la nueva página.
    */
     paginaAnterior() {
-      if (this.paginaActual > 0) {
+      if (this.paginationService.puedeRetroceder(this.paginaActual)) {
         this.paginaActual--;
         this.cargarVentas();
       }
@@ -213,7 +196,7 @@ export class ListaVentasComponent {
      * y luego recarga los datos correspondientes a la nueva página.
      */
     paginaSiguiente() {
-      if (this.paginaActual < this.totalPaginas - 1) {
+      if (this.paginationService.puedeAvanzar(this.paginaActual, this.totalPaginas)) {
         this.paginaActual++;
         this.cargarVentas();
       }
@@ -227,15 +210,11 @@ export class ListaVentasComponent {
      * @returns un arreglo de números que representa las páginas visibles
      */
     get paginasVisibles(): number[] {
-      const mitad = Math.floor(this.rangoVisible / 2);
-      let inicio = Math.max(this.paginaActual - mitad, 0);
-      let fin = Math.min(inicio + this.rangoVisible, this.totalPaginas);
-    
-      if (fin - inicio < this.rangoVisible) {
-        inicio = Math.max(fin - this.rangoVisible, 0);
-      }
-    
-      return Array.from({ length: fin - inicio }, (_, i) => i + inicio);
+      return this.paginationService.obtenerPaginasVisibles(
+        this.paginaActual,
+        this.totalPaginas,
+        this.rangoVisible
+      );
     }
   
     /**
@@ -251,7 +230,7 @@ export class ListaVentasComponent {
      * basado en el total de páginas. Este arreglo se utiliza para construir la paginación.
      */
     generarPaginas() {
-      this.paginas = Array.from({ length: this.totalPaginas }, (_, index) => index);
+      this.paginas = this.paginationService.generarPaginas(this.totalPaginas);
     }
   
     /**

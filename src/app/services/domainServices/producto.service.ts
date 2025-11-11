@@ -10,6 +10,7 @@ import { ProductoCompletoDTO } from "src/app/dto/producto/ProductoCompletoDTO";
 import { FormaVenta } from "src/app/dto/formasVenta/FormaVenta";
 import { ActualizarFormaVentaCompletoDTO } from "src/app/dto/producto/ActualizarFormaVentaCompletoDTO";
 import { GuardarFormaVenta } from "src/app/dto/formasVenta/GuardarFormaVenta";
+import { LocalStorageService } from "../shared/local-storage.service";
 
 @Injectable({
     providedIn: 'root'
@@ -19,6 +20,7 @@ export class ProductoService {
 
     private httpProductoService: HttpProductoService = inject(HttpProductoService);
     private alert: AlertService = inject(AlertService);
+    private localStorageService = inject(LocalStorageService);
 
     /**
      * Este método se encarga de obtener los productos de la base de datos
@@ -34,8 +36,7 @@ export class ProductoService {
     public getTodosProductos() {
         this.httpProductoService.getTodosLosProductos().subscribe({
             next: (resp) => {
-                localStorage.setItem('productos', JSON.stringify(resp));
-                console.log('Productos totales cargados:', resp.length);
+                this.localStorageService.setItem('productos', resp);
             },
         });
     }
@@ -45,22 +46,7 @@ export class ProductoService {
     * devuelve una lista de ProductoDTO
     */
     obtenerProductoLocal(): ProductoDTO[] {
-        const productos = localStorage.getItem('productos');
-
-        if (!productos) {
-            // Si no hay productos almacenados, devuelve un arreglo vacío
-            return [];
-        }
-        // Si hay productos, intenta parsearlos
-        try {
-            return JSON.parse(productos);
-        } catch (error) {
-            console.error(
-                'Error al parsear los productos desde localStorage:',
-                error
-            );
-            return []; // Devuelve un arreglo vacío si hay un error de formato
-        }
+        return this.localStorageService.getItemOrDefault<ProductoDTO[]>('productos', []);
     }
 
     /**

@@ -52,7 +52,6 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error('Tu navegador no soporta acceso a la cámara');
       }
-      console.log('[SCANNER] ✅ Navegador compatible');
 
       // Verificar elemento DOM
       if (!this.scannerContainer?.nativeElement) {
@@ -62,9 +61,8 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
       // Detener instancias previas
       try {
         Quagga.stop();
-        console.log('[SCANNER] Instancias previas detenidas');
       } catch (e) {
-        console.log('[SCANNER] No había instancias previas');
+        // No había instancias previas
       }
 
       const config: any = {
@@ -112,7 +110,6 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
       await new Promise<void>((resolve, reject) => {
         Quagga.init(config, (err: any) => {
           if (err) {
-            console.error('[SCANNER] ❌ Error en Quagga.init:', err);
             reject(err);
             return;
           }
@@ -127,12 +124,10 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
             // Activar detección después de un pequeño retardo para dar tiempo al autofocus y estabilizar el video
             setTimeout(() => {
               this.allowDetection = true;
-              console.log('[SCANNER] ⏱️ Detección habilitada después de', this.detectionDelayMs, 'ms');
             }, this.detectionDelayMs);
 
             resolve();
           } catch (startError) {
-            console.error('[SCANNER] ❌ Error en Quagga.start:', startError);
             reject(startError);
           }
         });
@@ -144,10 +139,6 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
         detectionCount++;
         // Si aún no permitimos detección (periodo de estabilización), ignoramos
         if (!this.allowDetection) {
-          // Opcional: log cada cierto número de detecciones para depuración
-          if (detectionCount % 30 === 0) {
-            console.log('[SCANNER] esperando a estabilizar video antes de procesar detecciones...');
-          }
           return;
         }
         if (!this.scanningActive) {
@@ -156,20 +147,14 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const code = result?.codeResult?.code;
         const format = result?.codeResult?.format;
-        
-        console.log('[SCANNER] 📊 Código RAW:', code);
-        console.log('[SCANNER] 📊 Formato:', format);
 
         if (!code) {
           return;
         }
 
         const cleanCode = code.trim();
-        console.log('[SCANNER] 🧹 Código limpio:', cleanCode);
 
         if (this.isValidBarcode(cleanCode, format)) {
-          console.log('[SCANNER] 🎯 Código final:', cleanCode);
-          
           this.scanningActive = false;
           this.playBeep();
           
@@ -177,18 +162,10 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
             this.stopScanner();
             this.dialogRef.close(cleanCode);
           });
-        } else {
-          console.log('[SCANNER] ❌ Código inválido, continuando escaneo');
         }
       });
 
-      console.log('[SCANNER] ✅ ====== SCANNER LISTO ======');
-
     } catch (error: any) {
-      console.error('[SCANNER] ❌❌❌ ERROR CRÍTICO ❌❌❌');
-      console.error('[SCANNER] Error:', error);
-      console.error('[SCANNER] Stack:', error?.stack);
-      
       this.ngZone.run(() => {
         this.isLoading = false;
         this.handleError(error);
@@ -197,23 +174,18 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private isValidBarcode(code: string, format?: string): boolean {
-    console.log('[SCANNER] 🔍 Validando:', { code, format, length: code.length });
-
     if (!code || code.length === 0) {
-      console.log('[SCANNER] ❌ Código vacío');
       return false;
     }
 
     // Códigos muy cortos probablemente sean errores
     if (code.length < 4) {
-      console.log('[SCANNER] ❌ Código muy corto');
       return false;
     }
 
     // Validar caracteres
     const validPattern = /^[0-9A-Za-z\-\s]+$/;
     if (!validPattern.test(code)) {
-      console.log('[SCANNER] ❌ Caracteres inválidos');
       return false;
     }
     return true;
@@ -221,7 +193,6 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private handleError(error: any): void {
     const errorName = error?.name || '';
-    console.log('[SCANNER] 💬 Manejando error:', errorName);
 
     if (errorName === 'NotAllowedError' || errorName === 'PermissionDeniedError') {
       this.errorMessage = 'Permiso de cámara denegado. Permite el acceso en la configuración del navegador.';
@@ -234,8 +205,6 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.errorMessage = `Error: ${error?.message || 'Error desconocido'}`;
     }
-
-    console.log('[SCANNER] 💬 Mensaje:', this.errorMessage);
   }
 
   private playBeep(): void {
@@ -263,22 +232,19 @@ export class ScannerModalComponent implements OnInit, AfterViewInit, OnDestroy {
         Quagga.offDetected();
         Quagga.offProcessed();
         Quagga.stop();
-        console.log('[SCANNER] ✅ Scanner detenido');
       }
     } catch (e) {
-      console.error('[SCANNER] ❌ Error al detener:', e);
+      // Error al detener scanner
     }
   }
 
   closeScanner(): void {
-    console.log('[SCANNER] 🚪 Cerrando por botón...');
     this.scanningActive = false;
     this.stopScanner();
     this.dialogRef.close();
   }
 
   ngOnDestroy(): void {
-    console.log('[SCANNER] 🧹 ngOnDestroy');
     this.stopScanner();
   }
 }

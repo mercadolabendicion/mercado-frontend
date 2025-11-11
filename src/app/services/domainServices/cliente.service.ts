@@ -5,15 +5,16 @@ import { AlertService } from "src/app/utils/alert.service";
 import { CrearClienteDTO } from "src/app/dto/cliente/CrearClienteDTO";
 import { ClienteDTO } from "src/app/dto/cliente/ClienteDTO";
 import { Page } from "src/app/dto/pageable/Page";
+import { LocalStorageService } from "../shared/local-storage.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClienteService {
 
-
   private clienteService: HttpClientesService = inject(HttpClientesService);
   private alertService: AlertService = inject(AlertService);
+  private localStorageService = inject(LocalStorageService);
 
 
   crearCliente(cliente: CrearClienteDTO) {
@@ -37,8 +38,7 @@ export class ClienteService {
   public getTodosClientes(): void {
     this.clienteService.getTodosLosClientes().subscribe({
       next: (resp) => {
-        localStorage.setItem('clientes', JSON.stringify(resp));
-        console.log('Clientes totales cargados:', resp.length);
+        this.localStorageService.setItem('clientes', resp);
       },
     });
   }
@@ -48,22 +48,7 @@ export class ClienteService {
   * devuelve una lista de ClientesDTO
   */
   obtenerClienteLocal(): ClienteDTO[] {
-    const clientes = localStorage.getItem('clientes');
-
-    if (!clientes) {
-      // Si no hay clientes almacenados, devuelve un arreglo vacío
-      return [];
-    }
-    // Si hay clientes, intenta parsearlos
-    try {
-      return JSON.parse(clientes);
-    } catch (error) {
-      console.error(
-        'Error al parsear los clientes desde localStorage:',
-        error
-      );
-      return []; // Devuelve un arreglo vacío si hay un error de formato
-    }
+    return this.localStorageService.getItemOrDefault<ClienteDTO[]>('clientes', []);
   }
 
 

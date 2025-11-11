@@ -3,6 +3,8 @@ import { ClienteDTO } from '../../../dto/cliente/ClienteDTO';
 import { ClienteAlertService } from 'src/app/utils/cliente-alert/clienteAlert.service';
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
 import { MenuComponent } from '../../menu/menu.component';
+import { PaginationService } from 'src/app/services/shared/pagination.service';
+import { LocalStorageService } from 'src/app/services/shared/local-storage.service';
 
 @Component({
   selector: 'app-home-cliente',
@@ -21,10 +23,12 @@ export class HomeClienteComponent {
   protected totalClientes: number;
   private alertClient: ClienteAlertService = inject(ClienteAlertService);
   private clienteService: ClienteService = inject(ClienteService);
+  private menuComponent: MenuComponent = inject(MenuComponent);
+  private paginationService = inject(PaginationService);
+  private localStorageService = inject(LocalStorageService);
   protected paginaActual: number = 0;
   protected totalPaginas!: number;
   protected paginas: number[] = [];
-  private menuComponent: MenuComponent = inject(MenuComponent);
   rangoVisible: number = 5; // Número de paginas que se van a mostrar en el paginador
 
   constructor() {
@@ -35,31 +39,12 @@ export class HomeClienteComponent {
   }
 
   ngOnInit() {
-    this.ajustarRangoVisible(); 
+    this.rangoVisible = this.paginationService.calcularRangoVisible();
     this.obtenerClientes(this.paginaActual);
     this.obtenerClientesTodos();
     this.updateClienteCount();
     this.menuComponent.listarClientes();
   }
-
-    /**
-   * Este método ajusta dinámicamente el número de páginas visibles en la paginación
-   * (`rangoVisible`) según el ancho de la pantalla. Utiliza los puntos de corte de Bootstrap:
-   * 
-   * - Para pantallas pequeñas (<576px), muestra 3 páginas.
-   * - Para pantallas medianas (>=576px y <768px), muestra 5 páginas.
-   * - Para pantallas grandes (>=768px), muestra 7 páginas.
-   */
-    ajustarRangoVisible(): void {
-      const anchoPantalla = window.innerWidth;
-      if (anchoPantalla < 576) { // Bootstrap 'sm' breakpoint
-        this.rangoVisible = 3;
-      } else if (anchoPantalla >= 768) {
-        this.rangoVisible = 7;
-      } else {
-        this.rangoVisible = 5; // Para pantallas medianas
-      }
-    }
 
   /**
    * Actualiza el total de clientes en la tabla
@@ -75,7 +60,7 @@ export class HomeClienteComponent {
    * todos los clientes que se encuentran en LocalStorage con la variable clientes
    */
   obtenerClientesTodos() {
-    this.clientesTodos = JSON.parse(localStorage.getItem('clientes') || '[]');
+    this.clientesTodos = this.localStorageService.getItemOrDefault<ClienteDTO[]>('clientes', []);
   }
 
   /**
@@ -160,7 +145,7 @@ export class HomeClienteComponent {
    * y luego recarga los datos correspondientes a la nueva página.
    */
   paginaAnterior() {
-    if (this.paginaActual > 0) {
+    if (this.paginationService.puedeRetroceder(this.paginaActual)) {
       this.paginaActual--;
       this.cargarClientes();
     }
@@ -172,7 +157,7 @@ export class HomeClienteComponent {
    * y luego recarga los datos correspondientes a la nueva página.
    */
   paginaSiguiente() {
-    if (this.paginaActual < this.totalPaginas - 1) {
+    if (this.paginationService.puedeAvanzar(this.paginaActual, this.totalPaginas)) {
       this.paginaActual++;
       this.cargarClientes();
     }
@@ -186,15 +171,11 @@ export class HomeClienteComponent {
    * @returns un arreglo de números que representa las páginas visibles
    */
   get paginasVisibles(): number[] {
-    const mitad = Math.floor(this.rangoVisible / 2);
-    let inicio = Math.max(this.paginaActual - mitad, 0);
-    let fin = Math.min(inicio + this.rangoVisible, this.totalPaginas);
-  
-    if (fin - inicio < this.rangoVisible) {
-      inicio = Math.max(fin - this.rangoVisible, 0);
-    }
-  
-    return Array.from({ length: fin - inicio }, (_, i) => i + inicio);
+    return this.paginationService.obtenerPaginasVisibles(
+      this.paginaActual,
+      this.totalPaginas,
+      this.rangoVisible
+    );
   }
 
   /**
@@ -210,7 +191,7 @@ export class HomeClienteComponent {
    * basado en el total de páginas. Este arreglo se utiliza para construir la paginación.
    */
   generarPaginas() {
-    this.paginas = Array.from({ length: this.totalPaginas }, (_, index) => index);
+    this.paginas = this.paginationService.generarPaginas(this.totalPaginas);
   }
 
   /**
