@@ -45,10 +45,61 @@ export class AuthService {
   }
 
   /**
+   * Decode JWT token payload
+   * @param token JWT token to decode
+   * @returns Decoded payload or null if invalid
+   */
+  private decodeToken(token: string): any {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        return null;
+      }
+      const payload = parts[1];
+      const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decoded);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Check if token is expired
+   * @returns true if token is expired or invalid, false otherwise
+   */
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) {
+      return true;
+    }
+
+    const decoded = this.decodeToken(token);
+    if (!decoded || !decoded.exp) {
+      return true;
+    }
+
+    // JWT exp is in seconds, Date.now() is in milliseconds
+    const expirationDate = decoded.exp * 1000;
+    const now = Date.now();
+    
+    return expirationDate < now;
+  }
+
+  /**
    * Check if user is authenticated
-   * @returns true if token exists, false otherwise
+   * @returns true if token exists and is not expired, false otherwise
    */
   isAuthenticated(): boolean {
-    return this.getToken() !== null;
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+    
+    if (this.isTokenExpired()) {
+      this.clearToken();
+      return false;
+    }
+    
+    return true;
   }
 }
