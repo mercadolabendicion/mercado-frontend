@@ -24,6 +24,7 @@ import { ClienteService } from 'src/app/services/domainServices/cliente.service'
 import { ScaleService } from 'src/app/services/domainServices/scale.service';
 import { MenuComponent } from '../../menu/menu.component';
 import { ScannerService } from 'src/app/services/domainServices/scannerService';
+import { FormatService } from 'src/app/services/shared/format.service';
 
 @Component({
   selector: 'app-venta',
@@ -64,6 +65,7 @@ export class VentaComponent implements DoCheck {
   private productoService: ProductoService = inject(ProductoService);
   private ventaService: VentaService = inject(VentaService);
   private menuComponent: MenuComponent = inject(MenuComponent);
+  private formatService: FormatService = inject(FormatService);
 
   // Estados UI / Formularios
   protected formulario!: FormGroup;
@@ -440,7 +442,6 @@ export class VentaComponent implements DoCheck {
         this.formasVentaProductoSeleccionado[indice]?.nombre ??
         this.formasVentaProductoSeleccionado[0]?.nombre ??
         '';
-      console.log('Forma de venta seleccionada: ' + formaVenta);
 
       // const cantidadValida =
       //   await this.productoService.verificarProductoCantidad(
@@ -464,7 +465,6 @@ export class VentaComponent implements DoCheck {
       );
       if (productoExistente) {
         productoExistente.cantidad += cantidad;
-        console.log(productoExistente);
       } else {
         const producto = CarritoProductoDTO.crearProducto(
           codigo,
@@ -618,9 +618,6 @@ export class VentaComponent implements DoCheck {
    */
   onCantidadFocusCarrito(index: number): void {
     this.indiceProductoEnfocado = index;
-    console.log(
-      `Campo cantidad del producto ${index} enfocado - esperando peso de balanza`
-    );
   }
 
   /**
@@ -628,7 +625,6 @@ export class VentaComponent implements DoCheck {
    */
   onCantidadBlurCarrito(): void {
     this.indiceProductoEnfocado = null;
-    console.log('Campo cantidad desenfocado');
   }
 
   /**
@@ -636,7 +632,6 @@ export class VentaComponent implements DoCheck {
    */
   onCantidadFocus(): void {
     this.campoEnfocado = 'cantidad';
-    console.log('Campo cantidad enfocado - esperando peso de balanza');
   }
 
   /**
@@ -644,7 +639,6 @@ export class VentaComponent implements DoCheck {
    */
   onCantidadBlur(): void {
     this.campoEnfocado = null;
-    console.log('Campo cantidad desenfocado');
   }
 
   /**
@@ -674,18 +668,13 @@ export class VentaComponent implements DoCheck {
    * Método para formatear un valor con comas
    */
   formatearValor(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const valorSinFormato = input.value.replace(/[^\d]/g, ''); // Elimina caracteres no numéricos
-    const valorNumerico = parseInt(valorSinFormato, 10);
+    const { valorNumerico, valorFormateado } = this.formatService.formatearValorInput(event);
     this.descuento = 0;
-
-    if (!isNaN(valorNumerico)) {
-      this.valorFormateado = valorNumerico.toLocaleString('en-US'); // Formato con comas
-      this.valorDescuento = this.valorFormateado;
-      input.value = this.valorFormateado;
-      if (this.valorDescuento != '') {
-        this.descuento = valorNumerico;
-      }
+    this.valorFormateado = valorFormateado;
+    this.valorDescuento = valorFormateado;
+    
+    if (valorFormateado !== '') {
+      this.descuento = valorNumerico;
     }
   }
 
@@ -858,9 +847,6 @@ export class VentaComponent implements DoCheck {
       // Si el peso es estable y el campo de cantidad del formulario está enfocado
       else if (data.stable && this.campoEnfocado === 'cantidad') {
         this.actualizarCantidadDesdeBalanza(data.weight);
-        console.log(
-          `Peso estable recibido de balanza: ${data.weight} ${data.unit}`
-        );
       }
     });
   }
@@ -890,9 +876,6 @@ export class VentaComponent implements DoCheck {
     const maxDisponible = this.getCantidadDisponible(producto);
     if (cantidadFinal > maxDisponible) {
       cantidadFinal = maxDisponible;
-      console.warn(
-        `Peso ${peso} excede el stock disponible (${maxDisponible}). Se ajustó a ${cantidadFinal}`
-      );
     }
 
     // Actualizar la cantidad del producto
@@ -900,10 +883,6 @@ export class VentaComponent implements DoCheck {
 
     // Recalcular totales
     this.calcularValores();
-
-    console.log(
-      `Cantidad del producto "${producto.nombre}" actualizada a ${cantidadFinal} kg desde balanza`
-    );
   }
 
   /**
@@ -954,14 +933,11 @@ export class VentaComponent implements DoCheck {
     this.productosForm.patchValue({
       cantidadProducto: cantidadFinal,
     });
-
-    console.log(`Cantidad actualizada desde balanza: ${cantidadFinal}`);
   }
 
   abrirCamara(): void {
     this.scannerService.abrirCamara().subscribe((result) => {
       if (result) {
-        console.log('Código escaneado:', result);
         this.procesarResultado(result);
       }
     });

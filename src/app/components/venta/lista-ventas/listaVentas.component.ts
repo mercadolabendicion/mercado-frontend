@@ -60,7 +60,6 @@ export class ListaVentasComponent {
     protected buscar(event: Event): void {
       const inputElement = event.target as HTMLInputElement;
       const busqueda = inputElement.value.trim().toLowerCase();
-      console.log(this.ventasTodas);
       this.ventasFiltradas = this.ventasTodas.filter((venta: VentaDTO) =>
         this.coincideBusqueda(venta, busqueda)
       );

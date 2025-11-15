@@ -12,6 +12,7 @@ import { MovimientoResponseDTO } from 'src/app/dto/movimiento/MovimientoResponse
 import { Modal } from 'bootstrap';
 import { CajaMenorService } from 'src/app/services/domainServices/cajaMenor.service';
 import { VentaService } from 'src/app/services/domainServices/venta.service';
+import { FormatService } from 'src/app/services/shared/format.service';
 
 interface Movimiento {
   id: string;
@@ -45,6 +46,7 @@ export class MovimientosComponent {
   private movimientoService: MovimientoService = inject(MovimientoService);
   private cajaMenorService: CajaMenorService = inject(CajaMenorService);
   private ventaService: VentaService = inject(VentaService);
+  private formatService: FormatService = inject(FormatService);
   valorFormateado: string = '';
   private cajaService: CajaService = inject(CajaService);
   fechaFiltro: string = '';
@@ -65,45 +67,13 @@ export class MovimientosComponent {
   }
 
   formatearValor(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const valorSinFormato = input.value.replace(/[^\d]/g, '');
-
-    if (valorSinFormato === '') {
-      this.valorFormateado = '';
-      input.value = '';
-      return;
-    }
-
-    const valorNumerico = parseInt(valorSinFormato, 10);
-
-    if (!isNaN(valorNumerico)) {
-      this.valorFormateado = valorNumerico.toLocaleString('en-US');
-      input.value = this.valorFormateado;
-    } else {
-      this.valorFormateado = '';
-      input.value = '';
-    }
+    const { valorFormateado } = this.formatService.formatearValorInput(event);
+    this.valorFormateado = valorFormateado;
   }
 
   formatearValorCierre(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const valorSinFormato = input.value.replace(/[^\d]/g, '');
-
-    if (valorSinFormato === '') {
-      this.valorCierreFormateado = '';
-      input.value = '';
-      return;
-    }
-
-    const valorNumerico = parseInt(valorSinFormato, 10);
-
-    if (!isNaN(valorNumerico)) {
-      this.valorCierreFormateado = valorNumerico.toLocaleString('en-US');
-      input.value = this.valorCierreFormateado;
-    } else {
-      this.valorCierreFormateado = '';
-      input.value = '';
-    }
+    const { valorFormateado } = this.formatService.formatearValorInput(event);
+    this.valorCierreFormateado = valorFormateado;
   }
 
   async ngOnInit() {
@@ -133,7 +103,6 @@ export class MovimientosComponent {
       this.ventaService.obtenerTotalVentasPorFecha(fecha).subscribe({
         next: (total) => {
           this.totalVentas = total;
-          console.log('Total de ventas del día obtenido:', total);
           resolve();
         },
         error: (err) => {
@@ -153,7 +122,6 @@ export class MovimientosComponent {
       this.cajaMenorService.consultarSaldo().subscribe({
         next: (saldo) => {
           this.saldoCajaMenor = saldo;
-          console.log('Saldo de caja menor obtenido:', saldo);
           resolve();
         },
         error: (err) => {

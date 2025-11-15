@@ -12,6 +12,8 @@ import { EditarProductoComponent } from '../editar-producto/editar-producto.comp
 import { MatDialog } from '@angular/material/dialog';
 import { ScannerService } from 'src/app/services/domainServices/scannerService';
 import { PaginationService } from 'src/app/services/shared/pagination.service';
+import { LocalStorageService } from 'src/app/services/shared/local-storage.service';
+import { FormatService } from 'src/app/services/shared/format.service';
 
 @Component({
   selector: 'app-home-producto',
@@ -44,6 +46,8 @@ export class HomeProductoComponent {
   protected idProductoSeleccionado: string = '';
   private dialog: MatDialog = inject(MatDialog);
   private paginationService = inject(PaginationService);
+  private localStorageService = inject(LocalStorageService);
+  private formatService = inject(FormatService);
   rangoVisible: number = 5; // Número de paginas que se van a mostrar en el paginador
   protected buscarInput: HTMLInputElement | null = null;
 
@@ -331,7 +335,7 @@ export class HomeProductoComponent {
         }
       });*/
     } else {
-      console.log('Formulario inválido');
+      // Formulario inválido - validación manejada por el formulario
     }
   }
 
@@ -354,25 +358,19 @@ export class HomeProductoComponent {
    * @param event evento de entrada generado por el usuario al escribir en el input
    */
   formatearValor(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const valorSinFormato = input.value.replace(/[^\d]/g, ''); // Elimina caracteres no numéricos
-    const valorNumerico = parseInt(valorSinFormato, 10);
+    const { valorNumerico, valorFormateado } = this.formatService.formatearValorInput(event);
     this.descuento = 0;
-
-    if (!isNaN(valorNumerico)) {
-      this.valorFormateado = valorNumerico.toLocaleString('en-US'); // Formato con comas
-      this.valorDescuento = this.valorFormateado;
-      input.value = this.valorFormateado;
-      if (this.valorDescuento != '') {
-        this.descuento = valorNumerico;
-      }
+    this.valorFormateado = valorFormateado;
+    this.valorDescuento = valorFormateado;
+    
+    if (valorFormateado !== '') {
+      this.descuento = valorNumerico;
     }
   }
 
   abrirCamara(): void {
     this.scannerService.abrirCamara().subscribe(result => {
       if (result) {
-        console.log('Código escaneado:', result);
         this.procesarResultado(result);
       }
     });

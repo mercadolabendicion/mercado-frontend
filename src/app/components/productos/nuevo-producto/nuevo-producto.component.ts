@@ -10,6 +10,7 @@ import { FormaVenta } from 'src/app/dto/formasVenta/FormaVenta';
 import { MenuComponent } from '../../menu/menu.component';
 import { DecimalPipe } from '@angular/common';
 import { ScannerService } from 'src/app/services/domainServices/scannerService';
+import { FormatService } from 'src/app/services/shared/format.service';
 
 @Component({
   selector: 'app-nuevo-producto',
@@ -31,6 +32,7 @@ export class NuevoProductoComponent implements OnInit {
     inject(ProductoAlertService);
   private menuComponent: MenuComponent = inject(MenuComponent);
   private decimalPipe: DecimalPipe = inject(DecimalPipe);
+  private formatService: FormatService = inject(FormatService);
 
   constructor(private scannerService: ScannerService) {}
 
@@ -101,7 +103,6 @@ export class NuevoProductoComponent implements OnInit {
     }
     const { codigo, nombre, precioCompra, fecha_vencimiento, lote } =
       this.formulario.value;
-    console.log(this.formulario.value);
     const formasVentaEntities = this.formasVenta.controls.map((forma) =>
       FormaVenta.toEntity(forma as FormGroup)
     );
@@ -246,7 +247,6 @@ export class NuevoProductoComponent implements OnInit {
   abrirCamara(): void {
     this.scannerService.abrirCamara().subscribe((result) => {
       if (result) {
-        console.log('Código escaneado:', result);
         this.procesarResultado(result);
       }
     });
