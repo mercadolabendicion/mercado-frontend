@@ -5,6 +5,7 @@ import { NuevoComponent } from '../components/clientes/nuevo/nuevo.component';
 import { NuevoProductoComponent } from '../components/productos/nuevo-producto/nuevo-producto.component';
 import { ClienteComponent } from './cliente/cliente.component';
 import { PrincipalComponent } from './principal/principal.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { CajaComponent } from './caja/caja.component';
 import { ConfiguracionComponent } from './configuracion/configuracion.component';
 import { AuthGuard } from '../guards/guard.guard';
@@ -14,68 +15,70 @@ import { FacturacionElectronicaComponent } from './facturacion-electronica/factu
 import { MovimientosComponent } from './movimientos/movimientos.component';
 
 const routes: Routes = [
-
-    {
-      path: 'cliente',
-      canActivate: [AuthGuard],
-      component: ClienteComponent
-    },
-    {
-      path: 'cliente/nuevo',
-      canActivate: [AuthGuard],
-      component: NuevoComponent
-    },
-    {
-      path: 'producto',
-      canActivate: [AuthGuard],
-      component: ProductoComponent
-    },
-    {
-      path: 'producto/nuevo',
-      canActivate: [AuthGuard],
-      component: NuevoProductoComponent
-    },
-    {
-      path: 'venta',
-      canActivate: [AuthGuard],
-      component: VentaComponent
-    },
-    {
-      path: 'lista-ventas',
-      canActivate: [AuthGuard],
-      component: ListaVentasComponent
-    },
-    {
-      path: 'principal',
-      canActivate: [AuthGuard],
-      component: PrincipalComponent
-    },
-    {
-      path: 'caja',
-      canActivate: [AuthGuard],
-      component: CajaComponent
-    },
-    {
-      path: 'movimientos',
-      canActivate: [AuthGuard],
-      component: MovimientosComponent
-    },
-    {
-      path: 'configuracion',
-      canActivate: [AuthGuard],
-      component: ConfiguracionComponent
-    },
-    {
-      path: 'facturacion-electronica',
-      canActivate: [AuthGuard],
-      component: FacturacionElectronicaComponent
-    }
-
-    
+  {
+    path: 'cliente',
+    canActivate: [AuthGuard],
+    component: ClienteComponent,
+  },
+  {
+    path: 'cliente/nuevo',
+    canActivate: [AuthGuard],
+    component: NuevoComponent,
+  },
+  {
+    path: 'producto',
+    canActivate: [AuthGuard],
+    component: ProductoComponent,
+  },
+  {
+    path: 'producto/nuevo',
+    canActivate: [AuthGuard],
+    component: NuevoProductoComponent,
+  },
+  {
+    path: 'venta',
+    canActivate: [AuthGuard],
+    component: VentaComponent,
+  },
+  {
+    path: 'lista-ventas',
+    canActivate: [AuthGuard],
+    component: ListaVentasComponent,
+  },
+  {
+    path: 'principal',
+    canActivate: [AuthGuard],
+    component: PrincipalComponent,
+  },
+  {
+    path: 'dashboard',
+    canActivate: [AuthGuard],
+    component: DashboardComponent,
+  },
+  {
+    path: 'caja',
+    canActivate: [AuthGuard],
+    component: CajaComponent,
+  },
+  {
+    path: 'movimientos',
+    canActivate: [AuthGuard],
+    component: MovimientosComponent,
+  },
+  {
+    path: 'configuracion',
+    canActivate: [AuthGuard],
+    component: ConfiguracionComponent,
+  },
+  {
+    path: 'facturacion-electronica',
+    canActivate: [AuthGuard],
+    component: FacturacionElectronicaComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class PageRoutingModule { }
+export class PageRoutingModule {}

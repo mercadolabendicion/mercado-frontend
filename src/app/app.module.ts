@@ -30,6 +30,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { AutofocusDirective } from './directives/autofocus.directive';
 import { DecimalPipe } from '@angular/common';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { PageModule } from './page/page.module';
 
 
 @NgModule({
@@ -63,8 +64,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    MatDialogModule
-    // PageModule
+    MatDialogModule,
+    PageModule
   ],
   providers: [ListaVentasComponent, ProductoAlertService, provideAnimationsAsync(), 
     {

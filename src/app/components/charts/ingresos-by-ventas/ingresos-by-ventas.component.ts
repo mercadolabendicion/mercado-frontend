@@ -1,0 +1,10 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'chart-ingresos-by-ventas',
+  templateUrl: './ingresos-by-ventas.component.html',
+  styleUrl: './ingresos-by-ventas.component.css'
+})
+export class IngresosByVentasComponent {
+
+}

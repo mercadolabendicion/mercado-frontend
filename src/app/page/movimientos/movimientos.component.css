@@ -1,9 +1,4 @@
 /* Variables de diseño y estilos base modernos */
-.contenedor{
-  border-radius: 8px;
-  margin: 20px 5%;
-}
-
 /* Header y título */
 .header-section {
   margin-bottom: 32px;

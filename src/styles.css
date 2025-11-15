@@ -71,6 +71,12 @@
   box-sizing: border-box;
 }
 
+/*Paginas*/
+.contenedor{
+  border-radius: var(--radius-md);
+  margin: var(--spacing-md) 5%;
+}
+
 /*Botones*/
 button {
   color: var(--bg-white);
