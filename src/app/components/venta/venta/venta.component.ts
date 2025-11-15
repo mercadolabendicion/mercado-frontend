@@ -25,12 +25,23 @@ import { ScaleService } from 'src/app/services/domainServices/scale.service';
 import { MenuComponent } from '../../menu/menu.component';
 import { ScannerService } from 'src/app/services/domainServices/scannerService';
 
+// Servicios compartidos
+import { FormatService } from 'src/app/services/shared/format.service';
+import { LocalStorageService } from 'src/app/services/shared/local-storage.service';
+
 @Component({
   selector: 'app-venta',
   templateUrl: './venta.component.html',
   styleUrls: ['./venta.component.css'],
 })
 export class VentaComponent implements DoCheck {
+  // Constants
+  private readonly DEFAULT_CLIENT_RUC = '222222222222';
+  private readonly MIN_WEIGHT_THRESHOLD = 0.01;
+  private readonly WEIGHT_PRECISION_CART = 1000; // 3 decimales
+  private readonly WEIGHT_PRECISION_FORM = 100; // 2 decimales
+  private readonly DECIMAL_BASE = 10;
+  
   @ViewChild('inputProducto') inputProductoRef!: ElementRef<HTMLInputElement>;
   @ViewChild('agregarUsuarioModal') modalElement!: ElementRef;
   @HostListener('document:click', ['$event'])
@@ -64,6 +75,8 @@ export class VentaComponent implements DoCheck {
   private productoService: ProductoService = inject(ProductoService);
   private ventaService: VentaService = inject(VentaService);
   private menuComponent: MenuComponent = inject(MenuComponent);
+  private formatService: FormatService = inject(FormatService);
+  private localStorageService = inject(LocalStorageService);
 
   // Estados UI / Formularios
   protected formulario!: FormGroup;
@@ -131,7 +144,7 @@ export class VentaComponent implements DoCheck {
     this.listarProductos();
     this.listarClientes();
     this.valorDescuento = null;
-    this.setClientePorDefecto('222222222222');
+    this.setClientePorDefecto(this.DEFAULT_CLIENT_RUC);
     this.suscribirseABalanza(); // Suscribirse a los datos de la balanza
   }
 
@@ -224,17 +237,7 @@ export class VentaComponent implements DoCheck {
    */
   protected listarProductos(): void {
     this.menuComponent.listarProductos();
-    this.productos = [];
-    const productosGuardados = localStorage.getItem('productos');
-    if (productosGuardados) {
-      try {
-        this.productos = JSON.parse(productosGuardados) as ProductoDTO[];
-      } catch (err) {
-        console.error('Error al parsear productos desde localStorage:', err);
-      }
-    } else {
-      console.warn('No se encontraron productos en localStorage.');
-    }
+    this.productos = this.localStorageService.getItemOrDefault<ProductoDTO[]>('productos', []);
   }
 
   /**
@@ -243,17 +246,7 @@ export class VentaComponent implements DoCheck {
    */
   listarClientes(): void {
     this.menuComponent.listarClientes();
-    this.clientes = [];
-    const clientesGuardados = localStorage.getItem('clientes');
-    if (clientesGuardados) {
-      try {
-        this.clientes = JSON.parse(clientesGuardados) as ClienteDTO[];
-      } catch (err) {
-        console.error('Error al parsear clientes desde localStorage:', err);
-      }
-    } else {
-      console.warn('No se encontraron clientes en localStorage.');
-    }
+    this.clientes = this.localStorageService.getItemOrDefault<ClienteDTO[]>('clientes', []);
   }
 
   /**
@@ -429,7 +422,6 @@ export class VentaComponent implements DoCheck {
    * @returns
    */
   public async agregarProducto(): Promise<void> {
-    // console.log(this.formasVentaProductoSeleccionado);
     if (!this.productosForm.valid) {
       Object.values(this.productosForm.controls).forEach((control) =>
         control.markAsTouched()
@@ -448,31 +440,20 @@ export class VentaComponent implements DoCheck {
         this.formasVentaProductoSeleccionado[indice]?.nombre ??
         this.formasVentaProductoSeleccionado[0]?.nombre ??
         '';
-      console.log('Forma de venta seleccionada: ' + formaVenta);
 
-      // const cantidadValida =
-      //   await this.productoService.verificarProductoCantidad(
-      //     cantidad,
-      //     codigo,
-      //     formaVenta
-      //   );
-
-      if (productoEliminado
-        //  || !cantidadValida
-        ) {
+      if (productoEliminado) {
         this.hayStock = false;
         return;
       }
 
       const precio = this.productosForm.get('precio')?.value;
-      const precioEntero = parseInt(precio.replace(/[\$,]/g, ''), 10);
+      const precioEntero = this.formatService.parsearValorFormateado(precio);
       const nombre = this.productosForm.get('nombreProducto')?.value;
       const productoExistente = this.listProductos.find(
         (prod) => prod.codigo === codigo && prod.formaVenta === formaVenta
       );
       if (productoExistente) {
         productoExistente.cantidad += cantidad;
-        console.log(productoExistente);
       } else {
         const producto = CarritoProductoDTO.crearProducto(
           codigo,
@@ -485,10 +466,6 @@ export class VentaComponent implements DoCheck {
       }
 
       this.resetForms();
-      this.subtotal = this.listProductos.reduce(
-        (total, producto) => total + producto.precio * producto.cantidad,
-        0
-      );
       this.calcularValores();
       this.focusInputProducto();
       if (!this.productosCompletos.find((p) => p.codigo === codigo)) {
@@ -565,7 +542,7 @@ export class VentaComponent implements DoCheck {
         total + producto.precio * producto.cantidad,
       0
     );
-    this.igv = this.subtotal * (this.porcentajeIva / 100);
+    this.igv = this.subtotal * (this.porcentajeIva / this.DECIMAL_BASE / this.DECIMAL_BASE);
     this.total = this.subtotal - this.descuento;
     this.totalReal = this.total;
   }
@@ -594,23 +571,23 @@ export class VentaComponent implements DoCheck {
    */
   private actualizarFormulario(
     formulario: FormGroup,
-    objetoSeleccionado: any | null,
+    objetoSeleccionado: ProductoDTO | ClienteDTO | null,
     camposMap: { [key: string]: string },
     camposValidar: string[]
   ): void {
     if (objetoSeleccionado) {
       // Actualizar los campos con los valores del objeto seleccionado
       const valores = Object.keys(camposMap).reduce((acc, key) => {
-        acc[key] = objetoSeleccionado[camposMap[key]] || '';
+        acc[key] = (objetoSeleccionado as unknown as Record<string, unknown>)[camposMap[key]] || '';
         return acc;
-      }, {} as { [key: string]: any });
+      }, {} as Record<string, unknown>);
       formulario.patchValue(valores);
     } else {
       // Vaciar los campos y añadir validaciones si no hay objeto seleccionado
       const valores = Object.keys(camposMap).reduce((acc, key) => {
         acc[key] = '';
         return acc;
-      }, {} as { [key: string]: any });
+      }, {} as Record<string, unknown>);
       formulario.patchValue(valores);
       camposValidar.forEach((campo) => {
         formulario.get(campo)?.setValidators(Validators.required);
@@ -627,9 +604,6 @@ export class VentaComponent implements DoCheck {
    */
   onCantidadFocusCarrito(index: number): void {
     this.indiceProductoEnfocado = index;
-    console.log(
-      `Campo cantidad del producto ${index} enfocado - esperando peso de balanza`
-    );
   }
 
   /**
@@ -637,7 +611,6 @@ export class VentaComponent implements DoCheck {
    */
   onCantidadBlurCarrito(): void {
     this.indiceProductoEnfocado = null;
-    console.log('Campo cantidad desenfocado');
   }
 
   /**
@@ -645,7 +618,6 @@ export class VentaComponent implements DoCheck {
    */
   onCantidadFocus(): void {
     this.campoEnfocado = 'cantidad';
-    console.log('Campo cantidad enfocado - esperando peso de balanza');
   }
 
   /**
@@ -653,7 +625,6 @@ export class VentaComponent implements DoCheck {
    */
   onCantidadBlur(): void {
     this.campoEnfocado = null;
-    console.log('Campo cantidad desenfocado');
   }
 
   /**
@@ -683,18 +654,13 @@ export class VentaComponent implements DoCheck {
    * Método para formatear un valor con comas
    */
   formatearValor(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const valorSinFormato = input.value.replace(/[^\d]/g, ''); // Elimina caracteres no numéricos
-    const valorNumerico = parseInt(valorSinFormato, 10);
+    const { valorNumerico, valorFormateado } = this.formatService.formatearValorInput(event);
     this.descuento = 0;
-
-    if (!isNaN(valorNumerico)) {
-      this.valorFormateado = valorNumerico.toLocaleString('en-US'); // Formato con comas
-      this.valorDescuento = this.valorFormateado;
-      input.value = this.valorFormateado;
-      if (this.valorDescuento != '') {
-        this.descuento = valorNumerico;
-      }
+    this.valorFormateado = valorFormateado;
+    this.valorDescuento = valorFormateado;
+    
+    if (valorFormateado !== '') {
+      this.descuento = valorNumerico;
     }
   }
 
@@ -867,9 +833,6 @@ export class VentaComponent implements DoCheck {
       // Si el peso es estable y el campo de cantidad del formulario está enfocado
       else if (data.stable && this.campoEnfocado === 'cantidad') {
         this.actualizarCantidadDesdeBalanza(data.weight);
-        console.log(
-          `Peso estable recibido de balanza: ${data.weight} ${data.unit}`
-        );
       }
     });
   }
@@ -890,18 +853,15 @@ export class VentaComponent implements DoCheck {
     let cantidadFinal = peso;
 
     // Si el peso es muy pequeño, ignorarlo (evitar ruido)
-    if (cantidadFinal < 0.01) return;
+    if (cantidadFinal < this.MIN_WEIGHT_THRESHOLD) return;
 
     // Redondear a 3 decimales (como está configurado en el servicio)
-    cantidadFinal = Math.round(cantidadFinal * 1000) / 1000;
+    cantidadFinal = Math.round(cantidadFinal * this.WEIGHT_PRECISION_CART) / this.WEIGHT_PRECISION_CART;
 
     // Verificar que no exceda el stock disponible
     const maxDisponible = this.getCantidadDisponible(producto);
     if (cantidadFinal > maxDisponible) {
       cantidadFinal = maxDisponible;
-      console.warn(
-        `Peso ${peso} excede el stock disponible (${maxDisponible}). Se ajustó a ${cantidadFinal}`
-      );
     }
 
     // Actualizar la cantidad del producto
@@ -909,10 +869,6 @@ export class VentaComponent implements DoCheck {
 
     // Recalcular totales
     this.calcularValores();
-
-    console.log(
-      `Cantidad del producto "${producto.nombre}" actualizada a ${cantidadFinal} kg desde balanza`
-    );
   }
 
   /**
@@ -954,23 +910,20 @@ export class VentaComponent implements DoCheck {
     let cantidadFinal = peso;
 
     // Si el peso es muy pequeño, ignorarlo (evitar ruido)
-    if (cantidadFinal < 0.01) return;
+    if (cantidadFinal < this.MIN_WEIGHT_THRESHOLD) return;
 
     // Redondear a 2 decimales
-    cantidadFinal = Math.round(cantidadFinal * 100) / 100;
+    cantidadFinal = Math.round(cantidadFinal * this.WEIGHT_PRECISION_FORM) / this.WEIGHT_PRECISION_FORM;
 
     // Actualizar el formulario
     this.productosForm.patchValue({
       cantidadProducto: cantidadFinal,
     });
-
-    console.log(`Cantidad actualizada desde balanza: ${cantidadFinal}`);
   }
 
   abrirCamara(): void {
     this.scannerService.abrirCamara().subscribe((result) => {
       if (result) {
-        console.log('Código escaneado:', result);
         this.procesarResultado(result);
       }
     });

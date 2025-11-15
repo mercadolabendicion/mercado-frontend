@@ -13,6 +13,7 @@ import { CajaMenorService } from 'src/app/services/domainServices/cajaMenor.serv
 import { CajaMayorService } from 'src/app/services/domainServices/cajaMayor.service';
 import { HistorialCajaMenorDTO } from 'src/app/dto/caja/HistorialCajaMenorDTO';
 import { HistorialCajaMayorDTO } from 'src/app/dto/caja/HistorialCajaMayorDTO';
+import { FormatService } from 'src/app/services/shared/format.service';
 
 @Component({
   selector: 'app-caja',
@@ -48,8 +49,9 @@ export class CajaComponent {
   private ventaService: VentaService = inject(VentaService);
   private cajaMenorService: CajaMenorService = inject(CajaMenorService);
   private cajaMayorService: CajaMayorService = inject(CajaMayorService);
+  private formatService: FormatService = inject(FormatService);
   // Store created bootstrap Modal instances so we can hide/show programmatically
-  private modalInstances: { [id: string]: any } = {};
+  private modalInstances: Record<string, Modal> = {};
 
   private showModal(modalId: string) {
     const modalEl = document.getElementById(modalId);
@@ -137,14 +139,6 @@ export class CajaComponent {
 
               // Sumar ingresos de movimientos + ventas del día
               this.ingresos = ingresosMovimientos + totalVentas;
-
-              console.log('Datos del día cargados:', {
-                movimientos: movimientos.length,
-                ingresosMovimientos: ingresosMovimientos,
-                totalVentas: totalVentas,
-                ingresosTotal: this.ingresos,
-                egresos: this.egresos
-              });
 
               resolve();
             },
@@ -354,15 +348,7 @@ export class CajaComponent {
   }
 
   formatearValor(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const valorSinFormato = input.value.replace(/[^\d]/g, '');
-    const valorNumerico = parseInt(valorSinFormato, 10);
-
-    if (!isNaN(valorNumerico)) {
-      input.value = valorNumerico.toLocaleString('en-US');
-    } else {
-      input.value = '';
-    }
+    this.formatService.formatearValorInput(event);
   }
 
   async cargarDatos() {
@@ -372,31 +358,12 @@ export class CajaComponent {
 
   protected generarReporte() {
     // Implementar generación de reporte con los registros de caja
-    console.log('Generar reporte', this.registrosCajaMenor);
   }
 
   formatearValorCierre(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const valorSinFormato = input.value.replace(/[^\d]/g, '');
-
-    if (valorSinFormato === '') {
-      this.valorCierreFormateado = '';
-      this.valorCierreCajaMayor = 0;
-      input.value = '';
-      return;
-    }
-
-    const valorNumerico = parseInt(valorSinFormato, 10);
-
-    if (!isNaN(valorNumerico)) {
-      this.valorCierreFormateado = valorNumerico.toLocaleString('en-US');
-      this.valorCierreCajaMayor = valorNumerico; // Guardar el valor numérico
-      input.value = this.valorCierreFormateado;
-    } else {
-      this.valorCierreFormateado = '';
-      this.valorCierreCajaMayor = 0;
-      input.value = '';
-    }
+    const { valorNumerico, valorFormateado } = this.formatService.formatearValorInput(event);
+    this.valorCierreFormateado = valorFormateado;
+    this.valorCierreCajaMayor = valorNumerico;
   }
 
   // Añadir después de las variables existentes del modal de cierre
@@ -405,27 +372,9 @@ export class CajaComponent {
 
   // Añadir este método después de formatearValorCierre
   formatearValorPaso(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const valorSinFormato = input.value.replace(/[^\d]/g, '');
-
-    if (valorSinFormato === '') {
-      this.valorPasoFormateado = '';
-      this.valorPasoCajaMenor = 0;
-      input.value = '';
-      return;
-    }
-
-    const valorNumerico = parseInt(valorSinFormato, 10);
-
-    if (!isNaN(valorNumerico)) {
-      this.valorPasoFormateado = valorNumerico.toLocaleString('en-US');
-      this.valorPasoCajaMenor = valorNumerico;
-      input.value = this.valorPasoFormateado;
-    } else {
-      this.valorPasoFormateado = '';
-      this.valorPasoCajaMenor = 0;
-      input.value = '';
-    }
+    const { valorNumerico, valorFormateado } = this.formatService.formatearValorInput(event);
+    this.valorPasoFormateado = valorFormateado;
+    this.valorPasoCajaMenor = valorNumerico;
   }
 
   // Añadir este método después de mostrarModalCerrarCaja
