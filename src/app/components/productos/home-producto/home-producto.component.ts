@@ -12,8 +12,6 @@ import { EditarProductoComponent } from '../editar-producto/editar-producto.comp
 import { MatDialog } from '@angular/material/dialog';
 import { ScannerService } from 'src/app/services/domainServices/scannerService';
 import { PaginationService } from 'src/app/services/shared/pagination.service';
-import { LocalStorageService } from 'src/app/services/shared/local-storage.service';
-import { FormatService } from 'src/app/services/shared/format.service';
 
 @Component({
   selector: 'app-home-producto',
@@ -46,8 +44,6 @@ export class HomeProductoComponent {
   protected idProductoSeleccionado: string = '';
   private dialog: MatDialog = inject(MatDialog);
   private paginationService = inject(PaginationService);
-  private localStorageService = inject(LocalStorageService);
-  private formatService = inject(FormatService);
   rangoVisible: number = 5; // Número de paginas que se van a mostrar en el paginador
   protected buscarInput: HTMLInputElement | null = null;
 
