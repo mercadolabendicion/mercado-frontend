@@ -235,7 +235,6 @@ export class VentaComponent implements DoCheck {
    * Carga todos los productos disponibles desde la API.
    */
   protected listarProductos(): void {
-    this.menuComponent.listarProductos();
     this.productos = this.localStorageService.getItemOrDefault<ProductoDTO[]>('productos', []);
   }
 
@@ -243,7 +242,6 @@ export class VentaComponent implements DoCheck {
    * Carga todos los clientes disponibles desde la API.
    */
   listarClientes(): void {
-    this.menuComponent.listarClientes();
     this.clientes = this.localStorageService.getItemOrDefault<ClienteDTO[]>('clientes', []);
   }
 
