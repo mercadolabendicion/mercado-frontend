@@ -29,8 +29,9 @@ def refrescar_modulo_clientes(page) -> None:
     """Recarga el módulo Angular para actualizar la tabla."""
     page.click("a.sidebar-link[routerlink='/app/cliente']")
     page.wait_for_url("**/app/cliente", timeout=60000)
+    # Esperar el campo de búsqueda y dar un poco más de tiempo para que la tabla se actualice
     page.wait_for_selector("input#buscar", timeout=60000)
-    page.wait_for_timeout(800)
+    page.wait_for_timeout(1500)
 
 
 # -------------------------------------------------------------------
@@ -88,9 +89,19 @@ def llenar_formulario_cliente(page, cliente: Cliente) -> None:
 def guardar_cliente(page) -> None:
     """Guarda el cliente y confirma el diálogo de éxito."""
     page.click("button#azul")
-    page.wait_for_selector(".swal2-confirm", timeout=60000)
-    page.click(".swal2-confirm")
-    page.wait_for_timeout(1200)
+    # Algunos flujos muestran un SweetAlert2, otros simplemente cierran el modal.
+    # Intentamos cerrar el swal si aparece; si no, esperamos que el modal/edición se cierre.
+    try:
+        page.wait_for_selector(".swal2-confirm", timeout=5000)
+        page.click(".swal2-confirm")
+        page.wait_for_timeout(800)
+    except Exception:
+        # Si no hay swal, esperamos que el modal de edición se cierre o que el listado esté disponible
+        try:
+            page.wait_for_selector("#editarClienteModal", state="hidden", timeout=5000)
+        except Exception:
+            # Fallback corto
+            page.wait_for_timeout(1200)
 
 
 def crear_cliente(page, cliente: Cliente = None) -> Cliente:
@@ -126,7 +137,13 @@ def validar_cliente_existe(page, cliente: Cliente) -> bool:
     Retorna True si el cliente está visible, False en caso contrario.
     """
     buscar_cliente(page, cliente["cedula"])
-    return page.locator(f"text={cliente['nombre']}").first.is_visible()
+    # Esperar explícitamente a que el nombre aparezca en la tabla (evita falsos negativos por asincronía)
+    locator = page.locator(f"text={cliente['nombre']}").first
+    try:
+        locator.wait_for(state="visible", timeout=3000)
+        return True
+    except:
+        return False
 
 
 # -------------------------------------------------------------------
@@ -136,14 +153,27 @@ def seleccionar_cliente_en_tabla(page, nombre: str) -> None:
     """Selecciona un cliente en la tabla haciendo clic en su fila."""
     # Buscar la fila que contiene el nombre del cliente y hacer clic en el botón de eliminar
     row = page.locator(f"tr:has-text('{nombre}')").first
-    row.locator("button[title='Eliminar']").click()
+    # En la UI actual el botón de eliminar es un botón con emoji (❌) dentro de la celda con clase "eliminar".
+    # Seleccionamos el primer botón dentro de esa celda para hacer la eliminación.
+    try:
+        row.locator("td.eliminar button").first.click()
+    except:
+        # Fallback a buscar por texto/emoji
+        row.locator("button:has-text('❌'), button:has-text('Eliminar')").first.click()
 
 
 def confirmar_eliminacion(page) -> None:
     """Confirma el diálogo de eliminación."""
-    page.wait_for_selector(".swal2-confirm", timeout=60000)
-    page.click(".swal2-confirm")
-    page.wait_for_timeout(1200)
+    # Intentar confirmar el diálogo de eliminación (swal2). Si no aparece, proceder y esperar que la fila desaparezca.
+    try:
+        page.wait_for_selector(".swal2-confirm", timeout=5000)
+        # Pequeño delay antes de aceptar para evitar condiciones de carrera en la UI
+        page.wait_for_timeout(500)
+        page.click(".swal2-confirm")
+        page.wait_for_timeout(800)
+    except Exception:
+        # No hubo un diálogo; esperar un corto tiempo por la eliminación en la tabla
+        page.wait_for_timeout(800)
 
 
 def eliminar_cliente(page, cliente: Cliente) -> None:
@@ -155,6 +185,13 @@ def eliminar_cliente(page, cliente: Cliente) -> None:
     buscar_cliente(page, cliente["cedula"])
     seleccionar_cliente_en_tabla(page, cliente["nombre"])
     confirmar_eliminacion(page)
+    # Esperar que la fila sea removida del DOM (buscar por cédula, más estable)
+    try:
+        row = page.locator(f"tr:has-text('{cliente['cedula']}')").first
+        row.wait_for(state="hidden", timeout=5000)
+    except Exception:
+        # Si no se oculta en el tiempo, continuar y refrescar el módulo
+        pass
     refrescar_modulo_clientes(page)
 
 
@@ -164,10 +201,17 @@ def validar_cliente_no_existe(page, cliente: Cliente) -> bool:
     Retorna True si el cliente no está visible, False si aún existe.
     """
     buscar_cliente(page, cliente["cedula"])
+    # Buscar la fila por cédula (es más estable) y esperar que desaparezca
+    row = page.locator(f"tr:has-text('{cliente['cedula']}')").first
     try:
-        return not page.locator(f"text={cliente['nombre']}").first.is_visible(timeout=2000)
-    except:
-        return True  # Si hay timeout, el elemento no existe
+        row.wait_for(state="hidden", timeout=3000)
+        return True
+    except Exception:
+        # Si no se oculta en el tiempo, comprobar visibilidad final
+        try:
+            return not row.is_visible()
+        except Exception:
+            return True
 
 
 # -------------------------------------------------------------------
@@ -176,8 +220,15 @@ def validar_cliente_no_existe(page, cliente: Cliente) -> bool:
 def abrir_edicion_cliente(page, nombre: str) -> None:
     """Abre el formulario de edición de un cliente desde la tabla."""
     row = page.locator(f"tr:has-text('{nombre}')").first
-    row.locator("button[title='Editar'], button:has-text('Editar')").click()
-    page.wait_for_url("**/app/cliente/**", timeout=60000)
+    # En la UI actual el botón de editar es un botón con clase "editar" y un emoji (✏️).
+    # Hacemos click y esperamos al componente/modal de edición en lugar de esperar una navegación.
+    try:
+        row.locator("button.editar, button:has-text('✏️'), button:has-text('Editar')").first.click()
+    except:
+        row.locator("button:has-text('✏️'), button:has-text('Editar')").first.click()
+
+    # Esperar por el modal/componente de edición o por el input del formulario para continuar
+    page.wait_for_selector("app-editar-cliente, #editarClienteModal, input[formcontrolname='nombre']", timeout=60000)
 
 
 def editar_cliente(page, cliente_original: Cliente, nuevos_datos: dict = None) -> Cliente:

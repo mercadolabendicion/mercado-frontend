@@ -30,8 +30,9 @@ def refrescar_modulo_productos(page) -> None:
     """Recarga el módulo Angular para actualizar la tabla."""
     page.click("a.sidebar-link[routerlink='/app/producto']")
     page.wait_for_url("**/app/producto", timeout=60000)
+    # Esperar el campo de escaneo/búsqueda y dar un poco más de tiempo para que la tabla se actualice
     page.wait_for_selector("input[placeholder*='Escanear']", timeout=60000)
-    page.wait_for_timeout(800)
+    page.wait_for_timeout(1500)
 
 
 # -------------------------------------------------------------------
@@ -78,9 +79,17 @@ def llenar_formulario_producto(page, producto: Producto) -> None:
 def guardar_producto(page) -> None:
     """Guarda el producto y confirma el diálogo de éxito."""
     page.click("button#azul")
-    page.wait_for_selector(".swal2-confirm", timeout=60000)
-    page.click(".swal2-confirm")
-    page.wait_for_timeout(2000)
+    # Manejar ambos comportamientos: swal2 o cierre directo de modal/dialog
+    try:
+        page.wait_for_selector(".swal2-confirm", timeout=5000)
+        page.click(".swal2-confirm")
+        page.wait_for_timeout(1000)
+    except Exception:
+        # Si no aparece swal, esperar cierre del modal o un pequeño retardo
+        try:
+            page.wait_for_selector("app-editar-producto, .modal", state="hidden", timeout=5000)
+        except Exception:
+            page.wait_for_timeout(1200)
 
 
 def crear_producto(page, producto: Producto = None) -> Producto:
@@ -116,7 +125,13 @@ def validar_producto_existe(page, producto: Producto) -> bool:
     """
     navegar_a_productos(page)
     buscar_producto(page, producto["codigo"])
-    return page.locator(f"text={producto['nombre']}").first.is_visible()
+    # Esperar explícitamente a que el nombre aparezca en la tabla (evita falsos negativos por asincronía)
+    locator = page.locator(f"text={producto['nombre']}").first
+    try:
+        locator.wait_for(state="visible", timeout=3000)
+        return True
+    except:
+        return False
 
 
 # -------------------------------------------------------------------
@@ -125,14 +140,26 @@ def validar_producto_existe(page, producto: Producto) -> bool:
 def seleccionar_producto_en_tabla(page, nombre: str) -> None:
     """Selecciona un producto en la tabla haciendo clic en su botón de eliminar."""
     row = page.locator(f"tr:has-text('{nombre}')").first
-    row.locator("button[title='Eliminar']").click()
+    # En la UI actual el botón de eliminar muestra un emoji ❌ o está identificado con clases.
+    try:
+        row.locator("button:has-text('❌'), button.eliminar, td.acciones button:has-text('❌')").first.click()
+    except:
+        # Fallback: clicar el primer botón de la celda de acciones
+        row.locator("td.acciones button").first.click()
 
 
 def confirmar_eliminacion(page) -> None:
     """Confirma el diálogo de eliminación."""
-    page.wait_for_selector(".swal2-confirm", timeout=60000)
-    page.click(".swal2-confirm")
-    page.wait_for_timeout(1200)
+    # Intentar confirmar el diálogo de eliminación (swal2). Si no aparece, proceder y esperar que la fila desaparezca.
+    try:
+        page.wait_for_selector(".swal2-confirm", timeout=5000)
+        # Pequeño delay para evitar condiciones de carrera antes de aceptar
+        page.wait_for_timeout(500)
+        page.click(".swal2-confirm")
+        page.wait_for_timeout(800)
+    except Exception:
+        # No hubo un diálogo; esperar un corto tiempo por la eliminación en la tabla
+        page.wait_for_timeout(800)
 
 
 def eliminar_producto(page, producto: Producto) -> None:
@@ -144,6 +171,12 @@ def eliminar_producto(page, producto: Producto) -> None:
     buscar_producto(page, producto["codigo"])
     seleccionar_producto_en_tabla(page, producto["nombre"])
     confirmar_eliminacion(page)
+    # Esperar que la fila del producto (por código) sea removida del DOM
+    try:
+        row = page.locator(f"tr:has-text('{producto['codigo']}')").first
+        row.wait_for(state="hidden", timeout=5000)
+    except Exception:
+        pass
     refrescar_modulo_productos(page)
 
 
@@ -154,10 +187,16 @@ def validar_producto_no_existe(page, producto: Producto) -> bool:
     """
     navegar_a_productos(page)
     buscar_producto(page, producto["codigo"])
+    # Buscar la fila por código (más estable) y esperar que desaparezca
+    row = page.locator(f"tr:has-text('{producto['codigo']}')").first
     try:
-        return not page.locator(f"text={producto['nombre']}").first.is_visible(timeout=2000)
-    except:
-        return True  # Si hay timeout, el elemento no existe
+        row.wait_for(state="hidden", timeout=3000)
+        return True
+    except Exception:
+        try:
+            return not row.is_visible()
+        except Exception:
+            return True
 
 
 # -------------------------------------------------------------------
@@ -166,9 +205,14 @@ def validar_producto_no_existe(page, producto: Producto) -> bool:
 def abrir_edicion_producto(page, nombre: str) -> None:
     """Abre el formulario de edición de un producto desde la tabla."""
     row = page.locator(f"tr:has-text('{nombre}')").first
-    row.locator("button[title='Editar'], button:has-text('Editar')").click()
-    page.wait_for_url("**/app/producto/**", timeout=60000)
-    page.wait_for_selector("h1.nota:has-text('Registro de productos')")
+    # En la UI actual el botón de editar tiene un emoji (✏️) y/o la clase "editar". Abrir modal/dialog y esperar al componente.
+    try:
+        row.locator("button.editar, button:has-text('✏️'), button:has-text('Editar')").first.click()
+    except:
+        row.locator("button:has-text('✏️'), button:has-text('Editar')").first.click()
+
+    # Esperar por el componente de edición (MatDialog) o por inputs del formulario
+    page.wait_for_selector("app-editar-producto, input[formcontrolname='nombre'], input[id='codigo']", timeout=60000)
 
 
 def editar_producto(page, producto_original: Producto, nuevos_datos: dict = None) -> Producto:
@@ -198,6 +242,8 @@ def editar_producto(page, producto_original: Producto, nuevos_datos: dict = None
         page.fill("input[formcontrolname='fecha_vencimiento']", nuevos_datos["fecha_vencimiento"])
     
     guardar_producto(page)
+    # Refrescar la vista de productos para asegurarnos de que la tabla esté actualizada
+    refrescar_modulo_productos(page)
     
     # Crear objeto con datos actualizados
     producto_editado = producto_original.copy()
