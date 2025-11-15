@@ -1,137 +1,41 @@
 """
-E2E smoke test: crear cliente.
-Optimizado: más rápido, sin emojis y con filtrado funcional.
+E2E Test: Crear Cliente
+Este test puede ejecutarse de forma independiente.
+Crea un cliente con datos aleatorios y valida su creación.
 """
-
-import random
-from typing import TypedDict
 
 from core.browser import get_page
 from core.login import login
+from actions.cliente_actions import crear_cliente, validar_cliente_existe
 
 
-class Cliente(TypedDict):
-    cedula: str
-    nombre: str
-    direccion: str
-    correo: str
-
-
-# -------------------------------------------------------------------
-# Escritura humana solo para formularios (no para búsqueda)
-# -------------------------------------------------------------------
-def escribir_lento(page, selector: str, texto: str, delay: float = 0.05) -> None:
-    """Escribe carácter por carácter en inputs comunes."""
-    page.click(selector)
-    page.fill(selector, "")
-    for c in texto:
-        page.keyboard.type(c, delay=delay)
-    page.keyboard.press("Tab")
-
-
-# -------------------------------------------------------------------
-# Navegación
-# -------------------------------------------------------------------
-def navegar_a_clientes(page) -> None:
-    page.click("a.sidebar-link[routerlink='/app/cliente']")
-    page.wait_for_url("**/app/cliente", timeout=60000)
-    page.wait_for_selector("app-cliente", timeout=60000)
-
-
-def refrescar_modulo_clientes(page) -> None:
-    """Recarga módulo Angular para actualizar tabla."""
-    page.click("a.sidebar-link[routerlink='/app/cliente']")
-    page.wait_for_url("**/app/cliente", timeout=60000)
-    page.wait_for_selector("input#buscar", timeout=60000)
-    page.wait_for_timeout(800)
-
-
-# -------------------------------------------------------------------
-# Generación de datos
-# -------------------------------------------------------------------
-def crear_datos_cliente() -> Cliente:
-    r = random.randint(1000000000, 9999999999)
-    return {
-        "cedula": str(r),
-        "nombre": "Cliente QA AUT",
-        "direccion": f"Calle {r}",
-        "correo": f"qa{r}@test.com"
-    }
-
-
-# -------------------------------------------------------------------
-# Formulario
-# -------------------------------------------------------------------
-def llenar_formulario_cliente(page, cliente: Cliente) -> None:
-    escribir_lento(page, "input[formcontrolname='cedula']", cliente["cedula"])
-    escribir_lento(page, "input[formcontrolname='nombre']", cliente["nombre"])
-    escribir_lento(page, "input[formcontrolname='direccion']", cliente["direccion"])
-    escribir_lento(page, "input[formcontrolname='correo']", cliente["correo"])
-
-
-# -------------------------------------------------------------------
-# Guardar
-# -------------------------------------------------------------------
-def guardar_cliente(page) -> None:
-    page.click("button#azul")
-    page.wait_for_selector(".swal2-confirm", timeout=60000)
-    page.click(".swal2-confirm")
-    page.wait_for_timeout(1200)
-
-
-# -------------------------------------------------------------------
-# Validación con filtrado real
-# -------------------------------------------------------------------
-def validar_cliente(page, cliente: Cliente) -> bool:
-    """
-    Valida que el cliente existe usando el buscador.
-    Usa page.fill (rápido) y dispara un evento de input manual.
-    """
-
-    # Escribir directamente (rápido)
-    page.fill("input#buscar", cliente["cedula"])
-
-    # Disparar evento real de Angular
-    page.dispatch_event("input#buscar", "input")
-
-    page.wait_for_timeout(1500)
-
-    # Buscar el nombre del cliente en la tabla
-    return page.locator(f"text={cliente['nombre']}").first.is_visible()
-
-
-# -------------------------------------------------------------------
-# Main
-# -------------------------------------------------------------------
 def main():
+    """
+    Flujo completo para crear un cliente.
+    Este test es independiente y puede ejecutarse sin depender de otros tests.
+    """
     playwright, browser, context, page = get_page(headless=False)
 
-    login(page)
-    navegar_a_clientes(page)
+    try:
+        # Autenticación
+        login(page)
 
-    cliente = crear_datos_cliente()
+        # Crear cliente (incluye navegación, llenado de formulario y guardado)
+        cliente = crear_cliente(page)
 
-    page.click("button#nuevo")
-    page.wait_for_url("**/app/cliente/nuevo", timeout=60000)
+        # Validar que el cliente fue creado exitosamente
+        ok = validar_cliente_existe(page, cliente)
 
-    llenar_formulario_cliente(page, cliente)
-    guardar_cliente(page)
+        if ok:
+            print("✓ FLUJO CREAR CLIENTE FUNCIONÓ CORRECTAMENTE")
+            print(f"✓ Cliente creado: {cliente}")
+        else:
+            print("✗ FALLÓ EL FLUJO CREAR CLIENTE")
+            print(f"✗ Cliente que se intentó crear: {cliente}")
 
-    # Refrescar módulo solo UNA VEZ
-    refrescar_modulo_clientes(page)
-
-    # Validar
-    ok = validar_cliente(page, cliente)
-
-    if ok:
-        print("FLUJO CREAR CLIENTE FUNCIONÓ CORRECTAMENTE")
-    else:
-        print("FALLÓ EL FLUJO CREAR CLIENTE")
-
-    print(cliente)
-
-    browser.close()
-    playwright.stop()
+    finally:
+        browser.close()
+        playwright.stop()
 
 
 if __name__ == "__main__":

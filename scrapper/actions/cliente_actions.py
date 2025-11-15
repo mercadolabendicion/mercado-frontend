@@ -1,0 +1,170 @@
+"""
+Acciones reutilizables para el módulo de Clientes.
+Cada función representa una acción atómica que puede ser utilizada en diferentes flujos.
+"""
+
+import random
+from typing import TypedDict
+
+
+class Cliente(TypedDict):
+    """Estructura de datos para un cliente."""
+    cedula: str
+    nombre: str
+    direccion: str
+    correo: str
+
+
+# -------------------------------------------------------------------
+# Navegación
+# -------------------------------------------------------------------
+def navegar_a_clientes(page) -> None:
+    """Navega al módulo de clientes desde cualquier pantalla."""
+    page.click("a.sidebar-link[routerlink='/app/cliente']")
+    page.wait_for_url("**/app/cliente", timeout=60000)
+    page.wait_for_selector("app-cliente", timeout=60000)
+
+
+def refrescar_modulo_clientes(page) -> None:
+    """Recarga el módulo Angular para actualizar la tabla."""
+    page.click("a.sidebar-link[routerlink='/app/cliente']")
+    page.wait_for_url("**/app/cliente", timeout=60000)
+    page.wait_for_selector("input#buscar", timeout=60000)
+    page.wait_for_timeout(800)
+
+
+# -------------------------------------------------------------------
+# Generación de datos
+# -------------------------------------------------------------------
+def generar_datos_cliente() -> Cliente:
+    """Genera datos aleatorios para un cliente de prueba."""
+    r = random.randint(1000000000, 9999999999)
+    return {
+        "cedula": str(r),
+        "nombre": "Cliente QA AUT",
+        "direccion": f"Calle {r}",
+        "correo": f"qa{r}@test.com"
+    }
+
+
+# -------------------------------------------------------------------
+# Utilidades de escritura
+# -------------------------------------------------------------------
+def escribir_lento(page, selector: str, texto: str, delay: float = 0.05) -> None:
+    """Escribe carácter por carácter en inputs comunes (simula escritura humana)."""
+    page.click(selector)
+    page.fill(selector, "")
+    for c in texto:
+        page.keyboard.type(c, delay=delay)
+    page.keyboard.press("Tab")
+
+
+def escribir_en_busqueda(page, texto: str, delay: float = 0.05) -> None:
+    """Escribe en el campo de búsqueda de clientes."""
+    page.click("input#buscar")
+    page.fill("input#buscar", "")
+    for c in texto:
+        page.keyboard.type(c, delay=delay)
+    page.wait_for_timeout(300)
+
+
+# -------------------------------------------------------------------
+# Crear cliente
+# -------------------------------------------------------------------
+def abrir_formulario_nuevo_cliente(page) -> None:
+    """Abre el formulario para crear un nuevo cliente."""
+    page.click("button#nuevo")
+    page.wait_for_url("**/app/cliente/nuevo", timeout=60000)
+
+
+def llenar_formulario_cliente(page, cliente: Cliente) -> None:
+    """Completa el formulario de cliente con los datos proporcionados."""
+    escribir_lento(page, "input[formcontrolname='cedula']", cliente["cedula"])
+    escribir_lento(page, "input[formcontrolname='nombre']", cliente["nombre"])
+    escribir_lento(page, "input[formcontrolname='direccion']", cliente["direccion"])
+    escribir_lento(page, "input[formcontrolname='correo']", cliente["correo"])
+
+
+def guardar_cliente(page) -> None:
+    """Guarda el cliente y confirma el diálogo de éxito."""
+    page.click("button#azul")
+    page.wait_for_selector(".swal2-confirm", timeout=60000)
+    page.click(".swal2-confirm")
+    page.wait_for_timeout(1200)
+
+
+def crear_cliente(page, cliente: Cliente = None) -> Cliente:
+    """
+    Flujo completo para crear un cliente.
+    Si no se proporciona un cliente, genera uno aleatorio.
+    Retorna los datos del cliente creado.
+    """
+    if cliente is None:
+        cliente = generar_datos_cliente()
+    
+    navegar_a_clientes(page)
+    abrir_formulario_nuevo_cliente(page)
+    llenar_formulario_cliente(page, cliente)
+    guardar_cliente(page)
+    refrescar_modulo_clientes(page)
+    
+    return cliente
+
+
+# -------------------------------------------------------------------
+# Buscar cliente
+# -------------------------------------------------------------------
+def buscar_cliente(page, cedula: str) -> None:
+    """Busca un cliente por su cédula utilizando el filtro."""
+    escribir_en_busqueda(page, cedula, delay=0.06)
+    page.wait_for_timeout(1500)
+
+
+def validar_cliente_existe(page, cliente: Cliente) -> bool:
+    """
+    Valida que el cliente existe en la tabla.
+    Retorna True si el cliente está visible, False en caso contrario.
+    """
+    buscar_cliente(page, cliente["cedula"])
+    return page.locator(f"text={cliente['nombre']}").first.is_visible()
+
+
+# -------------------------------------------------------------------
+# Eliminar cliente
+# -------------------------------------------------------------------
+def seleccionar_cliente_en_tabla(page, nombre: str) -> None:
+    """Selecciona un cliente en la tabla haciendo clic en su fila."""
+    # Buscar la fila que contiene el nombre del cliente y hacer clic en el botón de eliminar
+    row = page.locator(f"tr:has-text('{nombre}')").first
+    row.locator("button[title='Eliminar']").click()
+
+
+def confirmar_eliminacion(page) -> None:
+    """Confirma el diálogo de eliminación."""
+    page.wait_for_selector(".swal2-confirm", timeout=60000)
+    page.click(".swal2-confirm")
+    page.wait_for_timeout(1200)
+
+
+def eliminar_cliente(page, cliente: Cliente) -> None:
+    """
+    Flujo completo para eliminar un cliente.
+    Requiere que el cliente ya exista en el sistema.
+    """
+    navegar_a_clientes(page)
+    buscar_cliente(page, cliente["cedula"])
+    seleccionar_cliente_en_tabla(page, cliente["nombre"])
+    confirmar_eliminacion(page)
+    refrescar_modulo_clientes(page)
+
+
+def validar_cliente_no_existe(page, cliente: Cliente) -> bool:
+    """
+    Valida que el cliente NO existe en la tabla.
+    Retorna True si el cliente no está visible, False si aún existe.
+    """
+    buscar_cliente(page, cliente["cedula"])
+    try:
+        return not page.locator(f"text={cliente['nombre']}").first.is_visible(timeout=2000)
+    except:
+        return True  # Si hay timeout, el elemento no existe
