@@ -318,7 +318,6 @@ export class EditarProductoComponent {
     this.productoService.actualizar(this.productoActualizado).subscribe({
       next: () => {
         this.cerrarModal();
-        this.menuComponent.listarProductos();
       },
       error: (err) => {
         this.alert.simpleErrorAlert(err);
@@ -347,7 +346,6 @@ export class EditarProductoComponent {
         }
       });
     });  
-    this.menuComponent.listarProductos();
     this.cerrarModal();
   }
 

@@ -37,7 +37,6 @@ export class NuevoComponent {
       const cliente = CrearClienteDTO.crearCliente(cedula, nombre, direccion, correo);
       this.clienteService.crearCliente(cliente);
       this.formulario.reset();
-      this.menuComponent.listarClientes();
     }
   }
 

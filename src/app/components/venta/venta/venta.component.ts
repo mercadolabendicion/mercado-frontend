@@ -507,7 +507,6 @@ export class VentaComponent implements DoCheck {
       // Solo se ejecutan estas líneas si la promesa retorna true
       if (ventaCreada) {
         this.finalizarVenta();
-        this.menuComponent.listarVentas();
         this.cantidadDisponible = 0;
       } else {
         console.error('La venta no se pudo procesar correctamente.');

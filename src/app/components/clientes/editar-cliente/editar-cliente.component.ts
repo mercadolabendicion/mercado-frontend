@@ -85,7 +85,6 @@ export class EditarClienteComponent {
         this.alert.simpleErrorAlert(error.error.mensaje);
       }
     });
-    this.menuComponent.listarClientes();
   }
 
 }
