@@ -37,13 +37,10 @@ export class MenuComponent {
   }
 
   /**
-   * Metodo que se encarga de navegar a la pagina principal
-   * para cerrar la sesion
+   * Inicializa el componente del menú.
+   * Removed localStorage caching - data is now fetched on-demand from API.
    */
   ngOnInit(): void {
-    this.productoService.getTodosProductos();
-    this.clienteService.getTodosClientes();
-    this.ventaService.obtenerVentasTodas();
     this.router.navigate(['/app/principal']);
   }
 
@@ -67,16 +64,9 @@ export class MenuComponent {
       this.toggleCollapse();
   }
 
-  public listarClientes() {
-    this.clienteService.getTodosClientes();
-  }
-
-  public listarProductos() {
-    this.productoService.getTodosProductos();
-  }
-
-  public listarVentas() {
-    this.ventaService.obtenerVentasTodas();
-  }
+  /**
+   * Methods removed - data is now fetched on-demand from components.
+   * Removed to avoid unnecessary API calls and follow SOLID principles.
+   */
 
 }

@@ -183,16 +183,9 @@ export class VentaService {
   }
 
   /**
-  * Este método se encarga de obtener las ventas de la base de datos
+  * Removed localStorage usage - this method is no longer needed.
+  * Data is now fetched directly from API when required.
   */
-  public obtenerVentasTodas(): void {
-    this.httpVentaService.obtenerVentasTodas().subscribe({
-      next: (resp) => {
-        localStorage.setItem('ventas', JSON.stringify(resp));
-        console.log('Ventas totales cargadas:', resp.length);
-      },
-    });
-  }
 
   /**
    * Este metodo se encarga de obtener el siguiente id de venta

@@ -10,17 +10,21 @@ import { ProductoCompletoDTO } from "src/app/dto/producto/ProductoCompletoDTO";
 import { FormaVenta } from "src/app/dto/formasVenta/FormaVenta";
 import { ActualizarFormaVentaCompletoDTO } from "src/app/dto/producto/ActualizarFormaVentaCompletoDTO";
 import { GuardarFormaVenta } from "src/app/dto/formasVenta/GuardarFormaVenta";
-import { LocalStorageService } from "../shared/local-storage.service";
+import { ProductoDataService } from "../data-services/producto-data.service";
 
+/**
+ * Domain service for product business logic.
+ * Implements Single Responsibility Principle - handles product business operations.
+ * Uses Dependency Inversion - depends on abstractions through injected services.
+ */
 @Injectable({
     providedIn: 'root'
 })
 export class ProductoService {
 
-
     private httpProductoService: HttpProductoService = inject(HttpProductoService);
     private alert: AlertService = inject(AlertService);
-    private localStorageService = inject(LocalStorageService);
+    private productoDataService = inject(ProductoDataService);
 
     /**
      * Este método se encarga de obtener los productos de la base de datos
@@ -31,22 +35,21 @@ export class ProductoService {
     }
 
     /**
-    * Este método se encarga de obtener los productos de la base de datos
+    * Retrieves all products directly from the API.
+    * Removed localStorage caching - now fetches directly from API.
+    * @returns Observable array of ProductoDTO
     */
-    public getTodosProductos() {
-        this.httpProductoService.getTodosLosProductos().subscribe({
-            next: (resp) => {
-                this.localStorageService.setItem('productos', resp);
-            },
-        });
+    public getTodosProductos(): Observable<ProductoDTO[]> {
+        return this.productoDataService.obtenerTodosLosProductos();
     }
 
     /**
-    * Este metodo obtiene los productos del LocalStorage
-    * devuelve una lista de ProductoDTO
+    * Searches products by code or name from the API.
+    * @param searchTerm - The search term to filter products
+    * @returns Observable array of filtered ProductoDTO
     */
-    obtenerProductoLocal(): ProductoDTO[] {
-        return this.localStorageService.getItemOrDefault<ProductoDTO[]>('productos', []);
+    public buscarProductos(searchTerm: string): Observable<ProductoDTO[]> {
+        return this.productoDataService.buscarProductos(searchTerm);
     }
 
     /**

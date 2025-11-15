@@ -4,7 +4,6 @@ import { ClienteAlertService } from 'src/app/utils/cliente-alert/clienteAlert.se
 import { ClienteService } from 'src/app/services/domainServices/cliente.service';
 import { MenuComponent } from '../../menu/menu.component';
 import { PaginationService } from 'src/app/services/shared/pagination.service';
-import { LocalStorageService } from 'src/app/services/shared/local-storage.service';
 
 @Component({
   selector: 'app-home-cliente',
@@ -14,7 +13,6 @@ import { LocalStorageService } from 'src/app/services/shared/local-storage.servi
 export class HomeClienteComponent {
 
   protected clientes: ClienteDTO[];
-  private clientesTodos!: ClienteDTO[];
   protected personaEditar: ClienteDTO;
   protected filtroClientes: ClienteDTO[];
   protected modoOculto: boolean = true;
@@ -25,7 +23,6 @@ export class HomeClienteComponent {
   private clienteService: ClienteService = inject(ClienteService);
   private menuComponent: MenuComponent = inject(MenuComponent);
   private paginationService = inject(PaginationService);
-  private localStorageService = inject(LocalStorageService);
   protected paginaActual: number = 0;
   protected totalPaginas!: number;
   protected paginas: number[] = [];
@@ -41,9 +38,7 @@ export class HomeClienteComponent {
   ngOnInit() {
     this.rangoVisible = this.paginationService.calcularRangoVisible();
     this.obtenerClientes(this.paginaActual);
-    this.obtenerClientesTodos();
     this.updateClienteCount();
-    this.menuComponent.listarClientes();
   }
 
   /**
@@ -53,14 +48,6 @@ export class HomeClienteComponent {
    */
   private updateClienteCount(): void {
     this.totalClientes = this.filtroClientes.length;
-  }
-
-  /**
-   * Este metodo se encarga de guardar en la variable clientesTodos
-   * todos los clientes que se encuentran en LocalStorage con la variable clientes
-   */
-  obtenerClientesTodos() {
-    this.clientesTodos = this.localStorageService.getItemOrDefault<ClienteDTO[]>('clientes', []);
   }
 
   /**
@@ -92,32 +79,32 @@ export class HomeClienteComponent {
   }
 
   /**
-   * Busca un cliente por su cedula, nombre o id
-   * @param cedula 
+   * Busca un cliente por su cedula, nombre o id.
+   * Ahora busca directamente desde la API en lugar de localStorage.
+   * @param event evento de entrada
    */
   protected buscar(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
     const busqueda = inputElement.value.trim().toLowerCase();
 
-    this.filtroClientes = this.clientesTodos.filter((cliente: ClienteDTO) =>
-      this.coincideBusqueda(cliente, busqueda)
-    );
+    if (!busqueda || busqueda === '') {
+      // Si no hay texto de búsqueda, mostrar clientes paginados
+      this.obtenerClientes(this.paginaActual);
+      return;
+    }
 
-    this.updateClienteCount();
-  }
-
-  /**
-   * Este método verifica si un cliente coincide con la búsqueda
-   * @param cliente DTO del cliente
-   * @param busqueda String de búsqueda
-   * @returns boolean que indica si el cliente coincide con la búsqueda
-   */
-  private coincideBusqueda(cliente: ClienteDTO, busqueda: string): boolean {
-    return (
-      cliente.id.toString().includes(busqueda) ||
-      cliente.cedula.toLowerCase().includes(busqueda) ||
-      cliente.nombre.toLowerCase().includes(busqueda)
-    );
+    // Buscar directamente desde la API
+    this.clienteService.buscarClientes(busqueda).subscribe({
+      next: (clientes) => {
+        this.filtroClientes = clientes;
+        this.updateClienteCount();
+      },
+      error: (error) => {
+        console.error('Error al buscar clientes:', error);
+        this.filtroClientes = [];
+        this.updateClienteCount();
+      }
+    });
   }
 
 

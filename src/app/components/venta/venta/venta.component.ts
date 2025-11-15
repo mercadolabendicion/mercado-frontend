@@ -219,41 +219,33 @@ export class VentaComponent implements DoCheck {
   // LISTAR PRODUCTOS Y CLIENTES
 
   /**
-   * Este método se encarga de listar todos los productos disponibles desde localStorage,
-   * donde los datos son actualizados por el endpoint getTodosProductos.
+   * Carga todos los productos disponibles desde la API.
    */
   protected listarProductos(): void {
-    this.menuComponent.listarProductos();
-    this.productos = [];
-    const productosGuardados = localStorage.getItem('productos');
-    if (productosGuardados) {
-      try {
-        this.productos = JSON.parse(productosGuardados) as ProductoDTO[];
-      } catch (err) {
-        console.error('Error al parsear productos desde localStorage:', err);
+    this.productoService.getTodosProductos().subscribe({
+      next: (productos) => {
+        this.productos = productos;
+      },
+      error: (error) => {
+        console.error('Error al cargar productos:', error);
+        this.productos = [];
       }
-    } else {
-      console.warn('No se encontraron productos en localStorage.');
-    }
+    });
   }
 
   /**
-   * Este método se encarga de listar todos los clientes disponibles desde localStorage,
-   * donde los datos son actualizados por el endpoint getTodosClientes.
+   * Carga todos los clientes disponibles desde la API.
    */
   listarClientes(): void {
-    this.menuComponent.listarClientes();
-    this.clientes = [];
-    const clientesGuardados = localStorage.getItem('clientes');
-    if (clientesGuardados) {
-      try {
-        this.clientes = JSON.parse(clientesGuardados) as ClienteDTO[];
-      } catch (err) {
-        console.error('Error al parsear clientes desde localStorage:', err);
+    this.clienteService.getTodosClientes().subscribe({
+      next: (clientes) => {
+        this.clientes = clientes;
+      },
+      error: (error) => {
+        console.error('Error al cargar clientes:', error);
+        this.clientes = [];
       }
-    } else {
-      console.warn('No se encontraron clientes en localStorage.');
-    }
+    });
   }
 
   /**

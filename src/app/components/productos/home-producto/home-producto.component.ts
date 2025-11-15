@@ -12,7 +12,6 @@ import { EditarProductoComponent } from '../editar-producto/editar-producto.comp
 import { MatDialog } from '@angular/material/dialog';
 import { ScannerService } from 'src/app/services/domainServices/scannerService';
 import { PaginationService } from 'src/app/services/shared/pagination.service';
-import { LocalStorageService } from 'src/app/services/shared/local-storage.service';
 
 @Component({
   selector: 'app-home-producto',
@@ -22,7 +21,6 @@ import { LocalStorageService } from 'src/app/services/shared/local-storage.servi
 export class HomeProductoComponent {
 
   private productos: ProductoDTO[];
-  private productosTodos!: ProductoDTO[];
   protected productosEditar!: ProductoDTO;
   protected filtroProductos: ProductoDTO[];
   protected modoOculto: boolean = true;
@@ -46,7 +44,6 @@ export class HomeProductoComponent {
   protected idProductoSeleccionado: string = '';
   private dialog: MatDialog = inject(MatDialog);
   private paginationService = inject(PaginationService);
-  private localStorageService = inject(LocalStorageService);
   rangoVisible: number = 5; // Número de paginas que se van a mostrar en el paginador
   protected buscarInput: HTMLInputElement | null = null;
 
@@ -58,7 +55,6 @@ export class HomeProductoComponent {
 
 
   ngOnInit() {
-    this.obtenerProductosTodos();
     this.rangoVisible = this.paginationService.calcularRangoVisible();
     this.obtenerProductos(0);
     this.updateProductoCount();
@@ -70,15 +66,6 @@ export class HomeProductoComponent {
       fechaCreacion: ['', Validators.required],
       formasVentas: this.fb.array([])
     });
-  }
-
-
-  /**
-   * Este metodo se encarga de guardar en la variable productosTodos
-   * todos los productos que se encuentran en LocalStorage con la variable productos
-   */
-  obtenerProductosTodos() {
-    this.productosTodos = this.localStorageService.getItemOrDefault<ProductoDTO[]>('productos', []);
   }
 
 
@@ -116,30 +103,31 @@ export class HomeProductoComponent {
   }
 
   /**
-   * Este método se encarga de buscar un producto por su código o nombre
-   * @param texto 
+   * Este método se encarga de buscar un producto por su código o nombre.
+   * Ahora busca directamente desde la API en lugar de localStorage.
+   * @param evento evento de teclado
    */
   buscar(evento: Event): void {
     const input = (evento.target as HTMLInputElement).value.toLowerCase();
-    this.obtenerProductosTodos(); // Asegúrate de que productosTodos esté actualizado
-    this.filtroProductos = this.productosTodos.filter((producto: ProductoDTO) =>
-      this.coincideConBusqueda(producto, input)
-    ).sort((a: any, b: any) => a.cantidad - b.cantidad);
-    this.updateProductoCount();
-  }
+    
+    if (!input || input.trim() === '') {
+      // Si no hay texto de búsqueda, mostrar productos paginados
+      this.obtenerProductos(this.paginaActual);
+      return;
+    }
 
-  /**
-   * Este método se encarga de verificar si un producto coincide con la búsqueda
-   * @param producto  producto a verificar
-   * @param texto  texto de búsqueda
-   * @returns  un booleano que indica si el producto coincide con la búsqueda
-   */
-  private coincideConBusqueda(producto: ProductoDTO, texto: string): boolean {
-    const { codigo, nombre } = producto;
-    return (
-      codigo.toString().toLowerCase().includes(texto) ||
-      nombre.toLowerCase().includes(texto)
-    );
+    // Buscar directamente desde la API
+    this.productoService.buscarProductos(input).subscribe({
+      next: (productos) => {
+        this.filtroProductos = productos.sort((a: any, b: any) => a.cantidad - b.cantidad);
+        this.updateProductoCount();
+      },
+      error: (error) => {
+        console.error('Error al buscar productos:', error);
+        this.filtroProductos = [];
+        this.updateProductoCount();
+      }
+    });
   }
 
   /**

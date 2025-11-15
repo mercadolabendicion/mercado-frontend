@@ -5,8 +5,13 @@ import { AlertService } from "src/app/utils/alert.service";
 import { CrearClienteDTO } from "src/app/dto/cliente/CrearClienteDTO";
 import { ClienteDTO } from "src/app/dto/cliente/ClienteDTO";
 import { Page } from "src/app/dto/pageable/Page";
-import { LocalStorageService } from "../shared/local-storage.service";
+import { ClienteDataService } from "../data-services/cliente-data.service";
 
+/**
+ * Domain service for client business logic.
+ * Implements Single Responsibility Principle - handles client business operations.
+ * Uses Dependency Inversion - depends on abstractions through injected services.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +19,7 @@ export class ClienteService {
 
   private clienteService: HttpClientesService = inject(HttpClientesService);
   private alertService: AlertService = inject(AlertService);
-  private localStorageService = inject(LocalStorageService);
+  private clienteDataService = inject(ClienteDataService);
 
 
   crearCliente(cliente: CrearClienteDTO) {
@@ -33,22 +38,21 @@ export class ClienteService {
   }
 
   /**
-  * Este método se encarga de obtener los clientes de la base de datos
+  * Retrieves all clients directly from the API.
+  * Removed localStorage caching - now fetches directly from API.
+  * @returns Observable array of ClienteDTO
   */
-  public getTodosClientes(): void {
-    this.clienteService.getTodosLosClientes().subscribe({
-      next: (resp) => {
-        this.localStorageService.setItem('clientes', resp);
-      },
-    });
+  public getTodosClientes(): Observable<ClienteDTO[]> {
+    return this.clienteDataService.obtenerTodosLosClientes();
   }
 
   /**
-  * Este metodo obtiene los clientes del LocalStorage
-  * devuelve una lista de ClientesDTO
+  * Searches clients by cedula, name or id from the API.
+  * @param searchTerm - The search term to filter clients
+  * @returns Observable array of filtered ClienteDTO
   */
-  obtenerClienteLocal(): ClienteDTO[] {
-    return this.localStorageService.getItemOrDefault<ClienteDTO[]>('clientes', []);
+  public buscarClientes(searchTerm: string): Observable<ClienteDTO[]> {
+    return this.clienteDataService.buscarClientes(searchTerm);
   }
 
 
