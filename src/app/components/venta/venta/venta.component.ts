@@ -656,17 +656,15 @@ export class VentaComponent implements DoCheck {
    * Método para formatear un valor con comas
    */
   formatearValor(event: Event): void {
+    // Llamar una sola vez al servicio de formato y aplicar los valores retornados
     const { valorNumerico, valorFormateado } = this.formatService.formatearValorInput(event);
-    const { valorNumerico, valorFormateado } = this.formatService.formatearValorInput(event);
+
+    // Reset por defecto
     this.descuento = 0;
     this.valorFormateado = valorFormateado;
     this.valorDescuento = valorFormateado;
-    
-    if (valorFormateado !== '') {
-      this.descuento = valorNumerico;
-    this.valorFormateado = valorFormateado;
-    this.valorDescuento = valorFormateado;
-    
+
+    // Si se obtuvo un valor formateado no vacío, asignar el descuento numérico
     if (valorFormateado !== '') {
       this.descuento = valorNumerico;
     }
@@ -675,7 +673,7 @@ export class VentaComponent implements DoCheck {
   /**
    * Este metodo se encarga de cambiar el modo de visualización de la vista
    */
-  protected cambiarModoOculto(): void {
+  cambiarModoOculto(): void {
     this.modoOculto = !this.modoOculto;
   }
 
