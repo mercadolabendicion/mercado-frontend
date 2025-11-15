@@ -150,30 +150,35 @@ def validar_cliente_existe(page, cliente: Cliente) -> bool:
 # Eliminar cliente
 # -------------------------------------------------------------------
 def seleccionar_cliente_en_tabla(page, nombre: str) -> None:
-    """Selecciona un cliente en la tabla haciendo clic en su fila."""
+    """Selecciona un cliente en la tabla haciendo clic en su botón de eliminar."""
     # Buscar la fila que contiene el nombre del cliente y hacer clic en el botón de eliminar
     row = page.locator(f"tr:has-text('{nombre}')").first
-    # En la UI actual el botón de eliminar es un botón con emoji (❌) dentro de la celda con clase "eliminar".
-    # Seleccionamos el primer botón dentro de esa celda para hacer la eliminación.
-    try:
-        row.locator("td.eliminar button").first.click()
-    except:
-        # Fallback a buscar por texto/emoji
-        row.locator("button:has-text('❌'), button:has-text('Eliminar')").first.click()
+    # El botón de eliminar es el que tiene el emoji ❌ dentro de la celda con clase "eliminar"
+    # Hay dos botones en las acciones: Eliminar (❌) y Editar (✏️)
+    # Necesitamos hacer clic específicamente en el botón con ❌
+    row.locator("td.eliminar button:has-text('❌')").first.click()
 
 
 def confirmar_eliminacion(page) -> None:
-    """Confirma el diálogo de eliminación."""
-    # Intentar confirmar el diálogo de eliminación (swal2). Si no aparece, proceder y esperar que la fila desaparezca.
+    """Confirma el diálogo de eliminación de SweetAlert2."""
+    # Esperar a que aparezca el diálogo de SweetAlert2 y hacer clic en el botón de confirmación
     try:
-        page.wait_for_selector(".swal2-confirm", timeout=5000)
-        # Pequeño delay antes de aceptar para evitar condiciones de carrera en la UI
+        # Esperar a que el modal de SweetAlert2 esté visible
+        page.wait_for_selector(".swal2-popup", timeout=10000, state="visible")
+        # Esperar al botón de confirmación específicamente
+        page.wait_for_selector(".swal2-confirm", timeout=5000, state="visible")
+        # Pequeño delay para asegurar que el botón sea interactuable
         page.wait_for_timeout(500)
+        # Hacer clic en el botón de confirmación
         page.click(".swal2-confirm")
-        page.wait_for_timeout(800)
-    except Exception:
-        # No hubo un diálogo; esperar un corto tiempo por la eliminación en la tabla
-        page.wait_for_timeout(800)
+        # Esperar a que el diálogo desaparezca
+        page.wait_for_selector(".swal2-popup", timeout=5000, state="hidden")
+        # Dar tiempo para que la eliminación se procese
+        page.wait_for_timeout(1000)
+    except Exception as e:
+        # Si el diálogo no aparece o hay algún error, registrarlo pero continuar
+        print(f"⚠ Advertencia al confirmar eliminación: {e}")
+        page.wait_for_timeout(1000)
 
 
 def eliminar_cliente(page, cliente: Cliente) -> None:
