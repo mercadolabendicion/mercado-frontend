@@ -188,6 +188,8 @@ def eliminar_cliente(page, cliente: Cliente) -> None:
     """
     navegar_a_clientes(page)
     buscar_cliente(page, cliente["cedula"])
+    # Esperar a que la fila con el nombre del cliente sea visible después de la búsqueda
+    page.locator(f"tr:has-text('{cliente['nombre']}')").first.wait_for(state="visible", timeout=5000)
     seleccionar_cliente_en_tabla(page, cliente["nombre"])
     confirmar_eliminacion(page)
     # Esperar que la fila sea removida del DOM (buscar por cédula, más estable)

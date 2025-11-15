@@ -175,6 +175,8 @@ def eliminar_producto(page, producto: Producto) -> None:
     """
     navegar_a_productos(page)
     buscar_producto(page, producto["codigo"])
+    # Esperar a que la fila con el nombre del producto sea visible después de la búsqueda
+    page.locator(f"tr:has-text('{producto['nombre']}')").first.wait_for(state="visible", timeout=5000)
     seleccionar_producto_en_tabla(page, producto["nombre"])
     confirmar_eliminacion(page)
     # Esperar que la fila del producto (por código) sea removida del DOM
