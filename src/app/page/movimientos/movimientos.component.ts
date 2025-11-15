@@ -53,8 +53,8 @@ export class MovimientosComponent {
   movimientoEnEdicion: Movimiento | null = null;
 
   // Bootstrap modal instances
-  private ingresoModalInstance: any = null;
-  private cierreModalInstance: any = null;
+  private ingresoModalInstance: Modal | null = null;
+  private cierreModalInstance: Modal | null = null;
 
   // Variables para el resumen de cierre de caja
   totalVentasCierre: number = 0;
