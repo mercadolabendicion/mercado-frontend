@@ -49,6 +49,7 @@ def main():
             print(f"✗ El cliente aún existe: {cliente}")
 
     finally:
+        context.close()
         browser.close()
         playwright.stop()
 

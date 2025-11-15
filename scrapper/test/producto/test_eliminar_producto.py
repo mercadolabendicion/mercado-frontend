@@ -49,6 +49,7 @@ def main():
             print(f"✗ El producto aún existe: {producto}")
 
     finally:
+        context.close()
         browser.close()
         playwright.stop()
 

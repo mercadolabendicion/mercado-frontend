@@ -72,6 +72,7 @@ def main():
         print("="*60)
 
     finally:
+        context.close()
         browser.close()
         playwright.stop()
 

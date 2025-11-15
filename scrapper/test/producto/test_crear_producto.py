@@ -34,6 +34,7 @@ def main():
             print(f"✗ Producto que se intentó crear: {producto}")
 
     finally:
+        context.close()
         browser.close()
         playwright.stop()
 
