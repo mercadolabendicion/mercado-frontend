@@ -156,7 +156,12 @@ def seleccionar_cliente_en_tabla(page, nombre: str) -> None:
     # El botón de eliminar es el que tiene el emoji ❌ dentro de la celda con clase "eliminar"
     # Hay dos botones en las acciones: Eliminar (❌) y Editar (✏️)
     # Necesitamos hacer clic específicamente en el botón con ❌
-    row.locator("td.eliminar button:has-text('❌')").first.click()
+    delete_button = row.locator("td.eliminar button:has-text('❌')").first
+    # Asegurar que el botón esté visible y sea clickeable
+    delete_button.wait_for(state="visible", timeout=5000)
+    # Scroll al botón si es necesario y hacer clic con force para asegurar que Angular detecte el evento
+    delete_button.scroll_into_view_if_needed()
+    delete_button.click(force=True)
 
 
 def confirmar_eliminacion(page) -> None:
