@@ -6,12 +6,14 @@ import { ConfiguracionComponent } from './configuracion/configuracion.component'
 import { MenuComponent } from '../components/menu/menu.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { IngresosByVentasComponent } from '../components/charts/ingresos-by-ventas/ingresos-by-ventas.component';
+import { VentasHoyComponent } from '../components/charts/ventas-hoy/ventas-hoy.component';
 
 
 @NgModule({
   declarations: [
     DashboardComponent,
-    IngresosByVentasComponent
+    IngresosByVentasComponent,
+    VentasHoyComponent
   ],
   imports: [
     CommonModule,
@@ -19,7 +21,8 @@ import { IngresosByVentasComponent } from '../components/charts/ingresos-by-vent
   ],
   exports: [
     DashboardComponent,
-    IngresosByVentasComponent
+    IngresosByVentasComponent,
+    VentasHoyComponent
   ]
 })
 export class PageModule { }
