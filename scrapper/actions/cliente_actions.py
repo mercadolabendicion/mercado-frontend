@@ -168,3 +168,49 @@ def validar_cliente_no_existe(page, cliente: Cliente) -> bool:
         return not page.locator(f"text={cliente['nombre']}").first.is_visible(timeout=2000)
     except:
         return True  # Si hay timeout, el elemento no existe
+
+
+# -------------------------------------------------------------------
+# Editar cliente
+# -------------------------------------------------------------------
+def abrir_edicion_cliente(page, nombre: str) -> None:
+    """Abre el formulario de edición de un cliente desde la tabla."""
+    row = page.locator(f"tr:has-text('{nombre}')").first
+    row.locator("button[title='Editar'], button:has-text('Editar')").click()
+    page.wait_for_url("**/app/cliente/**", timeout=60000)
+
+
+def editar_cliente(page, cliente_original: Cliente, nuevos_datos: dict = None) -> Cliente:
+    """
+    Flujo completo para editar un cliente existente.
+    Si nuevos_datos no se proporciona, actualiza solo algunos campos.
+    Retorna el cliente con los datos actualizados.
+    """
+    if nuevos_datos is None:
+        # Actualizar solo algunos campos por defecto
+        r = random.randint(1000000000, 9999999999)
+        nuevos_datos = {
+            "nombre": f"Cliente QA EDITADO {r}",
+            "direccion": f"Avenida {r}",
+        }
+    
+    navegar_a_clientes(page)
+    buscar_cliente(page, cliente_original["cedula"])
+    abrir_edicion_cliente(page, cliente_original["nombre"])
+    
+    # Actualizar campos modificados
+    if "nombre" in nuevos_datos:
+        escribir_lento(page, "input[formcontrolname='nombre']", nuevos_datos["nombre"])
+    if "direccion" in nuevos_datos:
+        escribir_lento(page, "input[formcontrolname='direccion']", nuevos_datos["direccion"])
+    if "correo" in nuevos_datos:
+        escribir_lento(page, "input[formcontrolname='correo']", nuevos_datos["correo"])
+    
+    guardar_cliente(page)
+    refrescar_modulo_clientes(page)
+    
+    # Crear objeto con datos actualizados
+    cliente_editado = cliente_original.copy()
+    cliente_editado.update(nuevos_datos)
+    
+    return cliente_editado

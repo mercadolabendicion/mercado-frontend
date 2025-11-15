@@ -158,3 +158,49 @@ def validar_producto_no_existe(page, producto: Producto) -> bool:
         return not page.locator(f"text={producto['nombre']}").first.is_visible(timeout=2000)
     except:
         return True  # Si hay timeout, el elemento no existe
+
+
+# -------------------------------------------------------------------
+# Editar producto
+# -------------------------------------------------------------------
+def abrir_edicion_producto(page, nombre: str) -> None:
+    """Abre el formulario de edición de un producto desde la tabla."""
+    row = page.locator(f"tr:has-text('{nombre}')").first
+    row.locator("button[title='Editar'], button:has-text('Editar')").click()
+    page.wait_for_url("**/app/producto/**", timeout=60000)
+    page.wait_for_selector("h1.nota:has-text('Registro de productos')")
+
+
+def editar_producto(page, producto_original: Producto, nuevos_datos: dict = None) -> Producto:
+    """
+    Flujo completo para editar un producto existente.
+    Si nuevos_datos no se proporciona, actualiza solo algunos campos.
+    Retorna el producto con los datos actualizados.
+    """
+    if nuevos_datos is None:
+        # Actualizar solo algunos campos por defecto
+        r = random.randint(10000, 99999)
+        nuevos_datos = {
+            "nombre": f"Producto QA EDITADO {r}",
+            "lote": f"LOTE-EDIT-{r}",
+        }
+    
+    navegar_a_productos(page)
+    buscar_producto(page, producto_original["codigo"])
+    abrir_edicion_producto(page, producto_original["nombre"])
+    
+    # Actualizar campos modificados
+    if "nombre" in nuevos_datos:
+        page.fill("input[formcontrolname='nombre']", nuevos_datos["nombre"])
+    if "lote" in nuevos_datos:
+        page.fill("input[formcontrolname='lote']", nuevos_datos["lote"])
+    if "fecha_vencimiento" in nuevos_datos:
+        page.fill("input[formcontrolname='fecha_vencimiento']", nuevos_datos["fecha_vencimiento"])
+    
+    guardar_producto(page)
+    
+    # Crear objeto con datos actualizados
+    producto_editado = producto_original.copy()
+    producto_editado.update(nuevos_datos)
+    
+    return producto_editado

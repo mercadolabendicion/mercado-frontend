@@ -14,17 +14,24 @@ scrapper/
 ├── actions/                       # Acciones modulares por entidad de negocio
 │   ├── __init__.py
 │   ├── cliente_actions.py        # Acciones CRUD para clientes
-│   └── producto_actions.py       # Acciones CRUD para productos
+│   ├── producto_actions.py       # Acciones CRUD para productos
+│   └── venta_actions.py          # Acciones para ventas
 │
 ├── test/                          # Tests E2E independientes
 │   ├── __init__.py
 │   ├── test_login.py             # Test de autenticación
 │   ├── cliente/
 │   │   ├── test_crear_cliente.py
-│   │   └── test_eliminar_cliente.py
-│   └── producto/
-│       ├── test_crear_producto.py
-│       └── test_eliminar_producto.py
+│   │   ├── test_editar_cliente.py
+│   │   ├── test_eliminar_cliente.py
+│   │   └── test_crud_completo_cliente.py
+│   ├── producto/
+│   │   ├── test_crear_producto.py
+│   │   ├── test_editar_producto.py
+│   │   ├── test_eliminar_producto.py
+│   │   └── test_crud_completo_producto.py
+│   └── venta/
+│       └── test_crear_venta.py
 │
 ├── requirements.txt               # Dependencias Python
 └── README.md                     # Esta documentación
@@ -85,14 +92,45 @@ PASSWORD=tu_contraseña
 
 ## 📝 Ejecutar Tests
 
+### Tipos de Tests Disponibles
+
+#### Tests Unitarios (por operación)
+Validan una sola operación CRUD:
+- `test_crear_*.py` - Solo creación
+- `test_editar_*.py` - Creación + edición
+- `test_eliminar_*.py` - Creación + eliminación
+
+#### Tests CRUD Completos
+Validan el ciclo de vida completo (Create, Read, Update, Delete):
+- `test_crud_completo_cliente.py` - Todas las operaciones de cliente
+- `test_crud_completo_producto.py` - Todas las operaciones de producto
+
+#### Tests de Flujos de Negocio
+Validan procesos completos que involucran múltiples entidades:
+- `test_crear_venta.py` - Crea cliente, producto y realiza venta
+
 ### Ejecutar un test individual
 
 ```bash
 # Desde el directorio scrapper
+
+# Tests de Cliente
 python test/cliente/test_crear_cliente.py
+python test/cliente/test_editar_cliente.py
 python test/cliente/test_eliminar_cliente.py
+python test/cliente/test_crud_completo_cliente.py
+
+# Tests de Producto
 python test/producto/test_crear_producto.py
+python test/producto/test_editar_producto.py
 python test/producto/test_eliminar_producto.py
+python test/producto/test_crud_completo_producto.py
+
+# Tests de Venta
+python test/venta/test_crear_venta.py
+
+# Test de Login
+python test/test_login.py
 ```
 
 ### Ejecutar con modo headless
