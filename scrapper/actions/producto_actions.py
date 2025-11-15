@@ -140,26 +140,32 @@ def validar_producto_existe(page, producto: Producto) -> bool:
 def seleccionar_producto_en_tabla(page, nombre: str) -> None:
     """Selecciona un producto en la tabla haciendo clic en su botón de eliminar."""
     row = page.locator(f"tr:has-text('{nombre}')").first
-    # En la UI actual el botón de eliminar muestra un emoji ❌ o está identificado con clases.
-    try:
-        row.locator("button:has-text('❌'), button.eliminar, td.acciones button:has-text('❌')").first.click()
-    except:
-        # Fallback: clicar el primer botón de la celda de acciones
-        row.locator("td.acciones button").first.click()
+    # El botón de eliminar es el que tiene el emoji ❌ y la clase "red-x"
+    # En la UI actual hay tres botones: Ver (👁️), Eliminar (❌), Editar (✏️)
+    # Necesitamos hacer clic específicamente en el botón con ❌
+    row.locator("button:has-text('❌')").first.click()
 
 
 def confirmar_eliminacion(page) -> None:
-    """Confirma el diálogo de eliminación."""
-    # Intentar confirmar el diálogo de eliminación (swal2). Si no aparece, proceder y esperar que la fila desaparezca.
+    """Confirma el diálogo de eliminación de SweetAlert2."""
+    # Esperar a que aparezca el diálogo de SweetAlert2 y hacer clic en el botón de confirmación
     try:
-        page.wait_for_selector(".swal2-confirm", timeout=5000)
-        # Pequeño delay para evitar condiciones de carrera antes de aceptar
+        # Esperar a que el modal de SweetAlert2 esté visible
+        page.wait_for_selector(".swal2-popup", timeout=10000, state="visible")
+        # Esperar al botón de confirmación específicamente
+        page.wait_for_selector(".swal2-confirm", timeout=5000, state="visible")
+        # Pequeño delay para asegurar que el botón sea interactuable
         page.wait_for_timeout(500)
+        # Hacer clic en el botón de confirmación
         page.click(".swal2-confirm")
-        page.wait_for_timeout(800)
-    except Exception:
-        # No hubo un diálogo; esperar un corto tiempo por la eliminación en la tabla
-        page.wait_for_timeout(800)
+        # Esperar a que el diálogo desaparezca
+        page.wait_for_selector(".swal2-popup", timeout=5000, state="hidden")
+        # Dar tiempo para que la eliminación se procese
+        page.wait_for_timeout(1000)
+    except Exception as e:
+        # Si el diálogo no aparece o hay algún error, registrarlo pero continuar
+        print(f"⚠ Advertencia al confirmar eliminación: {e}")
+        page.wait_for_timeout(1000)
 
 
 def eliminar_producto(page, producto: Producto) -> None:
