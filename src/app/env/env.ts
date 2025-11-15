@@ -21,4 +21,5 @@ export const environment = {
   resolucionDian: '123456789',
   nit: '123456789-7',
   correo: 'jorgueurrego@gmail.com'
+  // Esta variable indica si el entorno es de producción o no
 }
