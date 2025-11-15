@@ -32,6 +32,13 @@ import { FormatService } from 'src/app/services/shared/format.service';
   styleUrls: ['./venta.component.css'],
 })
 export class VentaComponent implements DoCheck {
+  // Constants
+  private readonly DEFAULT_CLIENT_RUC = '222222222222';
+  private readonly MIN_WEIGHT_THRESHOLD = 0.01;
+  private readonly WEIGHT_PRECISION_CART = 1000; // 3 decimales
+  private readonly WEIGHT_PRECISION_FORM = 100; // 2 decimales
+  private readonly DECIMAL_BASE = 10;
+  
   @ViewChild('inputProducto') inputProductoRef!: ElementRef<HTMLInputElement>;
   @ViewChild('agregarUsuarioModal') modalElement!: ElementRef;
   @HostListener('document:click', ['$event'])
@@ -133,7 +140,7 @@ export class VentaComponent implements DoCheck {
     this.listarProductos();
     this.listarClientes();
     this.valorDescuento = null;
-    this.setClientePorDefecto('222222222222');
+    this.setClientePorDefecto(this.DEFAULT_CLIENT_RUC);
     this.suscribirseABalanza(); // Suscribirse a los datos de la balanza
   }
 
@@ -423,7 +430,6 @@ export class VentaComponent implements DoCheck {
    * @returns
    */
   public async agregarProducto(): Promise<void> {
-    // console.log(this.formasVentaProductoSeleccionado);
     if (!this.productosForm.valid) {
       Object.values(this.productosForm.controls).forEach((control) =>
         control.markAsTouched()
@@ -443,16 +449,7 @@ export class VentaComponent implements DoCheck {
         this.formasVentaProductoSeleccionado[0]?.nombre ??
         '';
 
-      // const cantidadValida =
-      //   await this.productoService.verificarProductoCantidad(
-      //     cantidad,
-      //     codigo,
-      //     formaVenta
-      //   );
-
-      if (productoEliminado
-        //  || !cantidadValida
-        ) {
+      if (productoEliminado) {
         this.hayStock = false;
         return;
       }
@@ -556,7 +553,7 @@ export class VentaComponent implements DoCheck {
         total + producto.precio * producto.cantidad,
       0
     );
-    this.igv = this.subtotal * (this.porcentajeIva / 100);
+    this.igv = this.subtotal * (this.porcentajeIva / this.DECIMAL_BASE / this.DECIMAL_BASE);
     this.total = this.subtotal - this.descuento;
     this.totalReal = this.total;
   }
@@ -585,23 +582,23 @@ export class VentaComponent implements DoCheck {
    */
   private actualizarFormulario(
     formulario: FormGroup,
-    objetoSeleccionado: any | null,
+    objetoSeleccionado: ProductoDTO | ClienteDTO | null,
     camposMap: { [key: string]: string },
     camposValidar: string[]
   ): void {
     if (objetoSeleccionado) {
       // Actualizar los campos con los valores del objeto seleccionado
       const valores = Object.keys(camposMap).reduce((acc, key) => {
-        acc[key] = objetoSeleccionado[camposMap[key]] || '';
+        acc[key] = (objetoSeleccionado as Record<string, unknown>)[camposMap[key]] || '';
         return acc;
-      }, {} as { [key: string]: any });
+      }, {} as Record<string, unknown>);
       formulario.patchValue(valores);
     } else {
       // Vaciar los campos y añadir validaciones si no hay objeto seleccionado
       const valores = Object.keys(camposMap).reduce((acc, key) => {
         acc[key] = '';
         return acc;
-      }, {} as { [key: string]: any });
+      }, {} as Record<string, unknown>);
       formulario.patchValue(valores);
       camposValidar.forEach((campo) => {
         formulario.get(campo)?.setValidators(Validators.required);
@@ -867,10 +864,10 @@ export class VentaComponent implements DoCheck {
     let cantidadFinal = peso;
 
     // Si el peso es muy pequeño, ignorarlo (evitar ruido)
-    if (cantidadFinal < 0.01) return;
+    if (cantidadFinal < this.MIN_WEIGHT_THRESHOLD) return;
 
     // Redondear a 3 decimales (como está configurado en el servicio)
-    cantidadFinal = Math.round(cantidadFinal * 1000) / 1000;
+    cantidadFinal = Math.round(cantidadFinal * this.WEIGHT_PRECISION_CART) / this.WEIGHT_PRECISION_CART;
 
     // Verificar que no exceda el stock disponible
     const maxDisponible = this.getCantidadDisponible(producto);
@@ -924,10 +921,10 @@ export class VentaComponent implements DoCheck {
     let cantidadFinal = peso;
 
     // Si el peso es muy pequeño, ignorarlo (evitar ruido)
-    if (cantidadFinal < 0.01) return;
+    if (cantidadFinal < this.MIN_WEIGHT_THRESHOLD) return;
 
     // Redondear a 2 decimales
-    cantidadFinal = Math.round(cantidadFinal * 100) / 100;
+    cantidadFinal = Math.round(cantidadFinal * this.WEIGHT_PRECISION_FORM) / this.WEIGHT_PRECISION_FORM;
 
     // Actualizar el formulario
     this.productosForm.patchValue({

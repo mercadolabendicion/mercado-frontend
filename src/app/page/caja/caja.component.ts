@@ -51,7 +51,7 @@ export class CajaComponent {
   private cajaMayorService: CajaMayorService = inject(CajaMayorService);
   private formatService: FormatService = inject(FormatService);
   // Store created bootstrap Modal instances so we can hide/show programmatically
-  private modalInstances: { [id: string]: any } = {};
+  private modalInstances: Record<string, Modal> = {};
 
   private showModal(modalId: string) {
     const modalEl = document.getElementById(modalId);
