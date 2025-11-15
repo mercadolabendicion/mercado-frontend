@@ -189,7 +189,6 @@ export class VentaService {
     this.httpVentaService.obtenerVentasTodas().subscribe({
       next: (resp) => {
         localStorage.setItem('ventas', JSON.stringify(resp));
-        console.log('Ventas totales cargadas:', resp.length);
       },
     });
   }

@@ -87,7 +87,6 @@ export class ProductoService {
      * @returns un booleano que indica si el producto tiene suficiente cantidad
      */
     public verificarProductoCantidad(cantidad: number, codigo: string, formaVenta: string): Promise<boolean> {
-        console.log(`Verificando cantidad: ${cantidad} para producto: ${codigo} con forma de venta: ${formaVenta}`);
         return new Promise((resolve, reject) => {
             this.httpProductoService.verificarCantidad(cantidad, codigo, formaVenta).subscribe({
                 next: (response) => {
