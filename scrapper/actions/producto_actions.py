@@ -115,7 +115,7 @@ def crear_producto(page, producto: Producto = None) -> Producto:
 def buscar_producto(page, codigo: str) -> None:
     """Busca un producto por su código utilizando el campo de escaneo."""
     page.fill("input[placeholder*='Escanear']", codigo)
-    page.wait_for_timeout(800)  # Reduced from 2000ms to 800ms
+    page.wait_for_timeout(1000)  # Give time for table to filter
 
 
 def validar_producto_existe(page, producto: Producto) -> bool:

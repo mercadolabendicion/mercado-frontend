@@ -63,7 +63,9 @@ def escribir_lento(page, selector: str, texto: str, delay: float = 0.05) -> None
 def escribir_en_busqueda(page, texto: str, delay: float = 0.05) -> None:
     """Escribe en el campo de búsqueda de clientes."""
     page.click("input#buscar")
-    page.fill("input#buscar", texto)  # Use fill instead of slow typing
+    page.fill("input#buscar", "")
+    # Use type() to trigger input events needed for Angular reactive forms
+    page.type("input#buscar", texto, delay=delay)
     page.wait_for_timeout(300)
 
 
@@ -126,7 +128,7 @@ def crear_cliente(page, cliente: Cliente = None) -> Cliente:
 def buscar_cliente(page, cedula: str) -> None:
     """Busca un cliente por su cédula utilizando el filtro."""
     escribir_en_busqueda(page, cedula, delay=0.06)
-    page.wait_for_timeout(500)  # Reduced from 1500ms to 500ms
+    page.wait_for_timeout(800)  # Give time for table to filter
 
 
 def validar_cliente_existe(page, cliente: Cliente) -> bool:
