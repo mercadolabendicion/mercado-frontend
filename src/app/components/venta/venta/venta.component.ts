@@ -589,7 +589,7 @@ export class VentaComponent implements DoCheck {
     if (objetoSeleccionado) {
       // Actualizar los campos con los valores del objeto seleccionado
       const valores = Object.keys(camposMap).reduce((acc, key) => {
-        acc[key] = (objetoSeleccionado as Record<string, unknown>)[camposMap[key]] || '';
+        acc[key] = (objetoSeleccionado as unknown as Record<string, unknown>)[camposMap[key]] || '';
         return acc;
       }, {} as Record<string, unknown>);
       formulario.patchValue(valores);
