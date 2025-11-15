@@ -194,9 +194,20 @@ def eliminar_cliente(page, cliente: Cliente) -> None:
     """
     navegar_a_clientes(page)
     buscar_cliente(page, cliente["cedula"])
-    # Esperar a que la fila con el nombre del cliente sea visible después de la búsqueda
-    page.locator(f"tr:has-text('{cliente['nombre']}')").first.wait_for(state="visible", timeout=5000)
-    seleccionar_cliente_en_tabla(page, cliente["nombre"])
+    # Esperar a que la tabla se actualice después de la búsqueda
+    page.wait_for_timeout(1000)
+    # Después de buscar por cédula, el cliente debería ser el único/primero en la tabla
+    # Simplemente hacer clic en el primer botón de eliminar que aparezca
+    try:
+        # Buscar el primer botón de eliminar en la tabla filtrada
+        first_delete_button = page.locator("td.eliminar button:has-text('❌')").first
+        first_delete_button.wait_for(state="visible", timeout=5000)
+        # Usar JavaScript para hacer click
+        first_delete_button.evaluate("button => button.click()")
+        page.wait_for_timeout(500)
+    except Exception as e:
+        print(f"⚠ Error al hacer clic en botón eliminar: {e}")
+    
     confirmar_eliminacion(page)
     # Esperar que la fila sea removida del DOM (buscar por cédula, más estable)
     try:
