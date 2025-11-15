@@ -2,6 +2,8 @@
 
 Este directorio contiene la automatización E2E de los flujos de negocio de la aplicación Mercado La Bendición utilizando Playwright y Python.
 
+> 📚 Para una guía detallada de la arquitectura y mejores prácticas, ver [ARCHITECTURE.md](ARCHITECTURE.md)
+
 ## 📁 Estructura del Proyecto
 
 ```
@@ -91,6 +93,29 @@ PASSWORD=tu_contraseña
 ```
 
 ## 📝 Ejecutar Tests
+
+### Script Maestro de Tests
+
+El script `run_tests.py` facilita la ejecución de tests:
+
+```bash
+# Listar todos los tests disponibles
+python run_tests.py --list
+
+# Ejecutar TODOS los tests
+python run_tests.py
+
+# Ejecutar tests por entidad
+python run_tests.py cliente      # Solo tests de cliente
+python run_tests.py producto     # Solo tests de producto
+python run_tests.py venta        # Solo tests de venta
+
+# Ejecutar tests por categoría
+python run_tests.py crud         # Solo tests CRUD completos
+python run_tests.py crear        # Solo tests de creación
+python run_tests.py editar       # Solo tests de edición
+python run_tests.py eliminar     # Solo tests de eliminación
+```
 
 ### Tipos de Tests Disponibles
 
