@@ -24,10 +24,7 @@ import { ClienteService } from 'src/app/services/domainServices/cliente.service'
 import { ScaleService } from 'src/app/services/domainServices/scale.service';
 import { MenuComponent } from '../../menu/menu.component';
 import { ScannerService } from 'src/app/services/domainServices/scannerService';
-
-// Servicios compartidos
 import { FormatService } from 'src/app/services/shared/format.service';
-import { LocalStorageService } from 'src/app/services/shared/local-storage.service';
 
 @Component({
   selector: 'app-venta',
@@ -76,7 +73,6 @@ export class VentaComponent implements DoCheck {
   private ventaService: VentaService = inject(VentaService);
   private menuComponent: MenuComponent = inject(MenuComponent);
   private formatService: FormatService = inject(FormatService);
-  private localStorageService = inject(LocalStorageService);
 
   // Estados UI / Formularios
   protected formulario!: FormGroup;
@@ -437,6 +433,13 @@ export class VentaComponent implements DoCheck {
         this.formasVentaProductoSeleccionado[0]?.nombre ??
         '';
 
+      // const cantidadValida =
+      //   await this.productoService.verificarProductoCantidad(
+      //     cantidad,
+      //     codigo,
+      //     formaVenta
+      //   );
+
       if (productoEliminado) {
         this.hayStock = false;
         return;
@@ -650,7 +653,13 @@ export class VentaComponent implements DoCheck {
    */
   formatearValor(event: Event): void {
     const { valorNumerico, valorFormateado } = this.formatService.formatearValorInput(event);
+    const { valorNumerico, valorFormateado } = this.formatService.formatearValorInput(event);
     this.descuento = 0;
+    this.valorFormateado = valorFormateado;
+    this.valorDescuento = valorFormateado;
+    
+    if (valorFormateado !== '') {
+      this.descuento = valorNumerico;
     this.valorFormateado = valorFormateado;
     this.valorDescuento = valorFormateado;
     
