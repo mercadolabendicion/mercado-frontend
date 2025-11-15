@@ -3,6 +3,7 @@ import { HistorialCajaMenorDTO } from '../../dto/caja/HistorialCajaMenorDTO';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../env/env';
+import { Page } from 'src/app/dto/pageable/Page';
 
 @Injectable({
     providedIn: 'root'
@@ -21,10 +22,15 @@ export class HttpCajaMenorService {
         return this.http.get<number>(`${this.URL_API}/caja-menor/saldo`);
     }
 
-    public obtenerHistorial(page: number, size: number): Observable<HistorialCajaMenorDTO[]> {
+    public obtenerHistorial(page: number, size: number): Observable<Page<HistorialCajaMenorDTO>> {
         const params = new HttpParams()
             .set('page', page.toString())
             .set('size', size.toString());
-        return this.http.get<HistorialCajaMenorDTO[]>(`${this.URL_API}/caja-menor/historial`, { params });
+
+        return this.http.get<Page<HistorialCajaMenorDTO>>(
+            `${this.URL_API}/caja-menor/historial`,
+            { params }
+        );
     }
+
 }

@@ -166,31 +166,31 @@ export class CajaComponent {
    * Carga el historial de cierres de caja menor desde el backend
    */
   cargarHistorialCajaMenor() {
-    this.cajaMenorService.obtenerHistorial(this.paginaActualMenor, this.tamanioPaginaMenor).subscribe({
+  this.cajaMenorService.obtenerHistorial(this.paginaActualMenor, this.tamanioPaginaMenor)
+    .subscribe({
       next: (historial) => {
-        this.registrosCajaMenor = historial;
-        this.tieneMasRegistrosMenor = historial.length === this.tamanioPaginaMenor;
+        this.registrosCajaMenor = historial.content;   // <--- AQUI
+        this.tieneMasRegistrosMenor = !historial.last; // puedes usar last del backend
       },
-      error: (err) => {
-        console.error('Error al cargar historial de caja menor:', err);
-      }
+      error: (err) => console.error('Error al cargar historial:', err)
     });
-  }
+}
+
 
   /**
    * Carga el historial de cierres de caja mayor desde el backend
    */
-  cargarHistorialCajaMayor() {
-    this.cajaMayorService.obtenerHistorial(this.paginaActualMayor, this.tamanioPaginaMayor).subscribe({
+ cargarHistorialCajaMayor() {
+  this.cajaMayorService.obtenerHistorial(this.paginaActualMayor, this.tamanioPaginaMayor)
+    .subscribe({
       next: (historial) => {
-        this.registrosCajaMayor = historial;
-        this.tieneMasRegistrosMayor = historial.length === this.tamanioPaginaMayor;
+        this.registrosCajaMayor = historial.content;   // <--- AQUI
+        this.tieneMasRegistrosMayor = !historial.last;
       },
-      error: (err) => {
-        console.error('Error al cargar historial de caja mayor:', err);
-      }
+      error: (err) => console.error('Error al cargar historial:', err)
     });
-  }
+}
+
 
   /**
    * Carga el saldo actual desde el backend (caja mayor)

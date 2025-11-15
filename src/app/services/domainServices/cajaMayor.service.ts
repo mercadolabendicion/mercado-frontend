@@ -5,6 +5,7 @@ import { HttpCajaMayorService } from '../http-services/httpCajaMayorService';
 import { AlertService } from "src/app/utils/alert.service";
 import { HistorialCajaMayorDTO } from '../../dto/caja/HistorialCajaMayorDTO';
 import { EstadoCajaMayorDTO } from '../../dto/caja/EstadoCajaMayorDTO';
+import { Page } from 'src/app/dto/pageable/Page';
 
 @Injectable({
     providedIn: 'root'
@@ -60,13 +61,14 @@ export class CajaMayorService {
      * @param page - Número de página (empezando en 0)
      * @param size - Cantidad de registros por página
      */
-    public obtenerHistorial(page: number, size: number): Observable<HistorialCajaMayorDTO[]> {
+    public obtenerHistorial(page: number, size: number): Observable<Page<HistorialCajaMayorDTO>> {
         return this.httpCajaMayorService.obtenerHistorial(page, size).pipe(
             catchError((error) => {
                 console.error('Error al obtener historial:', error);
                 this.alert.simpleErrorAlert('Error al cargar el historial de caja mayor');
-                return of([]);
+                return of(new Page<HistorialCajaMayorDTO>()); // NO retornar []
             })
         );
     }
+
 }
