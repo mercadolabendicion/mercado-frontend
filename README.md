@@ -2,6 +2,49 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.1.
 
+## 🧪 E2E Testing with Playwright
+
+This project includes a comprehensive E2E testing suite built with Playwright and Python. The tests are located in the `scrapper/` directory.
+
+### Quick Start
+
+```bash
+# Navigate to the scrapper directory
+cd scrapper
+
+# Install dependencies
+pip install -r requirements.txt
+playwright install
+
+# Configure environment
+cp .env.example .env  # Edit with your credentials
+
+# Run all tests
+python run_tests.py
+
+# Run specific tests
+python run_tests.py cliente    # Client tests
+python run_tests.py producto   # Product tests
+python run_tests.py venta      # Sales tests
+```
+
+### Documentation
+
+- [Scrapper README](scrapper/README.md) - Complete usage guide
+- [Architecture Guide](scrapper/ARCHITECTURE.md) - Design and best practices
+- [Implementation Summary](scrapper/SUMMARY.md) - What's included
+
+### Features
+
+- ✅ 10 independent E2E tests
+- ✅ 36+ reusable action functions
+- ✅ Modular architecture (Core → Actions → Tests)
+- ✅ Complete CRUD flows for Clients and Products
+- ✅ Integrated Sales flow
+- ✅ Master test runner script
+
+---
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
