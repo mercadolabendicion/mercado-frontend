@@ -24,7 +24,10 @@ import { ClienteService } from 'src/app/services/domainServices/cliente.service'
 import { ScaleService } from 'src/app/services/domainServices/scale.service';
 import { MenuComponent } from '../../menu/menu.component';
 import { ScannerService } from 'src/app/services/domainServices/scannerService';
+
+// Servicios compartidos
 import { FormatService } from 'src/app/services/shared/format.service';
+import { LocalStorageService } from 'src/app/services/shared/local-storage.service';
 
 @Component({
   selector: 'app-venta',
@@ -73,6 +76,7 @@ export class VentaComponent implements DoCheck {
   private ventaService: VentaService = inject(VentaService);
   private menuComponent: MenuComponent = inject(MenuComponent);
   private formatService: FormatService = inject(FormatService);
+  private localStorageService = inject(LocalStorageService);
 
   // Estados UI / Formularios
   protected formulario!: FormGroup;
@@ -231,30 +235,16 @@ export class VentaComponent implements DoCheck {
    * Carga todos los productos disponibles desde la API.
    */
   protected listarProductos(): void {
-    this.productoService.getTodosProductos().subscribe({
-      next: (productos) => {
-        this.productos = productos;
-      },
-      error: (error) => {
-        console.error('Error al cargar productos:', error);
-        this.productos = [];
-      }
-    });
+    this.menuComponent.listarProductos();
+    this.productos = this.localStorageService.getItemOrDefault<ProductoDTO[]>('productos', []);
   }
 
   /**
    * Carga todos los clientes disponibles desde la API.
    */
   listarClientes(): void {
-    this.clienteService.getTodosClientes().subscribe({
-      next: (clientes) => {
-        this.clientes = clientes;
-      },
-      error: (error) => {
-        console.error('Error al cargar clientes:', error);
-        this.clientes = [];
-      }
-    });
+    this.menuComponent.listarClientes();
+    this.clientes = this.localStorageService.getItemOrDefault<ClienteDTO[]>('clientes', []);
   }
 
   /**
@@ -455,7 +445,7 @@ export class VentaComponent implements DoCheck {
       }
 
       const precio = this.productosForm.get('precio')?.value;
-      const precioEntero = parseInt(precio.replace(/[\$,]/g, ''), 10);
+      const precioEntero = this.formatService.parsearValorFormateado(precio);
       const nombre = this.productosForm.get('nombreProducto')?.value;
       const productoExistente = this.listProductos.find(
         (prod) => prod.codigo === codigo && prod.formaVenta === formaVenta
@@ -474,10 +464,6 @@ export class VentaComponent implements DoCheck {
       }
 
       this.resetForms();
-      this.subtotal = this.listProductos.reduce(
-        (total, producto) => total + producto.precio * producto.cantidad,
-        0
-      );
       this.calcularValores();
       this.focusInputProducto();
       if (!this.productosCompletos.find((p) => p.codigo === codigo)) {
