@@ -7,13 +7,15 @@ import { MenuComponent } from '../components/menu/menu.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { IngresosByVentasComponent } from '../components/charts/ingresos-by-ventas/ingresos-by-ventas.component';
 import { VentasHoyComponent } from '../components/charts/ventas-hoy/ventas-hoy.component';
+import { TotalCajaMenorComponent } from '../components/charts/total-caja-menor/total-caja-menor.component';
 
 
 @NgModule({
   declarations: [
     DashboardComponent,
     IngresosByVentasComponent,
-    VentasHoyComponent
+    VentasHoyComponent,
+    TotalCajaMenorComponent
   ],
   imports: [
     CommonModule,
@@ -21,8 +23,6 @@ import { VentasHoyComponent } from '../components/charts/ventas-hoy/ventas-hoy.c
   ],
   exports: [
     DashboardComponent,
-    IngresosByVentasComponent,
-    VentasHoyComponent
   ]
 })
 export class PageModule { }

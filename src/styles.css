@@ -326,7 +326,7 @@ textarea:focus {
 
 .icon-yellow {
   background-color: var(--warning-icon);
-  color: var(--warning-color);
+  color: var(--warning-hover);
 }
 
 .icon-blue {
