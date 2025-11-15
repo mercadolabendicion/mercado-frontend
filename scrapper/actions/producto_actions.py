@@ -32,7 +32,7 @@ def refrescar_modulo_productos(page) -> None:
     page.wait_for_url("**/app/producto", timeout=60000)
     # Esperar el campo de escaneo/búsqueda y dar un poco más de tiempo para que la tabla se actualice
     page.wait_for_selector("input[placeholder*='Escanear']", timeout=60000)
-    page.wait_for_timeout(1500)
+    page.wait_for_timeout(500)  # Reduced from 1500ms to 500ms
 
 
 # -------------------------------------------------------------------
@@ -83,13 +83,13 @@ def guardar_producto(page) -> None:
     try:
         page.wait_for_selector(".swal2-confirm", timeout=5000)
         page.click(".swal2-confirm")
-        page.wait_for_timeout(1000)
+        page.wait_for_timeout(500)  # Reduced from 1000ms to 500ms
     except Exception:
         # Si no aparece swal, esperar cierre del modal o un pequeño retardo
         try:
             page.wait_for_selector("app-editar-producto, .modal", state="hidden", timeout=5000)
         except Exception:
-            page.wait_for_timeout(1200)
+            page.wait_for_timeout(500)  # Reduced from 1200ms to 500ms
 
 
 def crear_producto(page, producto: Producto = None) -> Producto:
@@ -115,7 +115,7 @@ def crear_producto(page, producto: Producto = None) -> Producto:
 def buscar_producto(page, codigo: str) -> None:
     """Busca un producto por su código utilizando el campo de escaneo."""
     page.fill("input[placeholder*='Escanear']", codigo)
-    page.wait_for_timeout(2000)
+    page.wait_for_timeout(800)  # Reduced from 2000ms to 800ms
 
 
 def validar_producto_existe(page, producto: Producto) -> bool:
@@ -155,29 +155,17 @@ def confirmar_eliminacion(page) -> None:
         # Esperar al botón de confirmación específicamente
         page.wait_for_selector(".swal2-confirm", timeout=5000, state="visible")
         # Pequeño delay para asegurar que el botón sea interactuable
-        page.wait_for_timeout(500)
+        page.wait_for_timeout(300)  # Reduced from 500ms to 300ms
         # Hacer clic en el botón de confirmación
         page.click(".swal2-confirm")
         # Esperar a que el diálogo desaparezca
         page.wait_for_selector(".swal2-popup", timeout=5000, state="hidden")
         # Dar tiempo para que la eliminación se procese
-        page.wait_for_timeout(1000)
-        
-        # Manejar alerta de éxito que puede aparecer después de la eliminación
-        try:
-            page.wait_for_selector(".swal2-popup", timeout=5000, state="visible")
-            page.wait_for_selector(".swal2-confirm", timeout=3000, state="visible")
-            page.wait_for_timeout(300)
-            page.click(".swal2-confirm")
-            page.wait_for_selector(".swal2-popup", timeout=5000, state="hidden")
-            page.wait_for_timeout(500)
-        except Exception:
-            # No hay alerta de éxito o ya se cerró
-            pass
+        page.wait_for_timeout(500)  # Reduced from 1000ms to 500ms
     except Exception as e:
         # Si el diálogo no aparece o hay algún error, registrarlo pero continuar
         print(f"⚠ Advertencia al confirmar eliminación: {e}")
-        page.wait_for_timeout(1000)
+        page.wait_for_timeout(500)  # Reduced from 1000ms to 500ms
 
 
 def eliminar_producto(page, producto: Producto) -> None:

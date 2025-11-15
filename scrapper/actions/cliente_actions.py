@@ -31,7 +31,7 @@ def refrescar_modulo_clientes(page) -> None:
     page.wait_for_url("**/app/cliente", timeout=60000)
     # Esperar el campo de búsqueda y dar un poco más de tiempo para que la tabla se actualice
     page.wait_for_selector("input#buscar", timeout=60000)
-    page.wait_for_timeout(1500)
+    page.wait_for_timeout(500)  # Reduced from 1500ms to 500ms
 
 
 # -------------------------------------------------------------------
@@ -63,9 +63,7 @@ def escribir_lento(page, selector: str, texto: str, delay: float = 0.05) -> None
 def escribir_en_busqueda(page, texto: str, delay: float = 0.05) -> None:
     """Escribe en el campo de búsqueda de clientes."""
     page.click("input#buscar")
-    page.fill("input#buscar", "")
-    for c in texto:
-        page.keyboard.type(c, delay=delay)
+    page.fill("input#buscar", texto)  # Use fill instead of slow typing
     page.wait_for_timeout(300)
 
 
@@ -94,14 +92,14 @@ def guardar_cliente(page) -> None:
     try:
         page.wait_for_selector(".swal2-confirm", timeout=5000)
         page.click(".swal2-confirm")
-        page.wait_for_timeout(800)
+        page.wait_for_timeout(500)  # Reduced from 800ms to 500ms
     except Exception:
         # Si no hay swal, esperamos que el modal de edición se cierre o que el listado esté disponible
         try:
             page.wait_for_selector("#editarClienteModal", state="hidden", timeout=5000)
         except Exception:
             # Fallback corto
-            page.wait_for_timeout(1200)
+            page.wait_for_timeout(500)  # Reduced from 1200ms to 500ms
 
 
 def crear_cliente(page, cliente: Cliente = None) -> Cliente:
@@ -128,7 +126,7 @@ def crear_cliente(page, cliente: Cliente = None) -> Cliente:
 def buscar_cliente(page, cedula: str) -> None:
     """Busca un cliente por su cédula utilizando el filtro."""
     escribir_en_busqueda(page, cedula, delay=0.06)
-    page.wait_for_timeout(1500)
+    page.wait_for_timeout(500)  # Reduced from 1500ms to 500ms
 
 
 def validar_cliente_existe(page, cliente: Cliente) -> bool:
@@ -168,29 +166,17 @@ def confirmar_eliminacion(page) -> None:
         # Esperar al botón de confirmación específicamente
         page.wait_for_selector(".swal2-confirm", timeout=5000, state="visible")
         # Pequeño delay para asegurar que el botón sea interactuable
-        page.wait_for_timeout(500)
+        page.wait_for_timeout(300)  # Reduced from 500ms to 300ms
         # Hacer clic en el botón de confirmación
         page.click(".swal2-confirm")
         # Esperar a que el diálogo desaparezca
         page.wait_for_selector(".swal2-popup", timeout=5000, state="hidden")
         # Dar tiempo para que la eliminación se procese
-        page.wait_for_timeout(1000)
-        
-        # Manejar alerta de éxito que puede aparecer después de la eliminación
-        try:
-            page.wait_for_selector(".swal2-popup", timeout=5000, state="visible")
-            page.wait_for_selector(".swal2-confirm", timeout=3000, state="visible")
-            page.wait_for_timeout(300)
-            page.click(".swal2-confirm")
-            page.wait_for_selector(".swal2-popup", timeout=5000, state="hidden")
-            page.wait_for_timeout(500)
-        except Exception:
-            # No hay alerta de éxito o ya se cerró
-            pass
+        page.wait_for_timeout(500)  # Reduced from 1000ms to 500ms
     except Exception as e:
         # Si el diálogo no aparece o hay algún error, registrarlo pero continuar
         print(f"⚠ Advertencia al confirmar eliminación: {e}")
-        page.wait_for_timeout(1000)
+        page.wait_for_timeout(500)  # Reduced from 1000ms to 500ms
 
 
 def eliminar_cliente(page, cliente: Cliente) -> None:

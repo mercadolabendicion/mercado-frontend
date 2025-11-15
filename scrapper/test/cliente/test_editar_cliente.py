@@ -43,6 +43,7 @@ def main():
             print(f"✗ No se encontró el cliente con los cambios")
 
     finally:
+        context.close()
         browser.close()
         playwright.stop()
 

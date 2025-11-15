@@ -34,6 +34,7 @@ def main():
             print(f"✗ Cliente que se intentó crear: {cliente}")
 
     finally:
+        context.close()
         browser.close()
         playwright.stop()
 

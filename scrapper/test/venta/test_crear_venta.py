@@ -53,6 +53,7 @@ def main():
             print(f"✗ No se encontró la venta en la lista")
 
     finally:
+        context.close()
         browser.close()
         playwright.stop()
 
