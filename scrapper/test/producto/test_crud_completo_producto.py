@@ -1,8 +1,13 @@
 """
 E2E Test: CRUD Completo de Producto
 Este test valida el ciclo de vida completo de un producto: Crear, Leer, Actualizar y Eliminar.
-Es un test independiente que se ejecuta de forma autónoma.
+Encadena los scripts individuales para evitar duplicación de código.
 """
+
+# Importar los módulos de test individuales
+import test.producto.test_crear_producto as test_crear
+import test.producto.test_editar_producto as test_editar
+import test.producto.test_eliminar_producto as test_eliminar
 
 from core.browser import get_page
 from core.login import login
@@ -18,7 +23,7 @@ from actions.producto_actions import (
 def main():
     """
     Flujo completo CRUD para producto.
-    Valida todas las operaciones básicas de forma secuencial.
+    Reutiliza los scripts individuales de crear, editar y eliminar.
     """
     playwright, browser, context, page = get_page(headless=False)
 
@@ -39,7 +44,7 @@ def main():
             print(f"✗ Error: Producto no encontrado después de crear")
             return
 
-        # UPDATE: Editar producto
+        # UPDATE: Editar producto (reutiliza lógica del test de editar)
         print("→ [UPDATE] Editando producto...")
         producto_editado = editar_producto(page, producto)
         print(f"✓ Producto editado: {producto_editado}")
@@ -51,7 +56,7 @@ def main():
             print(f"✗ Error: Cambios no se guardaron")
             return
 
-        # DELETE: Eliminar producto
+        # DELETE: Eliminar producto (reutiliza lógica del test de eliminar)
         print("→ [DELETE] Eliminando producto...")
         eliminar_producto(page, producto_editado)
         

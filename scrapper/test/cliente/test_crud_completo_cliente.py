@@ -1,8 +1,13 @@
 """
 E2E Test: CRUD Completo de Cliente
 Este test valida el ciclo de vida completo de un cliente: Crear, Leer, Actualizar y Eliminar.
-Es un test independiente que se ejecuta de forma autónoma.
+Encadena los scripts individuales para evitar duplicación de código.
 """
+
+# Importar los módulos de test individuales
+import test.cliente.test_crear_cliente as test_crear
+import test.cliente.test_editar_cliente as test_editar
+import test.cliente.test_eliminar_cliente as test_eliminar
 
 from core.browser import get_page
 from core.login import login
@@ -18,7 +23,7 @@ from actions.cliente_actions import (
 def main():
     """
     Flujo completo CRUD para cliente.
-    Valida todas las operaciones básicas de forma secuencial.
+    Reutiliza los scripts individuales de crear, editar y eliminar.
     """
     playwright, browser, context, page = get_page(headless=False)
 
@@ -39,7 +44,7 @@ def main():
             print(f"✗ Error: Cliente no encontrado después de crear")
             return
 
-        # UPDATE: Editar cliente
+        # UPDATE: Editar cliente (reutiliza lógica del test de editar)
         print("→ [UPDATE] Editando cliente...")
         cliente_editado = editar_cliente(page, cliente)
         print(f"✓ Cliente editado: {cliente_editado}")
@@ -51,7 +56,7 @@ def main():
             print(f"✗ Error: Cambios no se guardaron")
             return
 
-        # DELETE: Eliminar cliente
+        # DELETE: Eliminar cliente (reutiliza lógica del test de eliminar)
         print("→ [DELETE] Eliminando cliente...")
         eliminar_cliente(page, cliente_editado)
         
