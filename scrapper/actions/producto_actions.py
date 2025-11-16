@@ -32,7 +32,7 @@ def refrescar_modulo_productos(page) -> None:
     page.wait_for_url("**/app/producto", timeout=60000)
     # Esperar el campo de escaneo/búsqueda y dar un poco más de tiempo para que la tabla se actualice
     page.wait_for_selector("input[placeholder*='Escanear']", timeout=60000)
-    page.wait_for_timeout(1500)
+    page.wait_for_timeout(500)  # Reduced from 1500ms to 500ms
 
 
 # -------------------------------------------------------------------
@@ -83,13 +83,13 @@ def guardar_producto(page) -> None:
     try:
         page.wait_for_selector(".swal2-confirm", timeout=5000)
         page.click(".swal2-confirm")
-        page.wait_for_timeout(1000)
+        page.wait_for_timeout(500)  # Reduced from 1000ms to 500ms
     except Exception:
         # Si no aparece swal, esperar cierre del modal o un pequeño retardo
         try:
             page.wait_for_selector("app-editar-producto, .modal", state="hidden", timeout=5000)
         except Exception:
-            page.wait_for_timeout(1200)
+            page.wait_for_timeout(500)  # Reduced from 1200ms to 500ms
 
 
 def crear_producto(page, producto: Producto = None) -> Producto:
@@ -115,7 +115,7 @@ def crear_producto(page, producto: Producto = None) -> Producto:
 def buscar_producto(page, codigo: str) -> None:
     """Busca un producto por su código utilizando el campo de escaneo."""
     page.fill("input[placeholder*='Escanear']", codigo)
-    page.wait_for_timeout(2000)
+    page.wait_for_timeout(1000)  # Give time for table to filter
 
 
 def validar_producto_existe(page, producto: Producto) -> bool:
@@ -143,7 +143,13 @@ def seleccionar_producto_en_tabla(page, nombre: str) -> None:
     # El botón de eliminar es el que tiene el emoji ❌ y la clase "red-x"
     # En la UI actual hay tres botones: Ver (👁️), Eliminar (❌), Editar (✏️)
     # Necesitamos hacer clic específicamente en el botón con ❌
-    row.locator("button:has-text('❌')").first.click()
+    delete_button = row.locator("button:has-text('❌')").first
+    # Asegurar que el botón esté visible
+    delete_button.wait_for(state="visible", timeout=5000)
+    # Usar JavaScript para disparar el click, que es más confiable con Angular
+    delete_button.evaluate("button => button.click()")
+    # Esperar un momento para que Angular procese el evento
+    page.wait_for_timeout(500)
 
 
 def confirmar_eliminacion(page) -> None:
@@ -175,7 +181,20 @@ def eliminar_producto(page, producto: Producto) -> None:
     """
     navegar_a_productos(page)
     buscar_producto(page, producto["codigo"])
-    seleccionar_producto_en_tabla(page, producto["nombre"])
+    # Esperar a que la tabla se actualice después de la búsqueda
+    page.wait_for_timeout(1000)
+    # Después de buscar por código, el producto debería ser el único/primero en la tabla
+    # Simplemente hacer clic en el primer botón de eliminar que aparezca
+    try:
+        # Buscar el primer botón de eliminar en la tabla filtrada
+        first_delete_button = page.locator("button:has-text('❌')").first
+        first_delete_button.wait_for(state="visible", timeout=5000)
+        # Usar JavaScript para hacer click
+        first_delete_button.evaluate("button => button.click()")
+        page.wait_for_timeout(500)
+    except Exception as e:
+        print(f"⚠ Error al hacer clic en botón eliminar: {e}")
+    
     confirmar_eliminacion(page)
     # Esperar que la fila del producto (por código) sea removida del DOM
     try:

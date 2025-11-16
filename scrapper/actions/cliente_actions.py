@@ -31,7 +31,7 @@ def refrescar_modulo_clientes(page) -> None:
     page.wait_for_url("**/app/cliente", timeout=60000)
     # Esperar el campo de búsqueda y dar un poco más de tiempo para que la tabla se actualice
     page.wait_for_selector("input#buscar", timeout=60000)
-    page.wait_for_timeout(1500)
+    page.wait_for_timeout(500)  # Reduced from 1500ms to 500ms
 
 
 # -------------------------------------------------------------------
@@ -64,8 +64,8 @@ def escribir_en_busqueda(page, texto: str, delay: float = 0.05) -> None:
     """Escribe en el campo de búsqueda de clientes."""
     page.click("input#buscar")
     page.fill("input#buscar", "")
-    for c in texto:
-        page.keyboard.type(c, delay=delay)
+    # Use type() to trigger input events needed for Angular reactive forms
+    page.type("input#buscar", texto, delay=delay)
     page.wait_for_timeout(300)
 
 
@@ -94,14 +94,14 @@ def guardar_cliente(page) -> None:
     try:
         page.wait_for_selector(".swal2-confirm", timeout=5000)
         page.click(".swal2-confirm")
-        page.wait_for_timeout(800)
+        page.wait_for_timeout(500)  # Reduced from 800ms to 500ms
     except Exception:
         # Si no hay swal, esperamos que el modal de edición se cierre o que el listado esté disponible
         try:
             page.wait_for_selector("#editarClienteModal", state="hidden", timeout=5000)
         except Exception:
             # Fallback corto
-            page.wait_for_timeout(1200)
+            page.wait_for_timeout(500)  # Reduced from 1200ms to 500ms
 
 
 def crear_cliente(page, cliente: Cliente = None) -> Cliente:
@@ -128,7 +128,7 @@ def crear_cliente(page, cliente: Cliente = None) -> Cliente:
 def buscar_cliente(page, cedula: str) -> None:
     """Busca un cliente por su cédula utilizando el filtro."""
     escribir_en_busqueda(page, cedula, delay=0.06)
-    page.wait_for_timeout(1500)
+    page.wait_for_timeout(800)  # Give time for table to filter
 
 
 def validar_cliente_existe(page, cliente: Cliente) -> bool:
@@ -156,7 +156,13 @@ def seleccionar_cliente_en_tabla(page, nombre: str) -> None:
     # El botón de eliminar es el que tiene el emoji ❌ dentro de la celda con clase "eliminar"
     # Hay dos botones en las acciones: Eliminar (❌) y Editar (✏️)
     # Necesitamos hacer clic específicamente en el botón con ❌
-    row.locator("td.eliminar button:has-text('❌')").first.click()
+    delete_button = row.locator("td.eliminar button:has-text('❌')").first
+    # Asegurar que el botón esté visible
+    delete_button.wait_for(state="visible", timeout=5000)
+    # Usar JavaScript para disparar el click, que es más confiable con Angular
+    delete_button.evaluate("button => button.click()")
+    # Esperar un momento para que Angular procese el evento
+    page.wait_for_timeout(500)
 
 
 def confirmar_eliminacion(page) -> None:
@@ -188,7 +194,20 @@ def eliminar_cliente(page, cliente: Cliente) -> None:
     """
     navegar_a_clientes(page)
     buscar_cliente(page, cliente["cedula"])
-    seleccionar_cliente_en_tabla(page, cliente["nombre"])
+    # Esperar a que la tabla se actualice después de la búsqueda
+    page.wait_for_timeout(1000)
+    # Después de buscar por cédula, el cliente debería ser el único/primero en la tabla
+    # Simplemente hacer clic en el primer botón de eliminar que aparezca
+    try:
+        # Buscar el primer botón de eliminar en la tabla filtrada
+        first_delete_button = page.locator("td.eliminar button:has-text('❌')").first
+        first_delete_button.wait_for(state="visible", timeout=5000)
+        # Usar JavaScript para hacer click
+        first_delete_button.evaluate("button => button.click()")
+        page.wait_for_timeout(500)
+    except Exception as e:
+        print(f"⚠ Error al hacer clic en botón eliminar: {e}")
+    
     confirmar_eliminacion(page)
     # Esperar que la fila sea removida del DOM (buscar por cédula, más estable)
     try:
