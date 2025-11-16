@@ -48,87 +48,80 @@
       <div class="form-group">
         <input type="text" class="form-control" formControlName="lote" placeholder="Lote">
       </div>
-    </form>
 
-
+    <!-- Selector de impuesto (movido antes del título) -->
+    <div class="d-flex align-items-center mb-2" style="gap:8px;">
+      <div class="form-group" style="flex:1; min-width:200px;">
+        <p class="datos mb-1">Tipo de impuesto</p>
+        <select class="form-select" formControlName="impuesto">
+          <option value="" disabled selected>Seleccione un impuesto</option>
+          <option *ngFor="let impuesto of tipoImpuesto; let i = index" [value]="i">{{impuesto}}</option>
+        </select>
+      </div>
+    </div>
     <!-- Nuevo Componente -->
-    <h4 class="mt-4 text-center">Formas de compra y venta</h4>
-    <p class="text-muted mb-2" id="parrafo-desc">
-      A continuación podrá describir de qué maneras compró y cómo se va a vender el producto, definir el valor neto y a
-      qué precios se van a vender cada tipo de producto; Ej: (Cajas, Sellos, Unidades)
-    </p>
-  </div>
-  <form [formGroup]="formulario">
-    <div formArrayName="formasVenta">
-      <div class="formasVenta" *ngFor="let forma of formasVenta.controls; let i = index" [formGroupName]="i">
-        <div class="row mt-2 align-items-center">
-          <div class="row">
-            <div class="col-md-10 col-sm-12">
-              <div class="row cajasFormas">
-                <div class="col-md-3 col-sm-12">
-                  <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
-                </div>
-                <div class="col-md-3 col-sm-12">
-                  <input type="text" (input)="formatearValor($event)" class="form-control"
-                    formControlName="precioCompra" placeholder="$ Compra">
-                </div>
-                <div class="col-md-3 col-sm-12">
-                  <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioVenta"
-                    placeholder="$ Venta">
-                </div>
-                <div class="col-md-3 col-sm-12">
-                  <input type="number" min="0" class="form-control" formControlName="cantidad" placeholder="Cantidad">
-                </div>
-                <div class="col-md-3 col-sm-12">
-                  <input type="number" min="0" class="form-control" formControlName="minimoDisponible" placeholder="Minimo Disp.">
-                </div>
-              </div>
+    <div class="title-with-info d-flex justify-content-center align-items-center" style="gap:8px;">
+      <h4 class="mt-2 mb-0">Formas de compra y venta</h4>
+      <div class="info-wrapper">
+        <button type="button" class="info-icon" aria-label="Información formas">i</button>
+        <div class="tooltip-box" role="tooltip">A continuación podrá describir de qué maneras compró y cómo se va a vender el producto, definir el valor neto y a qué precios se van a vender cada tipo de producto; Ej: (Cajas, Sellos, Unidades)</div>
+      </div>
+    </div>
+
+
+
+    <div class="mb-2">
+      <button type="button" class="btn-lg mt-0 formulario w-100 add-form-button" id="blanco" (click)="agregarFila()">Agregar forma</button>
+    </div>
+
+  <!-- Formas de venta: cada forma es una card y se apilan hacia abajo -->
+  <div formArrayName="formasVenta" class="formasVenta">
+    <div class="formasVenta-grid">
+      <div class="forma-card" *ngFor="let forma of formasVenta.controls; let i = index" [formGroupName]="i">
+        <div class="card-header d-flex justify-content-end align-items-center">
+          <h5 class="mb-0">Forma de venta {{ forma.get('id')?.value }}</h5>
+          <button type="button" class="btn btn-link text-danger p-0" (click)="eliminarFila(i)" aria-label="Eliminar forma">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
+              <g fill="#ff0000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10">
+                <g transform="scale(8,8)">
+                  <path d="M12.21875,10.78125l-1.4375,1.4375l3.78125,3.78125l-3.78125,3.78125l1.4375,1.4375l3.78125,-3.78125l3.78125,3.78125l1.4375,-1.4375l-3.78125,-3.78125l3.78125,-3.78125l-1.4375,-1.4375l-3.78125,3.78125z"></path>
+                </g>
+              </g>
+            </svg>
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group field">
+              <label class="form-label">Nombre (forma)</label>
+              <input type="text" class="form-control" formControlName="nombre" placeholder="Ej.: Caja, Unidad, Sello">
             </div>
-            <div class="col-md-2">
-              <div class="row">
-                <div class="col-md-6 col-sm-12">
-                  <!-- Botón transparente con ícono de "X" -->
-                  <button type="button" class="btn quitarFila btn-transparent p-0" (click)="eliminarFila(i)">
-                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32"
-                      viewBox="0,0,256,256">
-                      <g fill="#ff0000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt"
-                        stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0"
-                        font-family="none" font-weight="none" font-size="none" text-anchor="none"
-                        style="mix-blend-mode: normal">
-                        <g transform="scale(8,8)">
-                          <path
-                            d="M16,3c-7.16797,0 -13,5.83203 -13,13c0,7.16797 5.83203,13 13,13c7.16797,0 13,-5.83203 13,-13c0,-7.16797 -5.83203,-13 -13,-13zM16,5c6.08594,0 11,4.91406 11,11c0,6.08594 -4.91406,11 -11,11c-6.08594,0 -11,-4.91406 -11,-11c0,-6.08594 4.91406,-11 11,-11zM12.21875,10.78125l-1.4375,1.4375l3.78125,3.78125l-3.78125,3.78125l1.4375,1.4375l3.78125,-3.78125l3.78125,3.78125l1.4375,-1.4375l-3.78125,-3.78125l3.78125,-3.78125l-1.4375,-1.4375l-3.78125,3.78125z">
-                          </path>
-                        </g>
-                      </g>
-                    </svg>
-                  </button>
-                </div>
-              </div>
+            <div class="form-group field">
+              <label class="form-label">Valor compra (neto)</label>
+              <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioCompra" placeholder="Ej.: 12000">
+            </div>
+            <div class="form-group field">
+              <label class="form-label">Precio venta (por unidad)</label>
+              <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioVenta" placeholder="Ej.: 15000">
+            </div>
+            <div class="form-group field">
+              <label class="form-label">Cantidad por forma</label>
+              <input type="number" min="0" class="form-control" formControlName="cantidad" placeholder="Ej.: 12">
+            </div>
+            <div class="form-group field">
+              <label class="form-label">Mínimo disponible</label>
+              <input type="number" min="0" class="form-control" formControlName="minimoDisponible" placeholder="Ej.: 2">
             </div>
           </div>
         </div>
       </div>
     </div>
-    <button type="button" class="btn-lg mt-2 formulario w-100" id="blanco" (click)="agregarFila()">+</button>
+  </div>
+
+  <div class="finFormulario mt-3">
+    <button class="btn-lg mt-3 w-100" type="submit" id="azul">Guardar producto</button>
+  </div>
+
   </form>
-  <!-- Fin del nuevo componente -->
-
-  <div class="finFormulario">
-    <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
-      <div class="form-group mt-4">
-        <p class="datos">Tipo de impuesto</p>
-        <select class="form-select" formControlName="impuesto">
-          <option value="" disabled selected>Seleccione un impuesto</option> <!-- Placeholder -->
-          <option *ngFor="let impuesto of tipoImpuesto; let i = index" [value]="i">
-            {{impuesto}}
-          </option>
-        </select>
-      </div>
-
-      <button class="btn-lg mt-5 w-100" type="submit" id="azul">
-        Guardar producto
-      </button>
-    </form>
   </div>
 </div>

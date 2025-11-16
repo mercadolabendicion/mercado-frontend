@@ -19,6 +19,7 @@ import { FormatService } from 'src/app/services/shared/format.service';
 })
 export class NuevoProductoComponent implements OnInit {
   protected formulario!: FormGroup;
+  private nextFormaId: number = 1;
   existe: boolean = false;
   protected tipoImpuesto!: string[];
   protected valorNumerico: number = 0;
@@ -55,8 +56,11 @@ export class NuevoProductoComponent implements OnInit {
   }
 
   agregarFila() {
-    this.formasVenta.push(
+    // Insert new forma at the beginning so newest appears first
+    this.formasVenta.insert(
+      0,
       this.formBuilder.group({
+        id: [this.nextFormaId++],
         nombre: [''],
         precioCompra: [''],
         precioVenta: [''],

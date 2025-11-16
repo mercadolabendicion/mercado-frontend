@@ -13,12 +13,187 @@
   border-radius: var(--radius-lg);
 }
 
+
+/* Card layout for formasVenta: vertical cards with responsive field grid */
 .formasVenta {
-  max-width: 800px;
+  /* Fix width to match `.formulario` so cards align with Código/Nombre/Lote */
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
   margin: 0 auto;
-  padding: 10px;
-  padding-left: 150px;
-  border-radius: var(--radius-lg);
+  /* Match the horizontal inner padding of the main .formulario container (10px)
+     so that cards and the add-button share the same visual width */
+  padding: 0 10px;
+}
+
+.formasVenta-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem; /* reduced vertical gap between cards */
+}
+
+.forma-card {
+  border: 1px solid var(--gray-200, #e6e6e6);
+  border-radius: 6px;
+  padding: 0.6rem; /* increase inner padding as requested */
+  background: var(--bg-white, #fff);
+  box-shadow: var(--shadow-sm, none);
+  width: 100%;
+  box-sizing: border-box; /* ensure padding doesn't change visual width */
+}
+
+/* Entry animation for cards */
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.forma-card {
+  animation: slideFadeIn 220ms ease-out both;
+}
+
+.card-header h5 {
+  font-size: 0.85rem;
+}
+
+.card-body {
+  padding-top: 0.25rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem; /* reduce vertical spacing between fields */
+  align-items: stretch;
+}
+
+.form-group.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 0.7rem;
+  margin-bottom: 2px; /* slightly tighter */
+  color: rgba(0,0,0,0.75);
+}
+
+/* Tooltip for info icon */
+.info-wrapper{
+  position: relative;
+  display: inline-block;
+  overflow: visible; /* allow tooltip to escape container */
+}
+
+.info-icon{
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-primary, #333);
+  border: 1px solid rgba(0,0,0,0.25);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.tooltip-box{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 8px);
+  background: rgba(0,0,0,0.92);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  white-space: normal; /* allow wrapping */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+  /* Wider than tall: allow reasonable horizontal expansion but cap to viewport */
+  min-width: 280px;
+  max-width: min(520px, calc(100% - 32px));
+  max-height: 200px;
+  overflow-y: auto; /* if text is very long, allow scrolling vertically */
+  text-align: left;
+  z-index: 9999; /* ensure it's above other elements */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+/* Header centering for card titles */
+.card-header{
+  position: relative;
+}
+
+.card-header h5{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* spacing between title and add button */
+.title-with-info {
+  margin-bottom: 0.35rem;
+}
+
+.add-form-button {
+  margin-top: 0.6rem;
+}
+
+/* Show tooltip on hover or focus (click gives focus) */
+.info-wrapper:hover .tooltip-box,
+.info-wrapper:focus-within .tooltip-box,
+.info-icon:focus + .tooltip-box {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* Make tooltip adapt on very small screens: full-width with small margins */
+@media (max-width: 480px) {
+  .tooltip-box {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% + 6px);
+    min-width: auto;
+    max-width: calc(100% - 24px);
+    padding: 8px 10px;
+    text-align: left;
+  }
+}
+
+/* Compact inputs inside cards */
+.forma-card .form-control {
+  padding: 0.22rem 0.5rem; /* more compact inputs */
+  font-size: 0.9rem;
+  height: auto;
+}
+
+/* Slightly smaller delete button */
+.card-header .btn {
+  line-height: 1;
+  font-size: 0.9rem;
+}
+
+/* Keep fields stacked vertically always; small paddings for mobile */
+@media (max-width: 576px) {
+  .formasVenta {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
 
 /* Media query para pantallas pequeñas */
