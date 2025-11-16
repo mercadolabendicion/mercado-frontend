@@ -93,23 +93,23 @@
         <div class="card-body">
           <div class="form-row">
             <div class="form-group field">
-              <label class="form-label">Nombre (forma)</label>
+              <label class="form-label">Nombre</label>
               <input type="text" class="form-control" formControlName="nombre" placeholder="Ej.: Caja, Unidad, Sello">
             </div>
             <div class="form-group field">
-              <label class="form-label">Valor compra (neto)</label>
+              <label class="form-label">Valor compra</label>
               <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioCompra" placeholder="Ej.: 12000">
             </div>
             <div class="form-group field">
-              <label class="form-label">Precio venta (por unidad)</label>
+              <label class="form-label">Precio venta</label>
               <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioVenta" placeholder="Ej.: 15000">
             </div>
             <div class="form-group field">
-              <label class="form-label">Cantidad por forma</label>
+              <label class="form-label">Cantidad</label>
               <input type="number" min="0" class="form-control" formControlName="cantidad" placeholder="Ej.: 12">
             </div>
             <div class="form-group field">
-              <label class="form-label">Mínimo disponible</label>
+              <label class="form-label">Mínimo en stock</label>
               <input type="number" min="0" class="form-control" formControlName="minimoDisponible" placeholder="Ej.: 2">
             </div>
           </div>
