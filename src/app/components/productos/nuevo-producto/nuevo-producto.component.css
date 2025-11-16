@@ -151,17 +151,30 @@
 /* Header centering for card titles */
 .card-header{
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  /* provide a minimum height so centered title vertically aligns nicely */
+  min-height: 38px;
 }
 
+/* Center the title horizontally inside the header while keeping the
+   delete button positioned to the right. The title gets constrained width
+   so it doesn't overlap the button on small cards. */
 .card-header h5{
-  position: static;
-  left: auto;
-  transform: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   margin: 0;
   font-size: 0.9rem;
+  text-align: center;
+  width: calc(100% - 72px); /* leave space for action buttons */
+  pointer-events: none; /* allow clicks to hit the button behind if necessary */
+}
+
+.card-header .btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /* spacing between title and add button */
