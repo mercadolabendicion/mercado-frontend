@@ -21,9 +21,9 @@
   max-width: 500px;
   box-sizing: border-box;
   margin: 0 auto;
-  /* Match the horizontal inner padding of the main .formulario container (10px)
-     so that cards and the add-button share the same visual width */
-  padding: 0 10px;
+  /* Do not add extra horizontal padding here — `.formulario` already provides it.
+     Keep padding at 0 so cards align exactly with other form elements. */
+  padding: 0;
 }
 
 .formasVenta-grid {
@@ -189,19 +189,11 @@
 }
 
 /* Keep fields stacked vertically always; small paddings for mobile */
+/* Remove extra padding overrides — rely on `.formulario` responsive padding for alignment */
 @media (max-width: 576px) {
   .formasVenta {
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-}
-
-/* Media query para pantallas pequeñas */
-@media (max-width: 576px) {
-  .formasVenta {
-    padding-left: 15px; /* Reduce el padding izquierdo en pantallas pequeñas */
-    padding-right: 0px;
-    max-width: 100%;    /* Elimina el límite de max-width */
+    padding: 0; /* ensure consistent alignment on small screens */
+    max-width: 100%;
   }
 }
 
