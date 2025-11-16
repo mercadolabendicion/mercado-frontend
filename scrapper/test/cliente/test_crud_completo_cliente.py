@@ -1,29 +1,22 @@
 """
 E2E Test: CRUD Completo de Cliente
 Este test valida el ciclo de vida completo de un cliente: Crear, Leer, Actualizar y Eliminar.
-Encadena los scripts individuales para evitar duplicación de código.
+Encadena los scripts individuales llamando a sus funciones específicas.
 """
-
-# Importar los módulos de test individuales
-import test.cliente.test_crear_cliente as test_crear
-import test.cliente.test_editar_cliente as test_editar
-import test.cliente.test_eliminar_cliente as test_eliminar
 
 from core.browser import get_page
 from core.login import login
-from actions.cliente_actions import (
-    crear_cliente,
-    validar_cliente_existe,
-    editar_cliente,
-    eliminar_cliente,
-    validar_cliente_no_existe
-)
+
+# Importar funciones específicas de cada test
+from test.cliente.test_crear_cliente import ejecutar_crear_cliente
+from test.cliente.test_editar_cliente import ejecutar_editar_cliente
+from test.cliente.test_eliminar_cliente import ejecutar_eliminar_cliente
 
 
 def main():
     """
     Flujo completo CRUD para cliente.
-    Reutiliza los scripts individuales de crear, editar y eliminar.
+    Encadena las funciones de los tests individuales: crear → editar → eliminar.
     """
     playwright, browser, context, page = get_page(headless=False)
 
@@ -31,40 +24,25 @@ def main():
         # Autenticación
         login(page)
 
-        # CREATE: Crear cliente
+        # CREATE: Llamar al script de crear
         print("→ [CREATE] Creando cliente...")
-        cliente = crear_cliente(page)
-        print(f"✓ Cliente creado: {cliente}")
-
-        # READ: Validar que existe
-        print("→ [READ] Validando que el cliente existe...")
-        if validar_cliente_existe(page, cliente):
-            print(f"✓ Cliente encontrado en el sistema")
-        else:
-            print(f"✗ Error: Cliente no encontrado después de crear")
+        cliente = ejecutar_crear_cliente(page)
+        if not cliente:
+            print("✗ Error en CREATE - abortando flujo CRUD")
             return
 
-        # UPDATE: Editar cliente (reutiliza lógica del test de editar)
-        print("→ [UPDATE] Editando cliente...")
-        cliente_editado = editar_cliente(page, cliente)
-        print(f"✓ Cliente editado: {cliente_editado}")
-        
-        # Validar cambios
-        if validar_cliente_existe(page, cliente_editado):
-            print(f"✓ Cambios guardados correctamente")
-        else:
-            print(f"✗ Error: Cambios no se guardaron")
+        # UPDATE: Llamar al script de editar
+        print("\n→ [UPDATE] Editando cliente...")
+        cliente_editado = ejecutar_editar_cliente(page, cliente)
+        if not cliente_editado:
+            print("✗ Error en UPDATE - abortando flujo CRUD")
             return
 
-        # DELETE: Eliminar cliente (reutiliza lógica del test de eliminar)
-        print("→ [DELETE] Eliminando cliente...")
-        eliminar_cliente(page, cliente_editado)
-        
-        # Validar eliminación
-        if validar_cliente_no_existe(page, cliente_editado):
-            print(f"✓ Cliente eliminado correctamente")
-        else:
-            print(f"✗ Error: Cliente no se eliminó")
+        # DELETE: Llamar al script de eliminar
+        print("\n→ [DELETE] Eliminando cliente...")
+        eliminado = ejecutar_eliminar_cliente(page, cliente_editado)
+        if not eliminado:
+            print("✗ Error en DELETE - flujo CRUD incompleto")
             return
 
         print("\n" + "="*60)
