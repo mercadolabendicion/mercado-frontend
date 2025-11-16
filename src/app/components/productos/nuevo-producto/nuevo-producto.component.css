@@ -63,8 +63,23 @@
 
 .forma-row .btn-delete {
   color: #dc3545;
-  padding: 4px;
+  padding: 6px;
   border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Make the delete X icon larger and keep it aligned */
+.btn-delete svg {
+  width: 50px !important;
+  height: 50px !important;
+  display: block;
+}
+
+.btn-delete:hover svg {
+  transform: scale(1.06);
+  transition: transform 120ms ease;
 }
 
 @media (max-width: 880px) {
