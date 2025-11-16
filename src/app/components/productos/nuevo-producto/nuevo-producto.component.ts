@@ -71,6 +71,11 @@ export class NuevoProductoComponent implements OnInit {
   }
 
   eliminarFila(indice: number) {
+    // Prevent removing the last remaining formaVenta
+    if (this.formasVenta.length <= 1) {
+      this.alert.simpleInfoAlert('Debe existir al menos una forma de venta.');
+      return;
+    }
     this.formasVenta.removeAt(indice);
   }
 
