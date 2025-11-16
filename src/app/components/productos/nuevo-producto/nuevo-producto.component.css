@@ -1,5 +1,6 @@
 .formulario {
-  max-width: 500px;
+  /* Allow a wider form to reduce vertical scroll; will still be responsive */
+  max-width: 920px;
   margin: 0 auto;
   margin-top: 50px;
   padding: 10px;
@@ -7,7 +8,7 @@
 }
 
 .finFormulario{
-  max-width: 500px;
+  max-width: 920px;
   margin: 0 auto;
   padding: 10px;
   border-radius: var(--radius-lg);
@@ -16,30 +17,40 @@
 
 /* Card layout for formasVenta: vertical cards with responsive field grid */
 .formasVenta {
-  /* Fix width to match `.formulario` so cards align with Código/Nombre/Lote */
+  /* Allow formasVenta to use the available form width (and expand within it)
+     Cards will be arranged by the inner grid `.formasVenta-grid`. */
   width: 100%;
-  max-width: 500px;
   box-sizing: border-box;
   margin: 0 auto;
-  /* Do not add extra horizontal padding here — `.formulario` already provides it.
-     Keep padding at 0 so cards align exactly with other form elements. */
   padding: 0;
 }
 
 .formasVenta-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem; /* reduced vertical gap between cards */
+  /* Use a responsive 2-column grid on wider screens so cards are wider and
+     shorter (less vertical stacking). Falls back to a single column on small screens. */
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 0.6rem; /* slightly larger gap between cards when multi-column */
+}
+
+@media (min-width: 720px) {
+  .formasVenta-grid {
+    grid-template-columns: repeat(2, minmax(360px, 1fr));
+    align-items: start;
+  }
 }
 
 .forma-card {
   border: 1px solid var(--gray-200, #e6e6e6);
   border-radius: 6px;
-  padding: 0.6rem; /* increase inner padding as requested */
+  /* Reduce vertical space while keeping readable padding */
+  padding: 0.45rem 0.6rem;
   background: var(--bg-white, #fff);
   box-shadow: var(--shadow-sm, none);
   width: 100%;
-  box-sizing: border-box; /* ensure padding doesn't change visual width */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Entry animation for cards */
@@ -67,10 +78,17 @@
 }
 
 .form-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem; /* reduce vertical spacing between fields */
-  align-items: stretch;
+  /* Use an internal grid to place fields side-by-side and reduce card height */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem; /* reduce vertical spacing between fields */
+  align-items: start;
+}
+
+@media (min-width: 520px) {
+  .form-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .form-group.field {
@@ -79,8 +97,8 @@
 }
 
 .form-label {
-  font-size: 0.7rem;
-  margin-bottom: 2px; /* slightly tighter */
+  font-size: 0.72rem;
+  margin-bottom: 4px;
   color: rgba(0,0,0,0.75);
 }
 
@@ -117,29 +135,31 @@
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 0.82rem;
-  white-space: normal; /* allow wrapping */
+  white-space: normal;
   opacity: 0;
   pointer-events: none;
   transition: opacity 160ms ease, transform 160ms ease;
-  /* Wider than tall: allow reasonable horizontal expansion but cap to viewport */
-  min-width: 280px;
+  min-width: 220px;
   max-width: min(520px, calc(100% - 32px));
   max-height: 200px;
-  overflow-y: auto; /* if text is very long, allow scrolling vertically */
+  overflow-y: auto;
   text-align: left;
-  z-index: 9999; /* ensure it's above other elements */
+  z-index: 9999;
   box-shadow: 0 6px 18px rgba(0,0,0,0.2);
 }
 
 /* Header centering for card titles */
 .card-header{
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .card-header h5{
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  position: static;
+  left: auto;
+  transform: none;
   margin: 0;
   font-size: 0.9rem;
 }
@@ -177,8 +197,8 @@
 
 /* Compact inputs inside cards */
 .forma-card .form-control {
-  padding: 0.22rem 0.5rem; /* more compact inputs */
-  font-size: 0.9rem;
+  padding: 0.26rem 0.5rem; /* compact inputs but comfortable */
+  font-size: 0.92rem;
   height: auto;
 }
 
@@ -188,12 +208,17 @@
   font-size: 0.9rem;
 }
 
-/* Keep fields stacked vertically always; small paddings for mobile */
-/* Remove extra padding overrides — rely on `.formulario` responsive padding for alignment */
+/* Small-screen adjustments */
 @media (max-width: 576px) {
   .formasVenta {
     padding: 0; /* ensure consistent alignment on small screens */
     max-width: 100%;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .formasVenta-grid {
+    grid-template-columns: 1fr;
   }
 }
 
