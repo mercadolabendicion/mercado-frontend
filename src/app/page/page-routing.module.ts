@@ -13,6 +13,8 @@ import { ListaVentasComponent } from '../components/venta/lista-ventas/listaVent
 import { VentaComponent } from '../components/venta/venta/venta.component';
 import { FacturacionElectronicaComponent } from './facturacion-electronica/facturacion-electronica.component';
 import { MovimientosComponent } from './movimientos/movimientos.component';
+import { UsuarioComponent } from './usuario/usuario.component';
+import { NuevoUsuarioComponent } from '../components/usuarios/nuevo-usuario/nuevo-usuario.component';
 
 const routes: Routes = [
   {
@@ -74,6 +76,16 @@ const routes: Routes = [
     path: 'facturacion-electronica',
     canActivate: [AuthGuard],
     component: FacturacionElectronicaComponent,
+  },
+  {
+    path: 'usuario',
+    canActivate: [AuthGuard],
+    component: UsuarioComponent,
+  },
+  {
+    path: 'usuario/nuevo',
+    canActivate: [AuthGuard],
+    component: NuevoUsuarioComponent,
   },
 ];
 

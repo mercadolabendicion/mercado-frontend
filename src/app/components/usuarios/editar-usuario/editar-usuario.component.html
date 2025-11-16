@@ -1,0 +1,48 @@
+<form [formGroup]="usuarioForm" (ngSubmit)="guardar()">
+  <div class="mb-3">
+    <label for="nombre" class="form-label">Nombre *</label>
+    <input 
+      type="text" 
+      class="form-control" 
+      id="nombre" 
+      formControlName="nombre"
+      [class.is-invalid]="usuarioForm.get('nombre')?.invalid && usuarioForm.get('nombre')?.touched">
+    <div class="invalid-feedback" *ngIf="usuarioForm.get('nombre')?.hasError('required')">
+      El nombre es requerido
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label for="email" class="form-label">Email *</label>
+    <input 
+      type="email" 
+      class="form-control" 
+      id="email" 
+      formControlName="email"
+      [class.is-invalid]="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched">
+    <div class="invalid-feedback" *ngIf="usuarioForm.get('email')?.hasError('required')">
+      El email es requerido
+    </div>
+    <div class="invalid-feedback" *ngIf="usuarioForm.get('email')?.hasError('email')">
+      El email no es válido
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label for="contrasenia" class="form-label">Nueva Contraseña (dejar en blanco para no cambiar)</label>
+    <input 
+      type="password" 
+      class="form-control" 
+      id="contrasenia" 
+      formControlName="contrasenia"
+      [class.is-invalid]="usuarioForm.get('contrasenia')?.invalid && usuarioForm.get('contrasenia')?.touched">
+    <div class="invalid-feedback" *ngIf="usuarioForm.get('contrasenia')?.hasError('minlength')">
+      La contraseña debe tener al menos 4 caracteres
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelar()">Cancelar</button>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+  </div>
+</form>

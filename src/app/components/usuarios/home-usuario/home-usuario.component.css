@@ -1,0 +1,56 @@
+.contenedor {
+  padding: 20px;
+}
+
+.rojo {
+  color: #dc3545;
+  margin-bottom: 20px;
+}
+
+.buscar input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.totalClientes {
+  color: #6c757d;
+  margin: 15px 0;
+}
+
+.table-container {
+  margin-top: 20px;
+}
+
+.separador {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.eliminar {
+  text-align: center;
+  width: 120px;
+}
+
+.eliminar button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.2em;
+  margin: 0 5px;
+}
+
+.eliminar button.editar {
+  color: #007bff;
+}
+
+.eliminar button:hover {
+  opacity: 0.7;
+}
+
+#nuevo {
+  width: 100%;
+}

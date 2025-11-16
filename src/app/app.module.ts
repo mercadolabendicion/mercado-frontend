@@ -31,6 +31,10 @@ import { AutofocusDirective } from './directives/autofocus.directive';
 import { DecimalPipe } from '@angular/common';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { PageModule } from './page/page.module';
+import { UsuarioComponent } from './page/usuario/usuario.component';
+import { HomeUsuarioComponent } from './components/usuarios/home-usuario/home-usuario.component';
+import { NuevoUsuarioComponent } from './components/usuarios/nuevo-usuario/nuevo-usuario.component';
+import { EditarUsuarioComponent } from './components/usuarios/editar-usuario/editar-usuario.component';
 
 
 @NgModule({
@@ -56,7 +60,11 @@ import { PageModule } from './page/page.module';
     ListaVentasComponent,
     FacturacionElectronicaComponent,
     AutofocusDirective,
-    ScannerModalComponent
+    ScannerModalComponent,
+    UsuarioComponent,
+    HomeUsuarioComponent,
+    NuevoUsuarioComponent,
+    EditarUsuarioComponent
   ],
   imports: [
     BrowserModule,

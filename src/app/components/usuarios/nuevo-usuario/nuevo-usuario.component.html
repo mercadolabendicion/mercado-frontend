@@ -1,0 +1,110 @@
+<div class="contenedor">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="rojo">Crear Nuevo Usuario</h1>
+    </div>
+  </div>
+
+  <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+    <div class="formulario-contenedor">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre *</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nombre" 
+              formControlName="nombre"
+              [class.is-invalid]="formulario.get('nombre')?.invalid && formulario.get('nombre')?.touched">
+            <div class="invalid-feedback" *ngIf="formulario.get('nombre')?.hasError('required')">
+              El nombre es requerido
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email *</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="email" 
+              formControlName="email"
+              [class.is-invalid]="formulario.get('email')?.invalid && formulario.get('email')?.touched">
+            <div class="invalid-feedback" *ngIf="formulario.get('email')?.hasError('required')">
+              El email es requerido
+            </div>
+            <div class="invalid-feedback" *ngIf="formulario.get('email')?.hasError('email')">
+              El email no es válido
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="contrasenia" class="form-label">Contraseña *</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="contrasenia" 
+              formControlName="contrasenia"
+              [class.is-invalid]="formulario.get('contrasenia')?.invalid && formulario.get('contrasenia')?.touched">
+            <div class="invalid-feedback" *ngIf="formulario.get('contrasenia')?.hasError('required')">
+              La contraseña es requerida
+            </div>
+            <div class="invalid-feedback" *ngIf="formulario.get('contrasenia')?.hasError('minlength')">
+              La contraseña debe tener al menos 4 caracteres
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="confirmarContrasenia" class="form-label">Confirmar Contraseña *</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="confirmarContrasenia" 
+              formControlName="confirmarContrasenia"
+              [class.is-invalid]="formulario.get('confirmarContrasenia')?.invalid && formulario.get('confirmarContrasenia')?.touched">
+            <div class="invalid-feedback" *ngIf="formulario.get('confirmarContrasenia')?.hasError('required')">
+              Debe confirmar la contraseña
+            </div>
+            <div class="invalid-feedback" *ngIf="formulario.get('confirmarContrasenia')?.hasError('noCoinciden')">
+              Las contraseñas no coinciden
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="rol" class="form-label">Rol *</label>
+            <select 
+              class="form-control" 
+              id="rol" 
+              formControlName="rol"
+              [class.is-invalid]="formulario.get('rol')?.invalid && formulario.get('rol')?.touched">
+              <option value="USER">Usuario</option>
+              <option value="ADMIN">Administrador</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="formulario.get('rol')?.hasError('required')">
+              El rol es requerido
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary me-2">Guardar</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

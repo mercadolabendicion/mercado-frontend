@@ -1,0 +1,9 @@
+.form-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.modal-footer {
+  padding-top: 20px;
+  border-top: 1px solid #dee2e6;
+}
