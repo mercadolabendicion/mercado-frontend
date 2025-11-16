@@ -162,6 +162,18 @@ def confirmar_eliminacion(page) -> None:
         page.wait_for_selector(".swal2-popup", timeout=5000, state="hidden")
         # Dar tiempo para que la eliminación se procese
         page.wait_for_timeout(1000)
+        
+        # Manejar alerta de éxito que puede aparecer después de la eliminación
+        try:
+            page.wait_for_selector(".swal2-popup", timeout=5000, state="visible")
+            page.wait_for_selector(".swal2-confirm", timeout=3000, state="visible")
+            page.wait_for_timeout(300)
+            page.click(".swal2-confirm")
+            page.wait_for_selector(".swal2-popup", timeout=5000, state="hidden")
+            page.wait_for_timeout(500)
+        except Exception:
+            # No hay alerta de éxito o ya se cerró
+            pass
     except Exception as e:
         # Si el diálogo no aparece o hay algún error, registrarlo pero continuar
         print(f"⚠ Advertencia al confirmar eliminación: {e}")
@@ -219,12 +231,23 @@ def abrir_edicion_producto(page, nombre: str) -> None:
 
     # Esperar por el componente de edición (MatDialog) o por inputs del formulario
     page.wait_for_selector("app-editar-producto, input[formcontrolname='nombre'], input[id='codigo']", timeout=60000)
+    # Dar tiempo adicional para que el formulario se cargue completamente
+    page.wait_for_timeout(1500)
 
 
 def editar_producto(page, producto_original: Producto, nuevos_datos: dict = None) -> Producto:
     """
     Flujo completo para editar un producto existente.
     Si nuevos_datos no se proporciona, actualiza solo algunos campos.
+    nuevos_datos puede incluir:
+    - nombre: nuevo nombre del producto
+    - lote: nuevo lote
+    - fecha_vencimiento: nueva fecha de vencimiento
+    - formas_venta: lista de formas de venta a actualizar
+      Ejemplo: [{"nombre": "Unidad", "precioVenta": "2000"}, ...]
+    - agregar_forma_venta: dict con datos de nueva forma de venta
+      Ejemplo: {"nombre": "Caja", "precioCompra": "5000", "precioVenta": "7000", "cantidad": "12"}
+    
     Retorna el producto con los datos actualizados.
     """
     if nuevos_datos is None:
@@ -239,13 +262,66 @@ def editar_producto(page, producto_original: Producto, nuevos_datos: dict = None
     buscar_producto(page, producto_original["codigo"])
     abrir_edicion_producto(page, producto_original["nombre"])
     
-    # Actualizar campos modificados
+    # Actualizar campos básicos del producto
     if "nombre" in nuevos_datos:
-        page.fill("input[formcontrolname='nombre']", nuevos_datos["nombre"])
+        nombre_input = page.locator("input[formcontrolname='nombre']").first
+        nombre_input.wait_for(state="visible", timeout=10000)
+        nombre_input.fill("")
+        nombre_input.fill(nuevos_datos["nombre"])
+    
     if "lote" in nuevos_datos:
-        page.fill("input[formcontrolname='lote']", nuevos_datos["lote"])
+        lote_input = page.locator("input[formcontrolname='lote']").first
+        lote_input.fill("")
+        lote_input.fill(nuevos_datos["lote"])
+    
     if "fecha_vencimiento" in nuevos_datos:
-        page.fill("input[formcontrolname='fecha_vencimiento']", nuevos_datos["fecha_vencimiento"])
+        fecha_input = page.locator("input[formcontrolname='fecha_vencimiento']").first
+        fecha_input.fill("")
+        fecha_input.fill(nuevos_datos["fecha_vencimiento"])
+    
+    # Actualizar formas de venta existentes
+    if "formas_venta" in nuevos_datos:
+        formas = page.locator("div[formarrayname='formasVenta']")
+        for idx, forma in enumerate(nuevos_datos["formas_venta"]):
+            if "nombre" in forma:
+                formas.locator("input[formcontrolname='nombre']").nth(idx).fill("")
+                formas.locator("input[formcontrolname='nombre']").nth(idx).fill(forma["nombre"])
+            if "precioCompra" in forma:
+                formas.locator("input[formcontrolname='precioCompra']").nth(idx).fill("")
+                formas.locator("input[formcontrolname='precioCompra']").nth(idx).fill(str(forma["precioCompra"]))
+            if "precioVenta" in forma:
+                formas.locator("input[formcontrolname='precioVenta']").nth(idx).fill("")
+                formas.locator("input[formcontrolname='precioVenta']").nth(idx).fill(str(forma["precioVenta"]))
+            if "cantidad" in forma:
+                formas.locator("input[formcontrolname='cantidad']").nth(idx).fill("")
+                formas.locator("input[formcontrolname='cantidad']").nth(idx).fill(str(forma["cantidad"]))
+    
+    # Agregar nueva forma de venta si se especifica
+    if "agregar_forma_venta" in nuevos_datos:
+        # Buscar y hacer clic en el botón para agregar forma de venta
+        try:
+            agregar_btn = page.locator("button:has-text('Agregar forma'), button:has-text('Agregar'), button[title*='Agregar']").first
+            agregar_btn.click()
+            page.wait_for_timeout(800)
+            
+            # Llenar la nueva forma de venta (será la última)
+            formas = page.locator("div[formarrayname='formasVenta']")
+            nueva_forma = nuevos_datos["agregar_forma_venta"]
+            
+            # Contar cuántas formas hay para obtener el índice de la nueva
+            count = formas.locator("input[formcontrolname='nombre']").count()
+            last_idx = count - 1
+            
+            if "nombre" in nueva_forma:
+                formas.locator("input[formcontrolname='nombre']").nth(last_idx).fill(nueva_forma["nombre"])
+            if "precioCompra" in nueva_forma:
+                formas.locator("input[formcontrolname='precioCompra']").nth(last_idx).fill(str(nueva_forma["precioCompra"]))
+            if "precioVenta" in nueva_forma:
+                formas.locator("input[formcontrolname='precioVenta']").nth(last_idx).fill(str(nueva_forma["precioVenta"]))
+            if "cantidad" in nueva_forma:
+                formas.locator("input[formcontrolname='cantidad']").nth(last_idx).fill(str(nueva_forma["cantidad"]))
+        except Exception as e:
+            print(f"⚠ Advertencia al agregar forma de venta: {e}")
     
     guardar_producto(page)
     # Refrescar la vista de productos para asegurarnos de que la tabla esté actualizada
