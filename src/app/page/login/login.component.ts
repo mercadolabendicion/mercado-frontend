@@ -52,7 +52,7 @@ export class LoginComponent {
    */
   protected login(): void {
     if (this.loginForm.invalid) return;
-    const { username, password } = this.loginForm.value;
+    const { username , password } = this.loginForm.value;
     let usuarioLogin = UsuarioLoginDTO.crearUsuarioLogin(username, password);
 
     this.httploginService.login(usuarioLogin)

@@ -61,6 +61,7 @@ export class NuevoProductoComponent implements OnInit {
         precioCompra: [''],
         precioVenta: [''],
         cantidad: [1],
+        minimoDisponible: [0],
       })
     );
   }

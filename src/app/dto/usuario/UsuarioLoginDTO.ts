@@ -1,11 +1,11 @@
 export class UsuarioLoginDTO {
-    usuario!: string;
+    email!: string;
     contrasena!: string;
 
 
-    static crearUsuarioLogin(usuario: string, contrasena: string): UsuarioLoginDTO {
+    static crearUsuarioLogin(email: string, contrasena: string): UsuarioLoginDTO {
         let usuarioLogin = new UsuarioLoginDTO();
-        usuarioLogin.usuario = usuario;
+        usuarioLogin.email = email;
         usuarioLogin.contrasena = contrasena;
         return usuarioLogin;
     }

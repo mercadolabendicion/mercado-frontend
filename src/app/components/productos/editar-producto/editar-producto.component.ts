@@ -104,7 +104,8 @@ export class EditarProductoComponent {
         nombre: [forma.nombre, Validators.required],
         precioCompra: [forma.precioCompra, Validators.required],
         precioVenta: [forma.precioVenta, Validators.required],
-        cantidad: [forma.cantidad, Validators.required]
+        cantidad: [forma.cantidad, Validators.required],
+        minimoDisponible: [forma.minimoStock ?? 0]
       }));
     });
   }

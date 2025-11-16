@@ -9,10 +9,11 @@ export class CrearProductoDTO {
     lote?: string | null;
     impuesto!: string;
     precioCompra!: number;
-    formasVenta!: FormaVenta[];
+  formasVenta!: FormaVenta[];
+  minimoStock?: number;
 
     static crearProductoDTO(codigo: string, nombre: string, fecha_vencimiento: string, lote: string, impuesto: string, 
-      precioCompra: number, formasVenta: FormaVenta[]): CrearProductoDTO {
+      precioCompra: number, formasVenta: FormaVenta[], minimoStock: number = 0): CrearProductoDTO {
 
       let producto = new CrearProductoDTO();
       producto.codigo = codigo;
@@ -33,6 +34,7 @@ export class CrearProductoDTO {
       producto.impuesto = impuesto;
       producto.precioCompra = precioCompra;
       producto.formasVenta = formasVenta;
+      producto.minimoStock = minimoStock;
       return producto;
     }
 }
