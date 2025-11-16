@@ -11,6 +11,7 @@ import { TotalCajaMenorComponent } from '../components/charts/total-caja-menor/t
 import { DiaMasVentasComponent } from '../components/charts/dia-mas-ventas/dia-mas-ventas.component';
 import { DiaMasIngresosComponent } from '../components/charts/dia-mas-ingresos/dia-mas-ingresos.component';
 import { PromedioVentasComponent } from '../components/charts/promedio-ventas/promedio-ventas.component';
+import { ProductoMasVendidoComponent } from '../components/charts/producto-mas-vendido/producto-mas-vendido.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { PromedioVentasComponent } from '../components/charts/promedio-ventas/pr
     TotalCajaMenorComponent,
     DiaMasVentasComponent,
     DiaMasIngresosComponent,
-    PromedioVentasComponent
+    PromedioVentasComponent,
+    ProductoMasVendidoComponent
   ],
   imports: [
     CommonModule,
