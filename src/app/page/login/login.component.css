@@ -134,6 +134,8 @@ input:focus {
 
 .head{
   padding-bottom: 100px;
+  position: relative;
+  top: 50px; /* mueve visualmente el título 50px hacia abajo sin afectar el flujo */
 }
 
 .card {
