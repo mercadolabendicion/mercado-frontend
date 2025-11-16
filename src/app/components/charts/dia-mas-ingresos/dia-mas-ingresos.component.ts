@@ -81,14 +81,16 @@ export class DiaMasIngresosComponent implements AfterViewInit, OnDestroy {
     this.chart = createChartEx(
       container,
       horzBehaviour as unknown as import('lightweight-charts').IHorzScaleBehavior<unknown>,
-      {
+      ({
         width,
         height,
         layout: {
           background: { color: '#fff' },
           textColor: '#000',
         },
-      }
+        // Ocultar la marca de agua (por defecto la librería puede mostrarla)
+        watermark: { visible: false },
+      } as any)
     );
 
     this.baselineSeries = this.chart.addSeries(BaselineSeries, {

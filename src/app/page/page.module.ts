@@ -12,7 +12,9 @@ import { DiaMasVentasComponent } from '../components/charts/dia-mas-ventas/dia-m
 import { DiaMasIngresosComponent } from '../components/charts/dia-mas-ingresos/dia-mas-ingresos.component';
 import { PromedioVentasComponent } from '../components/charts/promedio-ventas/promedio-ventas.component';
 import { ProductoMasVendidoComponent } from '../components/charts/producto-mas-vendido/producto-mas-vendido.component';
-
+import { ListaMasVendidosComponent } from '../components/charts/lista-mas-vendidos/lista-mas-vendidos.component';
+import { ProductosStockMinimoComponent } from '../components/charts/productos-stock-minimo/productos-stock-minimo.component';
+import { ProductosProximosVencerComponent } from '../components/charts/productos-proximos-vencer/productos-proximos-vencer.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,10 @@ import { ProductoMasVendidoComponent } from '../components/charts/producto-mas-v
     DiaMasVentasComponent,
     DiaMasIngresosComponent,
     PromedioVentasComponent,
-    ProductoMasVendidoComponent
+    ProductoMasVendidoComponent,
+    ListaMasVendidosComponent,
+    ProductosStockMinimoComponent,
+    ProductosProximosVencerComponent
   ],
   imports: [
     CommonModule,
