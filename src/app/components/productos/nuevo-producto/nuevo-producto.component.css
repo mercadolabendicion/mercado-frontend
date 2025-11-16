@@ -6,6 +6,11 @@
   border-radius: var(--radius-lg);
 }
 
+/* Ensure form allows visible overflow so the table can extend outside it */
+.formulario {
+  overflow: visible;
+}
+
 .finFormulario{
   max-width: 500px;
   margin: 0 auto;
@@ -29,8 +34,138 @@
 .formasVenta-grid {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem; /* reduced vertical gap between cards */
+  gap: 0.5rem; /* gap between rows */
 }
+
+/* Nueva fila para cada forma de venta: 5 columnas para campos + columna de acciones */
+.forma-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) 48px; /* 5 campos + action column */
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid var(--gray-200, #e6e6e6);
+  border-radius: 6px;
+  background: var(--bg-white, #fff);
+  box-sizing: border-box;
+}
+
+.forma-row .cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.forma-row .action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.forma-row .btn-delete {
+  color: #dc3545;
+  padding: 4px;
+  border: none;
+}
+
+@media (max-width: 880px) {
+  .forma-row {
+    grid-template-columns: repeat(2, 1fr) auto; /* stack fields into 2 columns on smaller screens */
+    grid-auto-rows: auto;
+  }
+}
+
+/* Camera button styling: azul */
+.camera-btn {
+  color: var(--primary-color, #0d6efd);
+  border-color: transparent;
+  background: transparent;
+  padding: 6px 8px;
+}
+
+/* Make inputs in row compact */
+.forma-row .form-control {
+  padding: 0.28rem 0.5rem;
+  font-size: 0.92rem;
+}
+
+/* Table styles for formasVenta */
+.formas-table-wrapper {
+  margin: 8px 0 0 0;
+  /* Allow the table to extend outside the form instead of showing an internal scrollbar */
+  overflow: visible;
+  position: relative;
+  /* Center the table within the form and let it overflow both sides equally */
+  left: 50%;
+  transform: translateX(-50%);
+  padding-bottom: 6px;
+  width: max-content; /* natural width of table */
+}
+
+.formas-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 820px; /* will make the table wider than the form on many screens */
+  box-sizing: border-box;
+  background: transparent;
+}
+
+/* Minimal cell styling: no heavy grid borders, compact padding, keep inputs consistent */
+.formas-table th,
+.formas-table td {
+  padding: 6px 8px;
+  border: none;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.formas-table thead th {
+  background: transparent !important; /* ensure no colored background */
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  font-size: 0.85rem; /* match form labels */
+  padding: 6px 8px;
+}
+
+/* visual separators by row (subtle) */
+.formas-table tbody tr {
+  border-bottom: 1px solid var(--gray-200, #e6e6e6);
+}
+
+/* Ensure table inputs use the same compact styling as other form controls */
+.formas-table .form-control {
+  padding: 6px 8px;
+  font-size: 0.92rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-300, #e9ecef);
+  background: var(--bg-white, #fff);
+}
+
+/* On very small screens reduce min-width so table fits better but still scrolls */
+.formas-table td,
+.formas-table th {
+  white-space: nowrap; /* keep cells readable without wrapping */
+}
+
+/* Responsive: on small screens show an internal horizontal scrollbar (slider) and allow wrapping */
+@media (max-width: 720px) {
+  .formas-table-wrapper {
+    left: 0;
+    transform: none;
+    width: 100%;
+    overflow-x: auto; /* show slider on small screens only */
+  }
+  .formas-table {
+    min-width: 640px; /* smaller min-width on small screens */
+    width: 100%;
+    table-layout: auto;
+  }
+  .formas-table td,
+  .formas-table th {
+    white-space: nowrap; /* keep columns readable but allow scrolling */
+  }
+}
+
+/* If desired, allow the table wrapper to visually extend outside the form by removing overflow hidden from parent. */
 
 /* Grid for the main product form fields: 2 columns on desktop, 1 on mobile */
 .form-grid {
@@ -99,8 +234,16 @@
 }
 
 .form-label {
-  font-size: 0.7rem;
-  margin-bottom: 2px; /* slightly tighter */
+  /* Unified label size across the form and table */
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  color: rgba(0,0,0,0.75);
+}
+
+/* Keep paragraph labels (used by some fields) consistent */
+.datos {
+  font-size: 0.85rem;
+  margin: 0 0 6px 0;
   color: rgba(0,0,0,0.75);
 }
 

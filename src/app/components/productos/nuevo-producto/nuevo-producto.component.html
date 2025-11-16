@@ -13,7 +13,7 @@
           <div class="d-flex align-items-center" style="gap:8px;">
             <input type="text" id="codigo" class="form-control" pattern="[a-zA-Z0-9]*" formControlName="codigo" placeholder="Código"
               (change)="validarCodigo( $event )" (keyup)="validarCodigo( $event )">
-            <button type="button" class="btn btn-outline-secondary" (click)="abrirCamara()" aria-label="Abrir cámara">
+            <button type="button" class="btn camera-btn" (click)="abrirCamara()" aria-label="Abrir cámara">
               <i class="fa-solid fa-camera"></i>
             </button>
           </div>
@@ -73,47 +73,51 @@
       <button type="button" class="btn-lg mt-0 formulario w-100 add-form-button" id="blanco" (click)="agregarFila()">Agregar forma</button>
     </div>
 
-  <!-- Formas de venta: cada forma es una card y se apilan hacia abajo -->
+  <!-- Formas de venta: tabla con un único encabezado; la tabla puede romper el ancho del formulario -->
   <div formArrayName="formasVenta" class="formasVenta">
-    <div class="formasVenta-grid">
-      <div class="forma-card" *ngFor="let forma of formasVenta.controls; let i = index" [formGroupName]="i">
-        <div class="card-header d-flex justify-content-end align-items-center">
-          <h5 class="mb-0">Forma de venta {{ forma.get('id')?.value }}</h5>
-          <button type="button" class="btn btn-link text-danger p-0" (click)="eliminarFila(i)" aria-label="Eliminar forma">
-            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
-              <g fill="#ff0000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10">
-                <g transform="scale(8,8)">
-                  <path d="M12.21875,10.78125l-1.4375,1.4375l3.78125,3.78125l-3.78125,3.78125l1.4375,1.4375l3.78125,-3.78125l3.78125,3.78125l1.4375,-1.4375l-3.78125,-3.78125l3.78125,-3.78125l-1.4375,-1.4375l-3.78125,3.78125z"></path>
-                </g>
-              </g>
-            </svg>
-          </button>
-        </div>
-        <div class="card-body">
-          <div class="form-row">
-            <div class="form-group field">
-              <label class="form-label">Nombre</label>
+    <div class="formas-table-wrapper">
+      <table class="formas-table" role="table">
+        <thead>
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Valor compra</th>
+            <th scope="col">Precio venta</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Mínimo en stock</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let forma of formasVenta.controls; let i = index" [formGroupName]="i">
+            <td>
               <input type="text" class="form-control" formControlName="nombre" placeholder="Ej.: Caja, Unidad, Sello">
-            </div>
-            <div class="form-group field">
-              <label class="form-label">Valor compra</label>
+            </td>
+            <td>
               <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioCompra" placeholder="Ej.: 12000">
-            </div>
-            <div class="form-group field">
-              <label class="form-label">Precio venta</label>
+            </td>
+            <td>
               <input type="text" (input)="formatearValor($event)" class="form-control" formControlName="precioVenta" placeholder="Ej.: 15000">
-            </div>
-            <div class="form-group field">
-              <label class="form-label">Cantidad</label>
+            </td>
+            <td>
               <input type="number" min="0" class="form-control" formControlName="cantidad" placeholder="Ej.: 12">
-            </div>
-            <div class="form-group field">
-              <label class="form-label">Mínimo en stock</label>
+            </td>
+            <td>
               <input type="number" min="0" class="form-control" formControlName="minimoDisponible" placeholder="Ej.: 2">
-            </div>
-          </div>
-        </div>
-      </div>
+            </td>
+            <td class="text-center">
+              <button type="button" class="btn btn-link btn-delete" (click)="eliminarFila(i)" aria-label="Eliminar forma">
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="18" height="18" viewBox="0,0,256,256" aria-hidden="true">
+                  <g fill="#ff0000" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10">
+                    <g transform="scale(8,8)">
+                      <path d="M12.21875,10.78125l-1.4375,1.4375l3.78125,3.78125l-3.78125,3.78125l1.4375,1.4375l3.78125,-3.78125l3.78125,3.78125l1.4375,-1.4375l-3.78125,-3.78125l3.78125,-3.78125l-1.4375,-1.4375l-3.78125,3.78125z"></path>
+                    </g>
+                  </g>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
