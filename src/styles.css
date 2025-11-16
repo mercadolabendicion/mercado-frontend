@@ -342,6 +342,7 @@ textarea:focus {
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   padding: 1.5rem;
+  height: 100%;
 }
 
 .card-header {

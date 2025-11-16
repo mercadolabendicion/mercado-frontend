@@ -1,25 +1,46 @@
 <div class="contenedor">
   <div class="row">
-    <div class="col-8">
+    <div class="col-md-6 col-lg-8">
       <h1>Dashboard de análisis</h1>
       <p>Monitorea el rendimiento de tu negocio en tiempo real</p>
     </div>
-    <div class="col-4">
+    <div class="col-md-6 col-lg-4">
       aqui van las fechas
     </div>
   </div>
   <div class="row">
-    <div class="col-3">
-      <chart-ingresos-by-ventas></chart-ingresos-by-ventas>
-    </div>
-    <div class="col-3">
+    <div class="col-md-6 col-lg-3 mt-4">
       <chart-ventas-hoy></chart-ventas-hoy>
     </div>
-    <div class="col-3">
+    <div class="col-md-6 col-lg-3 mt-4">
       <chart-total-caja-menor></chart-total-caja-menor>
     </div>
-    <div class="col-3">
+    <div class="col-md-6 col-lg-3 mt-4">
       <chart-dia-mas-ventas></chart-dia-mas-ventas>
+    </div>
+    <div class="col-md-6 col-lg-3 mt-4">
+      <chart-dia-mas-ingresos></chart-dia-mas-ingresos>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 col-lg-9 mt-4">
+      <chart-ingresos-by-ventas></chart-ingresos-by-ventas>
+    </div>
+    <div class="d-none d-lg-block col-md-12 col-lg-3">
+      <div class="mt-4">
+        <chart-ventas-hoy></chart-ventas-hoy>
+      </div>
+      <div class="mt-4">
+        <chart-ventas-hoy></chart-ventas-hoy>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="d-block d-lg-none col-md-6 col-lg-3 mt-4">
+      <chart-ventas-hoy></chart-ventas-hoy>
+    </div>
+    <div class="d-block d-lg-none col-md-6 col-lg-3 mt-4">
+      <chart-ventas-hoy></chart-ventas-hoy>
     </div>
   </div>
 </div>

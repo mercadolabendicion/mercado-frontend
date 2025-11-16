@@ -9,6 +9,7 @@ import { IngresosByVentasComponent } from '../components/charts/ingresos-by-vent
 import { VentasHoyComponent } from '../components/charts/ventas-hoy/ventas-hoy.component';
 import { TotalCajaMenorComponent } from '../components/charts/total-caja-menor/total-caja-menor.component';
 import { DiaMasVentasComponent } from '../components/charts/dia-mas-ventas/dia-mas-ventas.component';
+import { DiaMasIngresosComponent } from '../components/charts/dia-mas-ingresos/dia-mas-ingresos.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { DiaMasVentasComponent } from '../components/charts/dia-mas-ventas/dia-m
     IngresosByVentasComponent,
     VentasHoyComponent,
     TotalCajaMenorComponent,
-    DiaMasVentasComponent
+    DiaMasVentasComponent,
+    DiaMasIngresosComponent
   ],
   imports: [
     CommonModule,
