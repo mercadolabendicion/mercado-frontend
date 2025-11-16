@@ -137,6 +137,14 @@ input:focus {
   border-radius: var(--radius-lg);
   border-color: transparent;
   margin: var(--spacing-sm);
+  background: var(--bg-white);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem 1.25rem;
+  width: 100%;
+  max-width: 600px;
+  display: inline-block;
+  height: auto; /* let content define height */
+  overflow: hidden; /* hide any lower overflow */
 }
 
 @media screen and (min-width: 768px) {
