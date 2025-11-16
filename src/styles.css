@@ -356,6 +356,9 @@ textarea:focus {
 
 .card-body {
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card-icon {
@@ -369,7 +372,6 @@ textarea:focus {
 }
 
 .value-in-card {
-    margin-top: 5%;
     font-size: 2rem;
     font-weight: 700;
     color: var(--foreground);
