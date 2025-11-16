@@ -75,7 +75,7 @@ export class EditarClienteComponent {
     
     const { cedula, nombre, direccion, correo} = this.personaForm.value;
     let cliente = ActualizarClienteDTO.crearActualizarClienteDTO(cedula, nombre, direccion, correo);
-    
+
     this.httpClienteService.actualizar(cliente, this.personaEditar.id).subscribe({
       next: ()=>{
         this.alert.simpleSuccessAlert('Cliente editado correctamente');

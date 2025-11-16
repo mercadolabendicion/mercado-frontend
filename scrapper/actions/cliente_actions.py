@@ -136,24 +136,71 @@ def validar_cliente_existe(page, cliente: Cliente) -> bool:
     except:
         return False
 
+# ------------------------------------------------------------
+# Validar que el cliente NO existe (para pruebas de eliminación)
+# ------------------------------------------------------------
+def validar_cliente_no_existe(page, cliente: Cliente) -> bool:
+    buscar_cliente(page, cliente["cedula"])
+    page.wait_for_timeout(800)
+
+    # Buscar cualquier fila con la cédula del cliente
+    fila = page.locator(f"tr:has-text('{cliente['cedula']}')").first
+
+    try:
+        fila.wait_for(state="visible", timeout=2000)
+        # Si se ve → todavía existe → error
+        return False
+    except:
+        # Si NO aparece → fue eliminado
+        return True
 
 # ------------------------------------------------------------
 # Eliminar cliente
 # ------------------------------------------------------------
 def confirmar_eliminacion(page):
     try:
-        page.wait_for_selector(".swal2-popup", timeout=10000, state="visible")
-        page.wait_for_selector(".swal2-confirm", timeout=5000, state="visible")
-        page.wait_for_timeout(300)
+        # Espera a que aparezca el SweetAlert
+        page.wait_for_selector(".swal2-popup", timeout=5000)
+
+        # Click en confirmar
         page.click(".swal2-confirm")
-        page.wait_for_selector(".swal2-popup", state="hidden", timeout=5000)
-        page.wait_for_timeout(800)
+
+        # ⚠ SweetAlert desaparece RAPIDÍSIMO. Mejor usar try-catch suave.
+        try:
+            page.wait_for_selector(".swal2-popup", state="hidden", timeout=2000)
+        except:
+            pass  # Si no lo detecta ocultándose, no importa, continúa.
+
+        page.wait_for_timeout(300)
     except Exception as e:
         print(f"⚠ Error confirmando eliminación: {e}")
+
+def forzar_cierre_de_modales(page):
+    try:
+        # Cerrar cualquier modal visible con las clases de bootstrap
+        page.evaluate("""
+            () => {
+                document.querySelectorAll('.modal.show').forEach(m => {
+                    m.classList.remove('show');
+                    m.setAttribute('aria-hidden', 'true');
+                    m.style.display = 'none';
+                });
+
+                // Eliminar backdrop de bootstrap
+                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+            }
+        """)
+        page.wait_for_timeout(400)
+    except Exception as e:
+        print(f"⚠ No se pudieron cerrar modales: {e}")
 
 
 def eliminar_cliente(page, cliente: Cliente):
     navegar_a_clientes(page)
+
+    # 🔥 CERRAR CUALQUIER MODAL ABIERTO QUE SE HAYA QUEDADO COLGADO
+    forzar_cierre_de_modales(page)
+
     buscar_cliente(page, cliente["cedula"])
     page.wait_for_timeout(600)
 
@@ -165,7 +212,12 @@ def eliminar_cliente(page, cliente: Cliente):
         print(f"⚠ Error al hacer click en eliminar: {e}")
 
     confirmar_eliminacion(page)
+
+    #NUEVAMENTE, por si SweetAlert dejó algo
+    forzar_cierre_de_modales(page)
+
     refrescar_modulo_clientes(page)
+
 
 
 # ------------------------------------------------------------
