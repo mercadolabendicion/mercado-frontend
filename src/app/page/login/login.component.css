@@ -38,7 +38,10 @@
 }
 
 .col-left {
-  margin-top: 2%;
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .label {
@@ -142,9 +145,12 @@ input:focus {
   padding: 0.85rem 1rem; /* compacto */
   width: 100%;
   max-width: 600px;
-  display: inline-block; /* no cambiar layout del contenedor */
+  display: block;
   height: auto; /* que el contenido marque la altura */
   overflow: hidden; /* elimina la parte inferior sobrante visualmente */
+  margin-top: auto; /* centra verticalmente dentro de .col-left */
+  margin-bottom: auto;
+  align-self: center; /* centra horizontalmente sin afectar .head */
 }
 
 @media screen and (min-width: 768px) {
