@@ -127,6 +127,25 @@
   text-align: left;
 }
 
+/* Extra specific rules to override any Bootstrap/table theme that sets a blue header */
+.formulario .formas-table thead,
+.formulario .formas-table thead tr,
+.formulario .formas-table thead th {
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  color: var(--text-primary, #333) !important;
+}
+
+/* Also ensure no hover/active styles add color */
+.formulario .formas-table thead th:hover,
+.formulario .formas-table thead th:active,
+.formulario .formas-table thead th:focus {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
 /* visual separators by row (subtle) */
 .formas-table tbody tr {
   border-bottom: 1px solid var(--gray-200, #e6e6e6);
