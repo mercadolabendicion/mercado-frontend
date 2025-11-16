@@ -1,6 +1,5 @@
 .formulario {
-  /* Allow a wider form to reduce vertical scroll; will still be responsive */
-  max-width: 920px;
+  max-width: 500px;
   margin: 0 auto;
   margin-top: 50px;
   padding: 10px;
@@ -8,7 +7,7 @@
 }
 
 .finFormulario{
-  max-width: 920px;
+  max-width: 500px;
   margin: 0 auto;
   padding: 10px;
   border-radius: var(--radius-lg);
@@ -17,40 +16,50 @@
 
 /* Card layout for formasVenta: vertical cards with responsive field grid */
 .formasVenta {
-  /* Allow formasVenta to use the available form width (and expand within it)
-     Cards will be arranged by the inner grid `.formasVenta-grid`. */
+  /* Fix width to match `.formulario` so cards align with Código/Nombre/Lote */
   width: 100%;
+  max-width: 500px;
   box-sizing: border-box;
   margin: 0 auto;
+  /* Do not add extra horizontal padding here — `.formulario` already provides it.
+     Keep padding at 0 so cards align exactly with other form elements. */
   padding: 0;
 }
 
 .formasVenta-grid {
-  /* Use a responsive 2-column grid on wider screens so cards are wider and
-     shorter (less vertical stacking). Falls back to a single column on small screens. */
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 0.6rem; /* slightly larger gap between cards when multi-column */
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem; /* reduced vertical gap between cards */
 }
 
-@media (min-width: 720px) {
-  .formasVenta-grid {
-    grid-template-columns: repeat(2, minmax(360px, 1fr));
-    align-items: start;
+/* Grid for the main product form fields: 2 columns on desktop, 1 on mobile */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 8px;
+}
+
+.form-grid .full-span {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 576px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 }
 
 .forma-card {
   border: 1px solid var(--gray-200, #e6e6e6);
   border-radius: 6px;
-  /* Reduce vertical space while keeping readable padding */
-  padding: 0.45rem 0.6rem;
+  padding: 0.6rem; /* increase inner padding as requested */
   background: var(--bg-white, #fff);
   box-shadow: var(--shadow-sm, none);
   width: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
+  box-sizing: border-box; /* ensure padding doesn't change visual width */
 }
 
 /* Entry animation for cards */
@@ -78,17 +87,10 @@
 }
 
 .form-row {
-  /* Use an internal grid to place fields side-by-side and reduce card height */
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.45rem; /* reduce vertical spacing between fields */
-  align-items: start;
-}
-
-@media (min-width: 520px) {
-  .form-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem; /* reduce vertical spacing between fields */
+  align-items: stretch;
 }
 
 .form-group.field {
@@ -97,8 +99,8 @@
 }
 
 .form-label {
-  font-size: 0.72rem;
-  margin-bottom: 4px;
+  font-size: 0.7rem;
+  margin-bottom: 2px; /* slightly tighter */
   color: rgba(0,0,0,0.75);
 }
 
@@ -135,46 +137,31 @@
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 0.82rem;
-  white-space: normal;
+  white-space: normal; /* allow wrapping */
   opacity: 0;
   pointer-events: none;
   transition: opacity 160ms ease, transform 160ms ease;
-  min-width: 220px;
+  /* Wider than tall: allow reasonable horizontal expansion but cap to viewport */
+  min-width: 280px;
   max-width: min(520px, calc(100% - 32px));
   max-height: 200px;
-  overflow-y: auto;
+  overflow-y: auto; /* if text is very long, allow scrolling vertically */
   text-align: left;
-  z-index: 9999;
+  z-index: 9999; /* ensure it's above other elements */
   box-shadow: 0 6px 18px rgba(0,0,0,0.2);
 }
 
 /* Header centering for card titles */
 .card-header{
   position: relative;
-  /* provide a minimum height so centered title vertically aligns nicely */
-  min-height: 38px;
 }
 
-/* Center the title horizontally inside the header while keeping the
-   delete button positioned to the right. The title gets constrained width
-   so it doesn't overlap the button on small cards. */
 .card-header h5{
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   margin: 0;
   font-size: 0.9rem;
-  text-align: center;
-  width: calc(100% - 72px); /* leave space for action buttons */
-  pointer-events: none; /* allow clicks to hit the button behind if necessary */
-}
-
-.card-header .btn {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 /* spacing between title and add button */
@@ -210,8 +197,8 @@
 
 /* Compact inputs inside cards */
 .forma-card .form-control {
-  padding: 0.26rem 0.5rem; /* compact inputs but comfortable */
-  font-size: 0.92rem;
+  padding: 0.22rem 0.5rem; /* more compact inputs */
+  font-size: 0.9rem;
   height: auto;
 }
 
@@ -221,17 +208,12 @@
   font-size: 0.9rem;
 }
 
-/* Small-screen adjustments */
+/* Keep fields stacked vertically always; small paddings for mobile */
+/* Remove extra padding overrides — rely on `.formulario` responsive padding for alignment */
 @media (max-width: 576px) {
   .formasVenta {
     padding: 0; /* ensure consistent alignment on small screens */
     max-width: 100%;
-  }
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  .formasVenta-grid {
-    grid-template-columns: 1fr;
   }
 }
 

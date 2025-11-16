@@ -5,60 +5,59 @@
       <p class="text-muted mb-2">Recuerde ingresar todos los campos</p>
     </div>
     <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
-      <div class="row">
-        <div class="col-8">
-          <p class="mt-3">Código:</p>
+      <!-- Grid de 2 columnas para campos principales -->
+      <div class="form-grid">
+        <!-- Código (con botón de cámara dentro) -->
+        <div class="form-group field">
+          <label class="form-label">Código</label>
+          <div class="d-flex align-items-center" style="gap:8px;">
+            <input type="text" id="codigo" class="form-control" pattern="[a-zA-Z0-9]*" formControlName="codigo" placeholder="Código"
+              (change)="validarCodigo( $event )" (keyup)="validarCodigo( $event )">
+            <button type="button" class="btn btn-outline-secondary" (click)="abrirCamara()" aria-label="Abrir cámara">
+              <i class="fa-solid fa-camera"></i>
+            </button>
+          </div>
+          <span class="text-danger"
+            *ngIf="formulario.get('codigoExistente') && formulario.get('codigoExistente')!.errors && formulario.get('codigoExistente')!.touched">
+            El código ya existe
+          </span>
+          <span class="text-danger"
+            *ngIf="formulario.get('codigo') && formulario.get('codigo')!.errors && formulario.get('codigo')!.touched">
+            Por favor, ingrese un valor válido.
+          </span>
         </div>
-        <div class="col-4 justify-content-end d-flex">
-          <button class="btn btn-primary bg-transparent text-primary border-0" (click)="abrirCamara()">
-            <i class="fa-solid fa-camera"></i>
-          </button>
+
+        <!-- Nombre -->
+        <div class="form-group field">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
+          <span class="text-danger"
+            *ngIf="formulario.get('nombre') && formulario.get('nombre')!.errors && formulario.get('nombre')!.touched">
+            Por favor, ingrese un nombre válido
+          </span>
+        </div>
+
+        <!-- Fecha de vencimiento -->
+        <div class="form-group field">
+          <label class="form-label">Fecha de vencimiento</label>
+          <input type="date" class="form-control" formControlName="fecha_vencimiento" placeholder="Fecha de Vencimiento">
+        </div>
+
+        <!-- Lote -->
+        <div class="form-group field">
+          <label class="form-label">Lote</label>
+          <input type="text" class="form-control" formControlName="lote" placeholder="Lote">
+        </div>
+
+        <!-- Tipo de impuesto: ocupa las 2 columnas -->
+        <div class="form-group field full-span">
+          <label class="form-label">Tipo de impuesto</label>
+          <select class="form-select" formControlName="impuesto">
+            <option value="" disabled selected>Seleccione un impuesto</option>
+            <option *ngFor="let impuesto of tipoImpuesto; let i = index" [value]="i">{{impuesto}}</option>
+          </select>
         </div>
       </div>
-
-      <div class="form-group">
-        <input type="text" id="codigo" class="form-control" pattern="[a-zA-Z0-9]*" formControlName="codigo" placeholder="Código"
-          (change)="validarCodigo( $event )" (keyup)="validarCodigo( $event )">
-
-        <span class="text-danger"
-          *ngIf="formulario.get('codigoExistente') && formulario.get('codigoExistente')!.errors && formulario.get('codigoExistente')!.touched">
-          El código ya existe
-        </span>
-        <span class="text-danger"
-          *ngIf="formulario.get('codigo') && formulario.get('codigo')!.errors && formulario.get('codigo')!.touched">
-          Por favor, ingrese un valor válido.
-        </span>
-      </div>
-
-      <p class="datos">Nombre:</p>
-      <div class="form-group">
-        <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
-        <span class="text-danger"
-          *ngIf="formulario.get('nombre') && formulario.get('nombre')!.errors && formulario.get('nombre')!.touched">
-          Por favor, ingrese un nombre válido
-        </span>
-      </div>
-
-      <p class="datos">Fecha de vencimiento:</p>
-      <div class="form-group">
-        <input type="date" class="form-control" formControlName="fecha_vencimiento" placeholder="Fecha de Vencimiento">
-      </div>
-
-      <p class="datos">Lote:</p>
-      <div class="form-group">
-        <input type="text" class="form-control" formControlName="lote" placeholder="Lote">
-      </div>
-
-    <!-- Selector de impuesto (movido antes del título) -->
-    <div class="d-flex align-items-center mb-2" style="gap:8px;">
-      <div class="form-group" style="flex:1; min-width:200px;">
-        <p class="datos mb-1">Tipo de impuesto</p>
-        <select class="form-select" formControlName="impuesto">
-          <option value="" disabled selected>Seleccione un impuesto</option>
-          <option *ngFor="let impuesto of tipoImpuesto; let i = index" [value]="i">{{impuesto}}</option>
-        </select>
-      </div>
-    </div>
     <!-- Nuevo Componente -->
     <div class="title-with-info d-flex justify-content-center align-items-center" style="gap:8px;">
       <h4 class="mt-2 mb-0">Formas de compra y venta</h4>
