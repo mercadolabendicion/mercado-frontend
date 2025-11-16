@@ -106,7 +106,7 @@
   width: 100%;
   min-width: 820px; /* will make the table wider than the form on many screens */
   box-sizing: border-box;
-  background: transparent;
+  background-color: transparent !important; /* ensure no blue background from global/table styles */
 }
 
 /* Minimal cell styling: no heavy grid borders, compact padding, keep inputs consistent */
@@ -119,16 +119,23 @@
 }
 
 .formas-table thead th {
-  background: transparent !important; /* ensure no colored background */
+  background-color: transparent !important; /* ensure no colored background */
   font-weight: 600;
   color: var(--text-primary, #333);
   font-size: 0.85rem; /* match form labels */
   padding: 6px 8px;
+  text-align: left;
 }
 
 /* visual separators by row (subtle) */
 .formas-table tbody tr {
   border-bottom: 1px solid var(--gray-200, #e6e6e6);
+  background-color: transparent !important;
+}
+
+/* Remove hover blue from global table hover classes */
+.formas-table tbody tr:hover {
+  background-color: rgba(0,0,0,0.02) !important; /* very subtle */
 }
 
 /* Ensure table inputs use the same compact styling as other form controls */
@@ -137,7 +144,21 @@
   font-size: 0.92rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--gray-300, #e9ecef);
-  background: var(--bg-white, #fff);
+  background-color: var(--bg-white, #fff);
+}
+
+/* Match focus/hover styles with the rest of the form controls */
+.formas-table .form-control:focus,
+.formas-table .form-control:hover {
+  border-color: var(--primary-hover, #0b5ed7);
+  box-shadow: var(--shadow-sm, 0 0 0 0.1rem rgba(13,110,253,0.08));
+  outline: none;
+}
+
+/* Make table wrapper and table neutral (no blue backgrounds from other rules) */
+.formas-table-wrapper,
+.formas-table {
+  background-color: transparent !important;
 }
 
 /* On very small screens reduce min-width so table fits better but still scrolls */
