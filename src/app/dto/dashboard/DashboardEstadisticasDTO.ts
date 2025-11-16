@@ -2,24 +2,25 @@
  * Estructura de respuesta del endpoint GET /dashboard/estadisticas
  * Agrupa todas las estadísticas del dashboard
  */
+export interface ResumenVenta {
+    totalIngresos: number;
+    totalVentas: number;
+    promedioVenta: number;
+}
+
+export interface VentaPorDia {
+    diaSemana: string;
+    numeroDia: number;
+    cantidadVentas: number;
+    totalVentas: number;
+}
+
 export interface DashboardEstadisticasDTO {
-    // Ventas de hoy
-    ventasHoy?: {
-        cantidad: number;
-        total: number;
-        promedio: number;
-    };
+    // Resumen de ventas con ingresos, cantidad de ventas y promedio
+    resumenVentas?: ResumenVenta;
 
-    // Ingresos por ventas (agregado)
-    ingresosTotales?: {
-        total: number;
-        cantidad: number;
-    };
-
-    // Promedio de ventas
-    promedioVentas?: {
-        valor: number;
-    };
+    // Ventas por día de la semana (7 elementos, índice 0 = domingo, 6 = sábado)
+    ventasPorDia?: VentaPorDia[];
 
     // Caja menor
     cajaMenor?: {
@@ -27,14 +28,6 @@ export interface DashboardEstadisticasDTO {
         entrada: number;
         salida: number;
     };
-
-    // Día con más ingresos
-    diaConMasIngresos?: {
-        diaSemana: string;
-        numeroDia: number;
-        cantidadVentas: number;
-        totalVentas: number;
-    }[];
 
     // Día con más ventas
     diaConMasVentas?: {

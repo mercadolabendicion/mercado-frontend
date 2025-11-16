@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { createChartEx, BaselineSeries, IChartApi } from 'lightweight-charts';
 import { HorzScaleBehaviorWeek } from './horz-scale-week';
 
@@ -8,67 +8,34 @@ interface VentasDia {
   cantidadVentas: number;
   totalVentas: number;
 }
+
 @Component({
   selector: 'chart-dia-mas-ingresos',
   templateUrl: './dia-mas-ingresos.component.html',
   styleUrl: './dia-mas-ingresos.component.css',
 })
-export class DiaMasIngresosComponent implements AfterViewInit, OnDestroy {
+export class DiaMasIngresosComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChild('chartContainer', { static: false })
   chartContainer!: ElementRef<HTMLDivElement>;
+
+  @Input() ventasPorDia: VentasDia[] = [];
 
   private chart: IChartApi | null = null;
   private baselineSeries: any = null;
   private resizeObserver: ResizeObserver | null = null;
 
-  private ventasPorDia: VentasDia[] = [
-    {
-      diaSemana: 'Domingo',
-      numeroDia: 1,
-      cantidadVentas: 5,
-      totalVentas: 208520,
-    },
-    {
-      diaSemana: 'Lunes',
-      numeroDia: 2,
-      cantidadVentas: 19,
-      totalVentas: 52527,
-    },
-    {
-      diaSemana: 'Martes',
-      numeroDia: 3,
-      cantidadVentas: 127,
-      totalVentas: 740510.4,
-    },
-    {
-      diaSemana: 'Miércoles',
-      numeroDia: 4,
-      cantidadVentas: 42,
-      totalVentas: 230528.5,
-    },
-    {
-      diaSemana: 'Jueves',
-      numeroDia: 5,
-      cantidadVentas: 2,
-      totalVentas: 3458,
-    },
-    {
-      diaSemana: 'Viernes',
-      numeroDia: 6,
-      cantidadVentas: 1,
-      totalVentas: 4000,
-    },
-    {
-      diaSemana: 'Sábado',
-      numeroDia: 7,
-      cantidadVentas: 4,
-      totalVentas: 36012,
-    },
-  ];
-
   ngAfterViewInit(): void {
     this.initializeChart();
     this.setupResizeObserver();
+  }
+
+  /**
+   * Se ejecuta cuando los @Input cambian
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['ventasPorDia'] && this.chart && this.baselineSeries) {
+      this.updateChartData();
+    }
   }
 
   private initializeChart(): void {
@@ -103,11 +70,24 @@ export class DiaMasIngresosComponent implements AfterViewInit, OnDestroy {
       bottomFillColor2: 'rgba(239, 83, 80, 0.28)',
     });
 
-    // Mapear los datos `ventasPorDia` a items horizontales (numeroDia)
-    // Usamos `numeroDia` como 'time' y `totalVentas` como value (tambien se puede usar cantidadVentas de ser necesario)
-    const seriesData = this.ventasPorDia.map((d) => ({ time: d.numeroDia, value: d.totalVentas }));
+    this.updateChartData();
+  }
+
+  /**
+   * Actualiza los datos del gráfico
+   */
+  private updateChartData(): void {
+    if (!this.baselineSeries || this.ventasPorDia.length === 0) return;
+
+    // Mapear los datos `ventasPorDia` a items del gráfico
+    // Usamos `numeroDia` como 'time' y `totalVentas` como value
+    const seriesData = this.ventasPorDia.map((d) => ({
+      time: d.numeroDia,
+      value: d.totalVentas,
+    }));
+
     this.baselineSeries.setData(seriesData as any);
-    this.chart.timeScale().fitContent();
+    this.chart?.timeScale().fitContent();
   }
 
   private getContainerDimensions(container: HTMLDivElement): { width: number; height: number } {
