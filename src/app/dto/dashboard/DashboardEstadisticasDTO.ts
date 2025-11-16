@@ -44,6 +44,11 @@ export interface DashboardEstadisticasDTO {
         ingresos: number;
     };
 
+    // Estructura que viene del endpoint: productosMasVendidos puede ser
+    // un array de sub-arrays (cada sub-array contiene datos del producto)
+    // Se deja como any para poder manejar distintos formatos que el backend pueda devolver.
+    productosMasVendidos?: any[];
+
     // Lista de productos más vendidos
     listaMasVendidos?: {
         id: number;

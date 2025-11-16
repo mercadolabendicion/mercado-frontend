@@ -1,4 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+
+interface Producto {
+  id: number;
+  nombre: string;
+  cantidad: number;
+  ingresos: number;
+}
 
 @Component({
   selector: 'chart-producto-mas-vendido',
@@ -6,5 +13,6 @@ import { Component } from '@angular/core';
   styleUrl: './producto-mas-vendido.component.css'
 })
 export class ProductoMasVendidoComponent {
+  @Input() productoMasVendido: Producto | null = null;
 
 }

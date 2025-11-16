@@ -28,27 +28,27 @@
     </div>
     <div class="d-none d-lg-block col-md-12 col-lg-3">
       <div class="mt-4">
-        <chart-dia-mas-ventas></chart-dia-mas-ventas>
+        <chart-dia-mas-ventas [ventasPorDia]="ventasPorDia"></chart-dia-mas-ventas>
       </div>
       <div class="mt-4">
-        <chart-producto-mas-vendido></chart-producto-mas-vendido>
+        <chart-producto-mas-vendido [productoMasVendido]="productoMasVendido"></chart-producto-mas-vendido>
       </div>
     </div>
   </div>
   <div class="row">
     <div class="d-block d-lg-none col-md-6 col-lg-3 mt-4">
-      <chart-dia-mas-ventas></chart-dia-mas-ventas>
+      <chart-dia-mas-ventas [ventasPorDia]="ventasPorDia"></chart-dia-mas-ventas>
     </div>
     <div class="d-block d-lg-none col-md-6 col-lg-3 mt-4">
-      <chart-producto-mas-vendido></chart-producto-mas-vendido>
+      <chart-producto-mas-vendido [productoMasVendido]="productoMasVendido"></chart-producto-mas-vendido>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-12 col-lg-6 mt-4">
-      <chart-lista-mas-vendidos></chart-lista-mas-vendidos>
+    <div class="col-md-12 col-lg-6 mt-4" style="display: flex; flex-direction: column;">
+      <chart-lista-mas-vendidos [productosMasVendidos]="productosMasVendidos" style="flex: 1;"></chart-lista-mas-vendidos>
     </div>
-    <div class="col-md-12 col-lg-6 mt-4">
-      <chart-productos-proximos-vencer></chart-productos-proximos-vencer>
+    <div class="col-md-12 col-lg-6 mt-4" style="display: flex; flex-direction: column;">
+      <chart-productos-proximos-vencer [productosProximosVencer]="productosProximosVencer" style="flex: 1;"></chart-productos-proximos-vencer>
     </div>
   </div>
 </div>

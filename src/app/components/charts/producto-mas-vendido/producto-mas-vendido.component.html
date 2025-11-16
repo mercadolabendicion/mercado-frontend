@@ -16,8 +16,7 @@
             </svg>
         </div>
     </div>
-    <div class="card-body">
-        <h1 class="value-in-card">156 ventas</h1>
-        <span><strong>Sábado 11 Nov</strong></span>
-    </div>
+    <h1 class="value-in-card">{{ productoMasVendido?.nombre || 'N/A' }}</h1>
+    <span>Con <strong>{{ productoMasVendido?.cantidad || 0 }}</strong> ventas en el periodo selecionado</span>
+
 </div>

@@ -14,7 +14,7 @@
     </div>
     <div class="card-body">
         <p>Para el periodo seleccionado, el día</p>
-        <h2><strong>Domingo</strong></h2>
-        <span>Es el día que más se registran ventas, con un total de <strong>5</strong> ventas en el día.</span>
+        <h2><strong>{{ diaMasVentas?.diaSemana || 'N/A' }}</strong></h2>
+        <span>Es el día que más se registran ventas, con un total de <strong>{{ diaMasVentas?.cantidadVentas || 0 }}</strong> ventas en el día.</span>
     </div>
 </div>
