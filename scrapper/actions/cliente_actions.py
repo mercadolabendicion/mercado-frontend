@@ -175,6 +175,18 @@ def confirmar_eliminacion(page) -> None:
         page.wait_for_selector(".swal2-popup", timeout=5000, state="hidden")
         # Dar tiempo para que la eliminación se procese
         page.wait_for_timeout(1000)
+        
+        # Manejar alerta de éxito que puede aparecer después de la eliminación
+        try:
+            page.wait_for_selector(".swal2-popup", timeout=5000, state="visible")
+            page.wait_for_selector(".swal2-confirm", timeout=3000, state="visible")
+            page.wait_for_timeout(300)
+            page.click(".swal2-confirm")
+            page.wait_for_selector(".swal2-popup", timeout=5000, state="hidden")
+            page.wait_for_timeout(500)
+        except Exception:
+            # No hay alerta de éxito o ya se cerró
+            pass
     except Exception as e:
         # Si el diálogo no aparece o hay algún error, registrarlo pero continuar
         print(f"⚠ Advertencia al confirmar eliminación: {e}")
@@ -234,6 +246,8 @@ def abrir_edicion_cliente(page, nombre: str) -> None:
 
     # Esperar por el modal/componente de edición o por el input del formulario para continuar
     page.wait_for_selector("app-editar-cliente, #editarClienteModal, input[formcontrolname='nombre']", timeout=60000)
+    # Dar tiempo adicional para que el formulario se cargue completamente
+    page.wait_for_timeout(1500)
 
 
 def editar_cliente(page, cliente_original: Cliente, nuevos_datos: dict = None) -> Cliente:
@@ -254,12 +268,21 @@ def editar_cliente(page, cliente_original: Cliente, nuevos_datos: dict = None) -
     buscar_cliente(page, cliente_original["cedula"])
     abrir_edicion_cliente(page, cliente_original["nombre"])
     
-    # Actualizar campos modificados
+    # Actualizar campos modificados usando escribir_lento pero limpiando primero
     if "nombre" in nuevos_datos:
+        nombre_input = page.locator("input[formcontrolname='nombre']").first
+        nombre_input.wait_for(state="visible", timeout=10000)
+        nombre_input.fill("")
         escribir_lento(page, "input[formcontrolname='nombre']", nuevos_datos["nombre"])
+    
     if "direccion" in nuevos_datos:
+        direccion_input = page.locator("input[formcontrolname='direccion']").first
+        direccion_input.fill("")
         escribir_lento(page, "input[formcontrolname='direccion']", nuevos_datos["direccion"])
+    
     if "correo" in nuevos_datos:
+        correo_input = page.locator("input[formcontrolname='correo']").first
+        correo_input.fill("")
         escribir_lento(page, "input[formcontrolname='correo']", nuevos_datos["correo"])
     
     guardar_cliente(page)
