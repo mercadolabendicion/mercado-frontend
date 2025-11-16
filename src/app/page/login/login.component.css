@@ -139,12 +139,12 @@ input:focus {
   margin: var(--spacing-sm);
   background: var(--bg-white);
   box-shadow: var(--shadow-sm);
-  padding: 1rem 1.25rem;
+  padding: 0.85rem 1rem; /* compacto */
   width: 100%;
   max-width: 600px;
-  display: inline-block;
-  height: auto; /* let content define height */
-  overflow: hidden; /* hide any lower overflow */
+  display: inline-block; /* no cambiar layout del contenedor */
+  height: auto; /* que el contenido marque la altura */
+  overflow: hidden; /* elimina la parte inferior sobrante visualmente */
 }
 
 @media screen and (min-width: 768px) {
