@@ -319,6 +319,12 @@ textarea:focus {
   color: var(--success-color);
 }
 
+.icon-info {
+  border-radius: var(--radius-round);
+  background-color: var(--gray-100);
+  color: var(--gray-500);
+}
+
 .icon-red {
   background-color: var(--danger-icon);
   color: var(--danger-color);
@@ -339,7 +345,7 @@ textarea:focus {
   background-color: var(--bg-white);
   border: 1px solid var(--gray-500);
   border-radius: var(--radius-xxl);
-  overflow: hidden;
+  /* overflow: hidden; */
   box-shadow: var(--shadow-sm);
   padding: 1.5rem;
   height: 100%;
@@ -384,4 +390,36 @@ textarea:focus {
     font-weight: 700;
     color: var(--foreground);
     line-height: 1.2;
+}
+
+.tooltip {
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 1000;
+    transition: opacity 0.3s;
+}
+
+.card-icon:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
 }
