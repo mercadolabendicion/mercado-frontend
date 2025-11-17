@@ -76,6 +76,29 @@ export class DiaMasIngresosComponent
       } as any
     );
 
+    this.chart.applyOptions({
+      rightPriceScale: {
+        scaleMargins: {
+          top: 0.4, // Espacio para la leyenda
+          bottom: 0.15,
+        },
+      },
+      crosshair: {
+        horzLine: {
+          visible: false,
+          labelVisible: false,
+        },
+      },
+      grid: {
+        vertLines: {
+          visible: false,
+        },
+        horzLines: {
+          visible: false,
+        },
+      },
+    } as any);
+
     this.baselineSeries = this.chart.addSeries(BaselineSeries, {
       baseValue: { type: 'price', price: 50 },
       topLineColor: 'rgba(38, 166, 154, 0.8)',
@@ -161,7 +184,7 @@ export class DiaMasIngresosComponent
       style: 'currency',
       currency: 'COP',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     });
   }
 
@@ -173,8 +196,8 @@ export class DiaMasIngresosComponent
 
     this.legendElement = document.createElement('div');
     this.legendElement.style.position = 'absolute';
-    this.legendElement.style.left = '25px';
-    this.legendElement.style.top = '100px';
+    this.legendElement.style.left = '12px';
+    this.legendElement.style.top = '12px';
     this.legendElement.style.zIndex = '1';
     this.legendElement.style.fontSize = '14px';
     this.legendElement.style.fontFamily = 'sans-serif';
@@ -226,9 +249,9 @@ export class DiaMasIngresosComponent
     const formattedValue = this.formatearMoneda(value);
 
     this.legendElement.innerHTML = `
-      <div style="font-size: 28px; margin: 4px 0px; font-weight: bold;">${formattedValue}</div>
-      <div style="font-size: 16px; margin: 8px 0px; color: #26a69a;">${cantidadVentas} ventas</div>
-      <div style="font-size: 14px; margin: 2px 0px; color: #666;">${nombreDia}</div>
+      <div style="font-size: 16px; margin: 4px 0px; font-weight: bold;">${nombreDia}</div>
+      <div style="font-size: 18px; margin: 4px 0px; color: #26a69a;">Total Ventas: ${formattedValue}</div>
+      <div style="font-size: 14px; margin: 4px 0px; color: #666;">Cantidad: ${cantidadVentas} ventas</div>
     `;
   }
 
@@ -245,6 +268,9 @@ export class DiaMasIngresosComponent
   ngOnDestroy(): void {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
+    }
+    if (this.legendElement && this.legendElement.parentNode) {
+      this.legendElement.parentNode.removeChild(this.legendElement);
     }
   }
 }
