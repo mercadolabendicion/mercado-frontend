@@ -197,3 +197,36 @@ input:focus {
     text-align: center;
   }
 }
+
+/* Google Sign-In styles */
+.google-signin-container {
+  margin-top: var(--spacing-lg);
+  text-align: center;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: var(--spacing-md) 0;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--gray-400);
+}
+
+.separator span {
+  padding: 0 var(--spacing-sm);
+  color: var(--gray-600);
+  font-size: 14px;
+}
+
+.google-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-md);
+}
+

@@ -4,6 +4,7 @@ import { environment } from '../../env/env';
 import { Observable, tap } from 'rxjs';
 import { UsuarioLoginDTO } from '../../dto/usuario/UsuarioLoginDTO';
 import { UsuarioDTO } from '../../dto/usuario/UsuarioDTO';
+import { GoogleLoginDTO } from '../../dto/usuario/GoogleLoginDTO';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,6 +15,10 @@ export class HttpLoginService {
   
   login(usuario:UsuarioLoginDTO): Observable<UsuarioDTO> {
     return this.http.post<UsuarioDTO>(this.URL_API+"/usuarios/login", usuario );
+  }
+
+  googleLogin(googleLoginData: GoogleLoginDTO): Observable<UsuarioDTO> {
+    return this.http.post<UsuarioDTO>(this.URL_API+"/usuarios/google-login", googleLoginData);
   }
 
 }

@@ -26,6 +26,12 @@
         <p *ngIf="mensajeLogin">{{mensajeLogin}}*</p>
         <button class="btn-grad mx-auto d-block btn-login" id="btn-iniciar-sesion" type="submit" [disabled]="loginForm.invalid" (click)="login()">Iniciar Sesión</button>
       </form>
+      <div class="google-signin-container">
+        <div class="separator">
+          <span>O</span>
+        </div>
+        <div id="googleSignInButton" class="google-btn-wrapper"></div>
+      </div>
     </div>
   </div>
   </div>

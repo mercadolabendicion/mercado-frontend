@@ -2,10 +2,13 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UsuarioLoginDTO } from 'src/app/dto/usuario/UsuarioLoginDTO';
+import { GoogleLoginDTO } from 'src/app/dto/usuario/GoogleLoginDTO';
 import { environment } from 'src/app/env/env';
 import { HttpLoginService} from 'src/app/services/http-services/httpLogin.service';
 import { AlertService } from 'src/app/utils/alert.service';
 import { AuthService } from 'src/app/services/shared/auth.service';
+
+declare const google: any;
 
 @Component({
   selector: 'app-login',
@@ -22,12 +25,14 @@ export class LoginComponent {
   private alert: AlertService = inject(AlertService);
   private authService: AuthService = inject(AuthService);
   public nombreNegocio: string = environment.nombreNegocio;
+  private googleClientId: string = environment.googleClientId;
 
   ngOnInit(): void {
     this.buildForm();
     if(this.authService.isAuthenticated()){
       this.router.navigate(['/app/principal']);
     }
+    this.initializeGoogleSignIn();
   }
 
   /**
@@ -68,6 +73,51 @@ export class LoginComponent {
           this.router.navigate(['/app/principal']);
           },
         error: (error) => {this.alert.simpleErrorAlert(error.error.mensaje);}
+      });
+  }
+
+  /**
+   * Este método inicializa Google Sign-In
+   */
+  private initializeGoogleSignIn(): void {
+    if (typeof google !== 'undefined') {
+      google.accounts.id.initialize({
+        client_id: this.googleClientId,
+        callback: this.handleGoogleSignIn.bind(this)
+      });
+      
+      google.accounts.id.renderButton(
+        document.getElementById('googleSignInButton'),
+        { 
+          theme: 'outline', 
+          size: 'large',
+          width: 300,
+          text: 'signin_with',
+          logo_alignment: 'left'
+        }
+      );
+    }
+  }
+
+  /**
+   * Este método maneja la respuesta de Google Sign-In
+   */
+  private handleGoogleSignIn(response: any): void {
+    const googleToken = response.credential;
+    const googleLoginData = GoogleLoginDTO.crearGoogleLogin(googleToken);
+
+    this.httploginService.googleLogin(googleLoginData)
+      .subscribe({
+        next: response => {
+          if (response.token) {
+            this.authService.setToken(response.token);
+          }
+          localStorage.setItem('id', response.id+"");
+          this.router.navigate(['/app/principal']);
+        },
+        error: (error) => {
+          this.alert.simpleErrorAlert(error.error?.mensaje || 'Error al iniciar sesión con Google');
+        }
       });
   }
 
