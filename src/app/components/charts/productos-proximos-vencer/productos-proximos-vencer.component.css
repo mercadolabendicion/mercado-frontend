@@ -1,0 +1,42 @@
+/* Slider  */
+.slider {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}
+
+/*scroll en el body*/
+
+.scrollable-body {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.scrollable-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}

@@ -21,7 +21,18 @@ export class DashboardComponent implements OnInit {
   productosMasVendidos: any[] = [];
   productosProximosVencer: any[] = [];
 
+  // Filtros de fecha
+  fechaInicio: string = '';
+  fechaFin: string = '';
+
   ngOnInit(): void {
+    // Establecer fechas predeterminadas (últimos 7 días)
+    const hoy = new Date();
+    const hace7Dias = new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    this.fechaInicio = this.formatearFechaParaInput(hace7Dias);
+    this.fechaFin = this.formatearFechaParaInput(hoy);
+
     this.cargarEstadisticas();
   }
 
@@ -149,6 +160,25 @@ export class DashboardComponent implements OnInit {
   }
 
   /**
+   * Se ejecuta cuando cambian las fechas de filtro
+   */
+  onFechasChange(): void {
+    if (this.fechaInicio && this.fechaFin) {
+      console.log(`Filtrando estadísticas desde ${this.fechaInicio} hasta ${this.fechaFin}`);
+      this.dashboardService.obtenerEstadisticas(this.fechaInicio, this.fechaFin).subscribe({
+        next: (datos) => {
+          this.estadisticas = datos;
+          this.procesarDatos(datos);
+          console.log('Estadísticas del dashboard actualizadas:', datos);
+        },
+        error: (error) => {
+          console.error('Error al cargar estadísticas:', error);
+        }
+      });
+    }
+  }
+
+  /**
    * Formatea una fecha al formato YYYY-MM-DD requerido por el API
    * @param fecha Fecha a formatear
    * @returns Fecha formateada en formato YYYY-MM-DD
@@ -158,5 +188,34 @@ export class DashboardComponent implements OnInit {
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const dia = String(fecha.getDate()).padStart(2, '0');
     return `${año}-${mes}-${dia}`;
+  }
+
+  /**
+   * Formatea una fecha al formato requerido por el input type="date" (YYYY-MM-DD)
+   * @param fecha Fecha a formatear
+   * @returns Fecha formateada para input date
+   */
+  private formatearFechaParaInput(fecha: Date): string {
+    const año = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    return `${año}-${mes}-${dia}`;
+  }
+
+  /**
+   * Formatea una fecha al formato largo en español para mostrar en el banner
+   * Ejemplo: "domingo 02 de noviembre de 2025"
+   * @param fechaStr Fecha en formato YYYY-MM-DD (o cualquier parseable por Date)
+   */
+  formatFechaLarga(fechaStr: string): string {
+    if (!fechaStr) return '';
+    try {
+      const d = new Date(fechaStr + 'T00:00:00-05:00');
+      const s = d.toLocaleDateString('es-CO', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+      // El locale puede incluir una coma después del día de la semana; la removemos
+      return s.replace(',', '');
+    } catch (e) {
+      return fechaStr;
+    }
   }
 }

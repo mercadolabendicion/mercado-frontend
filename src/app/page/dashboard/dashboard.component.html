@@ -2,10 +2,38 @@
   <div class="row">
     <div class="col-md-6 col-lg-8">
       <h1>Dashboard principal</h1>
-      <p>Monitorea el rendimiento del negocio en tiempo real</p>
+      <span>Monitorea el rendimiento del negocio en tiempo real</span>
     </div>
     <div class="col-md-6 col-lg-4">
-      aqui van las fechas
+      <div style="display: flex; gap: 10px; align-items: flex-end; justify-content: flex-end; height: 100%;">
+        <div style="flex: 1;">
+          <label for="fecha-inicio" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Fecha Inicio</label>
+          <input 
+            id="fecha-inicio"
+            type="date" 
+            [(ngModel)]="fechaInicio"
+            (change)="onFechasChange()"
+            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;"
+          >
+        </div>
+        <div style="flex: 1;">
+          <label for="fecha-fin" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Fecha Fin</label>
+          <input 
+            id="fecha-fin"
+            type="date" 
+            [(ngModel)]="fechaFin"
+            (change)="onFechasChange()"
+            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;"
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-12">
+      <div *ngIf="fechaInicio && fechaFin" class="justify-content-center d-flex" style="background:#f5f7fb;padding:10px;border-radius:6px;border:1px solid #e6e9ef;">
+        <span>Mostrando información desde el <strong>{{ formatFechaLarga(fechaInicio) }}</strong> hasta el <strong>{{ formatFechaLarga(fechaFin) }}</strong></span>
+      </div>
     </div>
   </div>
   <div class="row">

@@ -361,6 +361,15 @@ textarea:focus {
   justify-content: space-between;
 }
 
+.card-footer {
+  background-color: var(--bg-white);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0;
+  border: none;
+}
+
 .card-icon {
   width: 40px;
   height: 40px;
