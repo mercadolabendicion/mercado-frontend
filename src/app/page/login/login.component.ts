@@ -67,12 +67,18 @@ export class LoginComponent {
           if (response.token) {
             this.authService.setToken(response.token);
           }
+          // Store full UsuarioDTO so other components can read name/photo
+          try {
+            localStorage.setItem('usuario', JSON.stringify(response));
+          } catch (e) {
+            // ignore storage errors
+          }
           // Keep id in localStorage for backward compatibility if needed
           localStorage.setItem('id', response.id+""); 
           this.mensajeLogin = response+"";
           this.router.navigate(['/app/principal']);
           },
-        error: (error) => {this.alert.simpleErrorAlert(error.error.mensaje);}
+        error: (error) => {this.alert.simpleErrorAlert(error.error.mensaje);} 
       });
   }
 
@@ -112,6 +118,8 @@ export class LoginComponent {
           if (response.token) {
             this.authService.setToken(response.token);
           }
+          // Save full user object too
+          try { localStorage.setItem('usuario', JSON.stringify(response)); } catch (e) {}
           localStorage.setItem('id', response.id+"");
           this.router.navigate(['/app/principal']);
         },

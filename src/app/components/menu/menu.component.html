@@ -126,11 +126,23 @@
 
   <div class="main">
     <div>
-      <nav class="navbar navbar-expand px-3 border-bottom">
+      <nav class="navbar navbar-expand px-3 border-bottom d-flex align-items-center">
         <button type="button" data-bs-theme="light" (click)="toggleCollapse()">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <h2 class="empresa">{{nombreNegocio}}</h2>
+        <h2 class="empresa mb-0">{{nombreNegocio}}</h2>
+
+        <!-- User profile (aligned right). Name hidden on small screens -->
+        <div class="navbar-user ms-auto d-flex align-items-center">
+          <ng-container *ngIf="userPhoto; else initialsTpl">
+            <img [src]="userPhoto" alt="avatar" class="avatar">
+          </ng-container>
+          <ng-template #initialsTpl>
+            <div class="avatar avatar-initials" *ngIf="userInitials">{{ userInitials }}</div>
+            <div class="avatar avatar-placeholder" *ngIf="!userInitials"></div>
+          </ng-template>
+          <span class="user-name d-none d-md-inline ms-2">{{ userName }}</span>
+        </div>
       </nav>
       <main>
         <div>

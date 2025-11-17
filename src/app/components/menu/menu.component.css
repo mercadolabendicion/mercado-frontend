@@ -68,6 +68,52 @@ li:hover {
     padding: 1.15rem 1.5rem;
 }
 
+/* Navbar user styles */
+.navbar-user .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: inline-block;
+}
+
+.navbar-user .avatar-initials {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color, #6c757d);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.navbar-user .avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+}
+
+/* Ensure fixed avatar size regardless of source */
+.navbar-user img.avatar {
+    width: 40px;
+    height: 40px;
+}
+
+/* Name responsive: hide on small screens */
+.navbar-user .user-name {
+    font-size: 14px;
+    color: var(--text-primary, #313149);
+}
+
+@media (max-width: 576px) {
+    .navbar-user .user-name {
+        display: none !important;
+    }
+}
+
 .sidebar-logo a {
     color: #113253;
     font-size: 1.25rem;
