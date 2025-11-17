@@ -23,6 +23,6 @@ export const environment = {
   correo: 'jorgueurrego@gmail.com',
   
   // Google OAuth Client ID (fake for development)
-  googleClientId: '123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com'
+  googleClientId: '102824860918-d7bqe21s292jdngdh29q40g8ve13lhd0.apps.googleusercontent.com'
   // Esta variable indica si el entorno es de producción o no
 }
