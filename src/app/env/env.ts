@@ -1,5 +1,6 @@
 export const environment = {
 
+  //comentario para merge
 
   // Esta es la URL de la API que se va a consumir en el proyecto
   //ApiUrl: 'https://back-drogueria-amd64.onrender.com',
