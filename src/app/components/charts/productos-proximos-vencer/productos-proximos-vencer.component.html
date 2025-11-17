@@ -11,46 +11,44 @@
             </svg>
         </div>
     </div>
-    <div class="card-body scrollable-body">
+    <div class="card-body">
         <div style="margin-bottom: 20px;">
             <label for="slider-dias" style="display: block; margin-bottom: 8px; font-weight: 500;">
                 Productos que vencen en: <strong>{{ diasFiltro }}</strong> días
             </label>
-            <input 
-                id="slider-dias"
-                type="range" 
-                min="1" 
-                max="30" 
-                [(ngModel)]="diasFiltro"
-                style="width: 100%; cursor: pointer; outline: none;"
-                class="slider"
-            >
+            <input id="slider-dias" type="range" min="1" max="30" [(ngModel)]="diasFiltro"
+                style="width: 100%; cursor: pointer; outline: none;" class="slider">
             <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-top: 8px;">
                 <span>1 día</span>
                 <span>30 días</span>
             </div>
         </div>
 
-        <table *ngIf="productosFiltrados && productosFiltrados.length > 0">
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Producto</th>
-                    <th>Fecha de vencimiento</th>
-                    <th>Días restantes</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let producto of productosFiltrados">
-                    <td>{{ obtenerCodigo(producto) }}</td>
-                    <td>{{ obtenerNombre(producto) }}</td>
-                    <td>{{ formatearFecha(obtenerFechaVencimiento(producto)) }}</td>
-                    <td>{{ obtenerDiasParaVencer(producto) }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <div *ngIf="!productosFiltrados || productosFiltrados.length === 0">
-            <p style="text-align: center; color: #999;">No hay productos que vencer en los próximos {{ diasFiltro }} días</p>
+        <div class="table-section-chart scrollable-body">
+            <div class="table-container-chart" *ngIf="productosFiltrados && productosFiltrados.length > 0">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Producto</th>
+                            <th>Fecha de vencimiento</th>
+                            <th>Días restantes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let producto of productosFiltrados">
+                            <td>{{ obtenerCodigo(producto) }}</td>
+                            <td>{{ obtenerNombre(producto) }}</td>
+                            <td>{{ formatearFecha(obtenerFechaVencimiento(producto)) }}</td>
+                            <td>{{ obtenerDiasParaVencer(producto) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div *ngIf="!productosFiltrados || productosFiltrados.length === 0">
+                <p style="text-align: center; color: #999;">No hay productos que vencer en los próximos {{ diasFiltro }}
+                    días</p>
+            </div>
         </div>
     </div>
 </div>
