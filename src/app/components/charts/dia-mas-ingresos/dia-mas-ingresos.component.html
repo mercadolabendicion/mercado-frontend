@@ -12,9 +12,9 @@
         </div>
     </div>
     <div class="card-body">
-        <p>Para el periodo seleccionado, el día <strong>Domingo</strong> es el día que más se registran ventas,
+        <p>Para el periodo seleccionado, el día <strong>{{ diaMasVentas?.diaSemana || 'N/A' }}</strong> es el día que más se registran ventas,
             con un total de: <br>
-            <span class="value-in-card">$ 33,000,000</span><br> de ventas en el día.
+            <span class="value-in-card">{{ formatearMoneda(diaMasVentas?.totalVentas || 0) }}</span><br> de ventas en el día.
         </p>
         <div #chartContainer class="chart-wrapper"></div>
     </div>

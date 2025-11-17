@@ -48,13 +48,10 @@ export class DashboardComponent implements OnInit {
     const fechaFin = this.formatearFecha(hoy);
     const fechaInicio = this.formatearFecha(hace7Dias);
 
-    console.log(`Cargando estadísticas del dashboard desde ${fechaInicio} hasta ${fechaFin}`);
-
     this.dashboardService.obtenerEstadisticas(fechaInicio, fechaFin).subscribe({
       next: (datos) => {
         this.estadisticas = datos;
         this.procesarDatos(datos);
-        console.log('Estadísticas del dashboard recibidas:', datos);
       },
       error: (error) => {
         console.error('Error al cargar estadísticas:', error);
@@ -148,15 +145,6 @@ export class DashboardComponent implements OnInit {
     if (datos.productosProximosVencer && Array.isArray(datos.productosProximosVencer)) {
       this.productosProximosVencer = datos.productosProximosVencer;
     }
-
-    console.log('Datos procesados para los charts:', {
-      totalIngresos: this.totalIngresos,
-      totalVentas: this.totalVentas,
-      promedioVenta: this.promedioVenta,
-      ventasPorDia: this.ventasPorDia
-      ,
-      productoMasVendido: this.productoMasVendido
-    });
   }
 
   /**
@@ -164,12 +152,10 @@ export class DashboardComponent implements OnInit {
    */
   onFechasChange(): void {
     if (this.fechaInicio && this.fechaFin) {
-      console.log(`Filtrando estadísticas desde ${this.fechaInicio} hasta ${this.fechaFin}`);
       this.dashboardService.obtenerEstadisticas(this.fechaInicio, this.fechaFin).subscribe({
         next: (datos) => {
           this.estadisticas = datos;
           this.procesarDatos(datos);
-          console.log('Estadísticas del dashboard actualizadas:', datos);
         },
         error: (error) => {
           console.error('Error al cargar estadísticas:', error);

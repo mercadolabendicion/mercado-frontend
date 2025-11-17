@@ -38,6 +38,5 @@ export class DiaMasVentasComponent implements OnChanges {
     )[0];
 
     this.diaMasVentas = diaMaximo;
-    console.log('Día con más ventas identificado:', this.diaMasVentas);
   }
 }

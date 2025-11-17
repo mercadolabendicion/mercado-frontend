@@ -1,8 +1,17 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnDestroy,
+  Input,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { createChartEx, BaselineSeries, IChartApi } from 'lightweight-charts';
 import { HorzScaleBehaviorWeek } from './horz-scale-week';
 
-interface VentasDia {
+interface VentaPorDia {
   diaSemana: string;
   numeroDia: number;
   cantidadVentas: number;
@@ -14,12 +23,15 @@ interface VentasDia {
   templateUrl: './dia-mas-ingresos.component.html',
   styleUrl: './dia-mas-ingresos.component.css',
 })
-export class DiaMasIngresosComponent implements AfterViewInit, OnDestroy, OnChanges {
+export class DiaMasIngresosComponent
+  implements AfterViewInit, OnDestroy, OnChanges
+{
   @ViewChild('chartContainer', { static: false })
   chartContainer!: ElementRef<HTMLDivElement>;
 
-  @Input() ventasPorDia: VentasDia[] = [];
+  @Input() ventasPorDia: VentaPorDia[] = [];
 
+  diaMasVentas: VentaPorDia | null = null;
   private chart: IChartApi | null = null;
   private baselineSeries: any = null;
   private resizeObserver: ResizeObserver | null = null;
@@ -36,6 +48,9 @@ export class DiaMasIngresosComponent implements AfterViewInit, OnDestroy, OnChan
     if (changes['ventasPorDia'] && this.chart && this.baselineSeries) {
       this.updateChartData();
     }
+    if (changes['ventasPorDia'] && this.ventasPorDia.length > 0) {
+      this.identificarDiaConMasVentas();
+    }
   }
 
   private initializeChart(): void {
@@ -48,7 +63,7 @@ export class DiaMasIngresosComponent implements AfterViewInit, OnDestroy, OnChan
     this.chart = createChartEx(
       container,
       horzBehaviour as unknown as import('lightweight-charts').IHorzScaleBehavior<unknown>,
-      ({
+      {
         width,
         height,
         layout: {
@@ -57,7 +72,7 @@ export class DiaMasIngresosComponent implements AfterViewInit, OnDestroy, OnChan
         },
         // Ocultar la marca de agua (por defecto la librería puede mostrarla)
         watermark: { visible: false },
-      } as any)
+      } as any
     );
 
     this.baselineSeries = this.chart.addSeries(BaselineSeries, {
@@ -90,7 +105,10 @@ export class DiaMasIngresosComponent implements AfterViewInit, OnDestroy, OnChan
     this.chart?.timeScale().fitContent();
   }
 
-  private getContainerDimensions(container: HTMLDivElement): { width: number; height: number } {
+  private getContainerDimensions(container: HTMLDivElement): {
+    width: number;
+    height: number;
+  } {
     return {
       width: container.clientWidth || 400,
       height: 300,
@@ -109,6 +127,40 @@ export class DiaMasIngresosComponent implements AfterViewInit, OnDestroy, OnChan
     });
 
     this.resizeObserver.observe(this.chartContainer.nativeElement);
+  }
+
+  /**
+   * Identifica el día con más ventas ordenando el array por totalVentas de mayor a menor
+   */
+  private identificarDiaConMasVentas(): void {
+    if (!this.ventasPorDia || this.ventasPorDia.length === 0) {
+      this.diaMasVentas = null;
+      return;
+    }
+
+    // Ordenar por totalVentas de mayor a menor y tomar el primero
+    const diaMaximo = [...this.ventasPorDia].sort(
+      (a, b) => b.totalVentas - a.totalVentas
+    )[0];
+
+    this.diaMasVentas = diaMaximo;
+  }
+
+  /**
+   * Formatea un número como moneda en formato COP (Colombia)
+   * @param valor Valor numérico a formatear
+   * @returns Valor formateado como moneda
+   */
+  formatearMoneda(valor: number): string {
+    if (!valor) {
+      return '$ 0';
+    }
+    return valor.toLocaleString('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
   }
 
   ngOnDestroy(): void {
